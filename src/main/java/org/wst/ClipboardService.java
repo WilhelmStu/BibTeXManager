@@ -1,36 +1,47 @@
 package org.wst;
 
+
 import javafx.application.Platform;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.input.Clipboard;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
-
 
 public class ClipboardService extends ScheduledService<String> {
 
     private final Clipboard clipboard = Clipboard.getSystemClipboard();
+    private String oldClipboard;
+
 
     @Override
     protected Task<String> createTask() {
+
         return new Task<>() {
             @Override
             protected String call() throws Exception {
 
-                System.out.println("test");
+                while (true) {
+                    Task<String> query = new Task<>() {
+                        @Override
+                        protected String call() {
+                            return clipboard.getString();
+                        }
+                    };
+                    Platform.runLater(query);
 
-                final FutureTask query = new FutureTask(new Callable() {
-                    @Override
-                    public Object call() throws Exception {
-                        return clipboard.getString();
+                    if (oldClipboard == null) {
+                        oldClipboard = query.get();
+                        return query.get();
+                    } else if (!(oldClipboard.equals(query.get()))) {
+                        oldClipboard = query.get();
+                        return query.get();
+                    } else {
+                        wait(500);
                     }
-                });
-
-              Platform.runLater(query);
-                return (String) query.get();
+                }
             }
         };
     }
 }
+
+

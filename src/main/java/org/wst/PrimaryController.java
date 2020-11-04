@@ -2,62 +2,40 @@ package org.wst;
 
 import java.io.IOException;
 
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
-import javafx.scene.input.Clipboard;
 import javafx.util.Duration;
 
-public class PrimaryController  {
+public class PrimaryController {
 
     public TextArea textArea1;
-    final Clipboard clipboard = Clipboard.getSystemClipboard();
 
     public PrimaryController() {
     }
 
-
     @FXML
     public void initialize() {
-        //ClipboardThread task = new ClipboardThread(textArea1.getText());
         ClipboardService service = new ClipboardService();
-        //task.addListener(this);
 
-
+        // setup service to check clipboard every second
         service.setPeriod(Duration.seconds(1));
-        service.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-
-            @Override
-            public void handle(WorkerStateEvent t) {
+        service.setOnSucceeded(t -> {
+            // get string from clipboard
+            if (t.getSource().getValue() != null) {
                 System.out.println(t.getSource().getValue());
                 textArea1.setText(t.getSource().getValue().toString());
+
+                /* maybe used later
+                Window st = textArea1.getScene().getWindow();
+                st.requestFocus();
+                 */
+                App.toFront();
+
+            } else {
+                textArea1.setText("Empty Clipboard!");
             }
         });
-
-
         service.start();
-
-        /*Task<String> task = service.createTask();
-
-
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
-
-
-        task.setOnSucceeded((succeededEvent) -> {
-                   textArea1.setText(task.getMessage());
-
-                   Thread thread1 = new Thread(service.createTask());
-                   thread1.setDaemon(true);
-                   thread1.start();
-                }
-        );
-
-         */
     }
 
     @FXML
