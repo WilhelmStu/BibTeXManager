@@ -36,7 +36,7 @@ public class ClipboardService extends ScheduledService<String> {
                         oldClipboard = query.get();
                         return query.get();
                     } else {
-                        wait(500);
+                        wait(200);
                     }
                 }
             }

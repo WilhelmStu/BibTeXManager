@@ -18,7 +18,7 @@ public class PrimaryController {
         ClipboardService service = new ClipboardService();
 
         // setup service to check clipboard every second
-        service.setPeriod(Duration.seconds(1));
+        service.setPeriod(Duration.millis(200));
         service.setOnSucceeded(t -> {
             // get string from clipboard
             if (t.getSource().getValue() != null) {
