@@ -22,8 +22,9 @@ public class PrimaryController {
         service.setOnSucceeded(t -> {
             // get string from clipboard
             if (t.getSource().getValue() != null) {
-                System.out.println(t.getSource().getValue());
-                textArea1.setText(t.getSource().getValue().toString());
+                String entry = FormatChecker.basicBibTeXCheck((String) t.getSource().getValue());
+                System.out.println(entry);
+                textArea1.setText(entry.equals("invalid")? "Not a valid BibTeX entry!" : entry);
 
                 /* maybe used later
                 Window st = textArea1.getScene().getWindow();
