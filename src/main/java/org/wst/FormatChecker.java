@@ -15,6 +15,7 @@ public abstract class FormatChecker {
 
     // todo: Advanced check for required/optional fields for each type above...
     // todo? second regex to check field validity...
+    // todo? allow multiple entries?
 
     /**
      * @param raw input from system clipboard, that can contain a BibTeX entry
@@ -22,9 +23,9 @@ public abstract class FormatChecker {
      */
     public static String basicBibTeXCheck(String raw) {
 
-        String re = "[@]\\w{4,}\\s*[{]\\s*((?s)[\\w-])*\\s*[,](?s).*[}]";
+        String re = "[@]\\w{4,}\\s*[{]\\s*((?s)[\\w-])*\\s*[,][^@]+[}]";
 
-        String re2 = "((?s)[\\w-])*";
+        //String re2 = "((?s)[\\w-])*";
         Pattern pt = Pattern.compile(re);
         Matcher mt = pt.matcher(raw);
         String firstEntry = "invalid";

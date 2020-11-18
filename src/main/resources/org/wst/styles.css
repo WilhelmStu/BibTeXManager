@@ -1,0 +1,12 @@
+
+#selectedFile {
+    -fx-background-color: white;
+    -fx-border-color: grey;
+    -fx-border-width: 1;
+    -fx-padding: 4;
+    -fx-min-width: 200;
+    -fx-alignment: center;
+    -fx-text-fill: red;
+    -fx-font-size: 16;
+
+}

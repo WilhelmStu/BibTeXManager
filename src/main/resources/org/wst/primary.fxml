@@ -6,14 +6,34 @@
 <?import javafx.geometry.Insets?>
 
 <?import javafx.scene.control.TextArea?>
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.wst.PrimaryController">
+<?import javafx.scene.layout.HBox?>
+<VBox alignment="CENTER"  spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.wst.PrimaryController" >
     <children>
         <Label text="Primary View"/>
-        <Button fx:id="primaryButton" text="Switch to Secondary View" onAction="#switchToSecondary"/>
-        <TextArea fx:id="textArea1" text="From clipboard:"/>
+        <HBox spacing="20.0" alignment="CENTER">
+            <VBox fx:id="colWithListView" spacing="10.0">
+            <Button fx:id="selectRootButton" text="Select root directory" onAction="#selectRoot"/>
+                <!-- ListView added here -->
+            </VBox>
+            <Button fx:id="selectFile" text=">" onAction="#selectFile" minWidth="30" minHeight="30"/>
+            <VBox spacing="10.0">
+                <Button fx:id="selectSingleFileButton" text="Select single file" onAction="#selectSingle"/>
+                <Button fx:id="createFileButton" text="Create new File" onAction="#createFile"/>
+                <Label fx:id="selectedFile" text="No file selected"/>
+            </VBox>
+
+            <VBox fx:id="colWithSecondListView" spacing="10.0">
+                <Label fx:id="secondList" text="TODO: second list that &#xD; will display bib entry &#xD;inside the selected bib file"/>
+            </VBox>
+
+        </HBox>
+
+        <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:"/>
     </children>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 </VBox>
+
+

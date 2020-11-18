@@ -19,8 +19,15 @@ public class testMain {
                 "      pages   = \"286--295\"\n" +
                 "    }  ";
 
+        String test3 = "ANY TEXT THAT IS NOT BIBTEX " +
+                " @misc     {   patashnik-bibtexing ," +
+                "       author = \"Oren Patashnik\"," +
+                "       title = \"BIBTEXing\"," +
+                "       year = \"1988\" }   " +
+                " MORE COPIED TEXT THAT IS NOT BIBTEX        ";
 
         System.out.println(FormatChecker.basicBibTeXCheck(test));
         System.out.println(FormatChecker.basicBibTeXCheck(test2));
+        System.out.println(FormatChecker.basicBibTeXCheck(test3));
     }
 }
