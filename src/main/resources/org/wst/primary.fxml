@@ -13,7 +13,7 @@
         <Label text="Primary View"/>
         <HBox spacing="20.0" alignment="CENTER">
             <VBox fx:id="colWithListView" spacing="10.0">
-            <Button fx:id="selectRootButton" text="Select root directory" onAction="#selectRoot"/>
+            <Button fx:id="selectRootButton" text="Select root directory.." onAction="#selectRoot"/>
                 <!-- ListView added here -->
             </VBox>
             <Button fx:id="selectFile" text=">" onAction="#selectFile" minWidth="30" minHeight="30"/>

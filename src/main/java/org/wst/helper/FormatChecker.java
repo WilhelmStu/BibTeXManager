@@ -1,4 +1,4 @@
-package org.wst;
+package org.wst.helper;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;

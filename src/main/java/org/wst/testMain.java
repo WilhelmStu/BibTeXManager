@@ -1,5 +1,7 @@
 package org.wst;
 
+import org.wst.helper.FormatChecker;
+
 public class testMain {
     public static void main(String[] args) {
         String test = "ANY TEXT THAT IS NOT BIBTEX " +

@@ -1,4 +1,4 @@
-package org.wst;
+package org.wst.helper;
 
 
 import javafx.application.Platform;

@@ -10,6 +10,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.wst.helper.ClipboardService;
+import org.wst.helper.FileManager;
+import org.wst.helper.FormatChecker;
 
 public class PrimaryController {
 
@@ -19,6 +22,11 @@ public class PrimaryController {
     private VBox colWithListView;
     @FXML
     private VBox colWithSecondListView;
+
+    private ListView<String> fileList;
+    private ListView<String> bibList;
+
+    private final FileManager fileManager = FileManager.getInstance();
 
     public PrimaryController() {
 
@@ -49,8 +57,6 @@ public class PrimaryController {
                 Window st = textArea1.getScene().getWindow();
                 st.requestFocus();
                  */
-
-
             } else {
                 inputArea.setText("Empty Clipboard!");
             }
@@ -60,11 +66,11 @@ public class PrimaryController {
 
     @FXML
     private void initListViews(){
-        ObservableList<String> fileNames = FXCollections.observableArrayList("file1", "fiel", "file1", "fiel","file1", "fiel","file1", "fiel");
-        ListView<String> fileList = new ListView<>(fileNames);
+        ObservableList<String> fileNames = FXCollections.observableArrayList("No root selected");
+        fileList = new ListView<>(fileNames);
         fileList.setMaxSize(200, 180);
 
-        ListView<String> bibList = new ListView<>();
+        bibList = new ListView<>();
         bibList.setMaxSize(200, 180);
 
         colWithListView.getChildren().add(fileList);
@@ -77,8 +83,8 @@ public class PrimaryController {
     }
 
     @FXML
-    private void selectRoot() {
-
+    private void selectRoot(ActionEvent actionEvent) {
+        fileManager.selectDirectory(actionEvent, fileList);
     }
 
     @FXML
