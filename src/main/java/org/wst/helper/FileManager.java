@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,16 +26,20 @@ public class FileManager {
         return fileManager;
     }
 
-    private static File rootDirectory;
+    private File rootDirectory;
+    private List<File> filesInsideRoot;
+    private File selectedFile;
 
     public void selectDirectory(ActionEvent actionEvent, ListView<String> view) {
-
         Button b = (Button) actionEvent.getSource();
         String oldText = b.getText();
         b.setDisable(true);
         b.setText("Searching for bib files..");
 
         DirectoryChooser chooser = new DirectoryChooser();
+
+        // open chooser at last selected folder..
+        if (rootDirectory != null) chooser.setInitialDirectory(rootDirectory);
         chooser.setTitle("Select a root directory");
         rootDirectory = chooser.showDialog(b.getScene().getWindow());
 
@@ -43,14 +48,17 @@ public class FileManager {
             t.setOnSucceeded(list -> {
                 List<String> fileNames = new ArrayList<>();
 
-                for (File f : t.getValue()
+                filesInsideRoot = t.getValue();
+                for (File f : filesInsideRoot
                 ) {
                     fileNames.add(f.getName());
                 }
 
                 Collections.sort(fileNames);
                 System.out.println(fileNames);
+                if (fileNames.size() == 0) fileNames.add("No .bib files found!");
                 view.setItems(FXCollections.observableArrayList(fileNames));
+
                 b.setDisable(false);
                 b.setText(oldText);
 
@@ -86,4 +94,39 @@ public class FileManager {
         }
         return list;
     }
+
+    public String getRootDirectory() {
+        return rootDirectory != null ? rootDirectory.getAbsolutePath() : "No root selected";
+    }
+
+    public void selectSingleFile(ActionEvent actionEvent) {
+        Button b = (Button) actionEvent.getSource();
+        String oldText = b.getText();
+        b.setDisable(true);
+        b.setText("Searching for bib files..");
+
+        FileChooser fileChooser = new FileChooser();
+
+        if (selectedFile != null) {
+            fileChooser.setInitialDirectory(selectedFile.getParentFile());
+        }
+        fileChooser.setTitle("Select a single file");
+        selectedFile = fileChooser.showOpenDialog(b.getScene().getWindow());
+        b.setDisable(false);
+        b.setText(oldText);
+    }
+
+    public void selectFileFromList(String filename) {
+        for (File f: filesInsideRoot
+             ) {
+            if(f.getName().equals(filename)) {
+                selectedFile = f;
+            }
+        }
+    }
+
+    public String getSelectedFileName() {
+        return selectedFile != null ? selectedFile.getName() : "No file selected";
+    }
+
 }

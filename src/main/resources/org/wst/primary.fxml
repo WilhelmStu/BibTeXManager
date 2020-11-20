@@ -14,11 +14,12 @@
         <HBox spacing="20.0" alignment="CENTER">
             <VBox fx:id="colWithListView" spacing="10.0">
             <Button fx:id="selectRootButton" text="Select root directory.." onAction="#selectRoot"/>
+                <Label fx:id="rootDirectory" text="No root selected" textOverrun="LEADING_ELLIPSIS"/>
                 <!-- ListView added here -->
             </VBox>
-            <Button fx:id="selectFile" text=">" onAction="#selectFile" minWidth="30" minHeight="30"/>
+            <Button fx:id="selectFile" text=">" onAction="#selectFileFromList" minWidth="30" minHeight="30"/>
             <VBox spacing="10.0">
-                <Button fx:id="selectSingleFileButton" text="Select single file" onAction="#selectSingle"/>
+                <Button fx:id="selectSingleFileButton" text="Select single file" onAction="#selectSingleFile"/>
                 <Button fx:id="createFileButton" text="Create new File" onAction="#createFile"/>
                 <Label fx:id="selectedFile" text="No file selected"/>
             </VBox>
