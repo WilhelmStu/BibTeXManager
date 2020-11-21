@@ -1,10 +1,10 @@
 
-#selectedFileRed, #selectedFileGreen {
+#selectedFile, #selectedFileGreen {
     -fx-background-color: white;
     -fx-border-color: grey;
     -fx-border-width: 1;
     -fx-padding: 4;
-    -fx-min-width: 200;
+    -fx-min-width: 180;
     -fx-alignment: center;
     -fx-text-fill: red;
     -fx-font-size: 16;
@@ -12,4 +12,27 @@
 
 #selectedFileGreen {
     -fx-text-fill: green;
+}
+
+.button {
+    -fx-min-width: 140;
+    -fx-font-size: 14;
+}
+
+#selectFile {
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+}
+
+.list-view {
+    -fx-min-width: 40;
+}
+
+.Vbox {
+    -fx-alignment: center;
+    -fx-spacing: 10;
+}
+
+#inputArea{
+    -fx-font-size: 14;
 }

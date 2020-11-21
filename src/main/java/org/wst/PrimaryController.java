@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.wst.helper.ClipboardService;
@@ -21,6 +22,8 @@ public class PrimaryController {
     private VBox colWithListView;
     @FXML
     private VBox colWithSecondListView;
+    @FXML
+    private GridPane gridPane;
     @FXML
     private Label rootDirectory;
     @FXML
@@ -71,10 +74,8 @@ public class PrimaryController {
     private void initListViews() {
         //ObservableList<String> fileNames = FXCollections.observableArrayList("No root selected");
         fileList = new ListView<>();
-        fileList.setMaxSize(200, 180);
 
         bibList = new ListView<>();
-        bibList.setMaxSize(200, 180);
 
         colWithListView.getChildren().add(fileList);
         colWithSecondListView.getChildren().add(bibList);
@@ -95,14 +96,15 @@ public class PrimaryController {
     @FXML
     private void selectSingleFile(ActionEvent actionEvent) {
         fileManager.selectSingleFile(actionEvent);
-        this.selectedFile.setText(fileManager.getSelectedFileName());
-        this.selectedFile.setId(fileManager.getSelectedFileName().equals("No file selected") ?
-                "selectedFileRed" : "selectedFileGreen");
+        this.selectedFile.setText(fileManager.getSelectedFileName() + " selected");
+        this.selectedFile.setId(fileManager.getSelectedFileName().equals("No file") ?
+                "selectedFile" : "selectedFileGreen");
 
     }
 
-    //todo fix layout.. replace with gridPane or table??
-    //todo make data class for strings...
+    //todo make data class for strings
+    //todo read data from selected file
+    //todo insert data into selected file
     @FXML
     private void createFile(ActionEvent actionEvent) {
 
@@ -111,8 +113,8 @@ public class PrimaryController {
     @FXML
     private void selectFileFromList(ActionEvent actionEvent) {
         fileManager.selectFileFromList(fileList.getSelectionModel().getSelectedItem());
-        this.selectedFile.setText(fileManager.getSelectedFileName());
-        this.selectedFile.setId(fileManager.getSelectedFileName().equals("No file selected") ?
-                "selectedFileRed" : "selectedFileGreen");
+        this.selectedFile.setText(fileManager.getSelectedFileName() + " selected");
+        this.selectedFile.setId(fileManager.getSelectedFileName().equals("No file") ?
+                "selectedFile" : "selectedFileGreen");
     }
 }

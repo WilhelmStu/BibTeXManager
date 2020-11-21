@@ -103,7 +103,7 @@ public class FileManager {
         Button b = (Button) actionEvent.getSource();
         String oldText = b.getText();
         b.setDisable(true);
-        b.setText("Searching for bib files..");
+        b.setText("Selecting a bib file..");
 
         FileChooser fileChooser = new FileChooser();
 
@@ -117,6 +117,7 @@ public class FileManager {
     }
 
     public void selectFileFromList(String filename) {
+        if(filesInsideRoot == null) return;
         for (File f: filesInsideRoot
              ) {
             if(f.getName().equals(filename)) {
@@ -126,7 +127,7 @@ public class FileManager {
     }
 
     public String getSelectedFileName() {
-        return selectedFile != null ? selectedFile.getName() : "No file selected";
+        return selectedFile != null ? selectedFile.getName() : "No file";
     }
 
 }

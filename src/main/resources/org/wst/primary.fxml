@@ -6,35 +6,68 @@
 <?import javafx.geometry.Insets?>
 
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.HBox?>
-<VBox alignment="CENTER"  spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.wst.PrimaryController" >
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+
+
+<GridPane fx:id="gridPane" alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.171"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="org.wst.PrimaryController"
+          hgap="10"
+          vgap="10"
+          gridLinesVisible="true">
+
     <children>
-        <Label text="Primary View"/>
-        <HBox spacing="20.0" alignment="CENTER">
-            <VBox fx:id="colWithListView" spacing="10.0">
-            <Button fx:id="selectRootButton" text="Select root directory.." onAction="#selectRoot"/>
-                <Label fx:id="rootDirectory" text="No root selected" textOverrun="LEADING_ELLIPSIS"/>
-                <!-- ListView added here -->
-            </VBox>
-            <Button fx:id="selectFile" text=">" onAction="#selectFileFromList" minWidth="30" minHeight="30"/>
-            <VBox spacing="10.0">
-                <Button fx:id="selectSingleFileButton" text="Select single file" onAction="#selectSingleFile"/>
-                <Button fx:id="createFileButton" text="Create new File" onAction="#createFile"/>
-                <Label fx:id="selectedFile" text="No file selected"/>
-            </VBox>
 
-            <VBox fx:id="colWithSecondListView" spacing="10.0">
-                <Label fx:id="secondList" text="TODO: second list that &#xD; will display bib entry &#xD;inside the selected bib file"/>
-            </VBox>
+        <Label GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.columnSpan="4" text="Main Window"/>
 
-        </HBox>
+        <VBox fx:id="colWithListView" styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="0">
 
-        <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:"/>
+            <Button fx:id="selectRootButton" text="Select directory >" onAction="#selectRoot"/>
+            <Label fx:id="rootDirectory" text="No root selected" textOverrun="LEADING_ELLIPSIS"/>
+            <!-- ListView added here -->
+
+        </VBox>
+
+        <Button fx:id="selectFile" text=">" onAction="#selectFileFromList"
+                GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER"/>
+
+        <VBox fx:id="centerColumn"  styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.valignment="CENTER">
+
+            <Button fx:id="selectSingleFileButton" text="Select file >" onAction="#selectSingleFile"/>
+            <Button fx:id="createFileButton" text="Create new file >" onAction="#createFile"/>
+            <Label fx:id="selectedFile" text="No file selected"/>
+
+        </VBox>
+
+        <VBox fx:id="colWithSecondListView" styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="3">
+
+            <Label fx:id="secondList"
+                   text="TODO: second list that &#xD; will display bib entries &#xD;inside the selected bib file"/>
+
+        </VBox>
+
+        <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="2"
+                  GridPane.columnSpan="4"/>
+
     </children>
+
+    <columnConstraints>
+        <ColumnConstraints percentWidth="30.0"/>
+        <ColumnConstraints percentWidth="5.0"/>
+        <ColumnConstraints percentWidth="35.0"/>
+        <ColumnConstraints percentWidth="35.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints percentHeight="2"/>
+        <RowConstraints percentHeight="40"/>
+        <RowConstraints percentHeight="54"/>
+    </rowConstraints>
+
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="5.0"/>
     </padding>
-</VBox>
+</GridPane>
 
 
