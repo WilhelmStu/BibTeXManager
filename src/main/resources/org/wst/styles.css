@@ -4,7 +4,8 @@
     -fx-border-color: grey;
     -fx-border-width: 1;
     -fx-padding: 4;
-    -fx-min-width: 180;
+    -fx-max-width: 300;
+    -fx-pref-width: 300;
     -fx-alignment: center;
     -fx-text-fill: red;
     -fx-font-size: 16;
@@ -15,8 +16,9 @@
 }
 
 .button {
-    -fx-min-width: 140;
+    -fx-pref-width: 145;
     -fx-font-size: 14;
+    -fx-cursor: hand;
 }
 
 #selectFile {
@@ -30,9 +32,21 @@
 
 .Vbox {
     -fx-alignment: center;
-    -fx-spacing: 10;
+    -fx-spacing: 5;
+    -fx-padding: 5 5 5 5;
 }
 
-#inputArea{
+#inputArea {
     -fx-font-size: 14;
+}
+
+/* https://stackoverflow.com/questions/37354686/customize-javafx-alert-with-css */
+.dialog-pane > .content.label {
+    -fx-text-fill: red;
+    -fx-font-size: 16;
+    -fx-padding: 10 10 10 10;
+}
+
+.dialog-pane .button {
+    -fx-cursor: hand;
 }

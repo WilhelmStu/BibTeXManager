@@ -8,7 +8,10 @@ import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -128,6 +131,18 @@ public class FileManager {
 
     public String getSelectedFileName() {
         return selectedFile != null ? selectedFile.getName() : "No file";
+    }
+
+    public boolean isFileSelected(){
+        return selectedFile != null;
+    }
+
+    public void writeToFile(String str) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), true));
+        writer.write("\n");
+        writer.write(str);
+        writer.flush();
+        writer.close();
     }
 
 }

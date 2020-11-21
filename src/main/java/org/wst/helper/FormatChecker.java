@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // https://www.openoffice.org/bibliographic/bibtex-defs.html
+// https://www.verbosus.com/bibtex-style-examples.html
 public abstract class FormatChecker {
     public final static String[] types = {"article", "book", "booklet", "conference", "inbook", "incollection", "inproceedings",
             "manual", "mastersthesis", "misc", "phdthesis", "proceedings", "techreport", "unpublished"};

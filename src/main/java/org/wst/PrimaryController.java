@@ -4,9 +4,7 @@ import java.io.IOException;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
@@ -17,7 +15,7 @@ import org.wst.helper.FormatChecker;
 public class PrimaryController {
 
     @FXML
-    private TextArea inputArea;
+    private TextArea inputArea; // replace with textFlow
     @FXML
     private VBox colWithListView;
     @FXML
@@ -102,9 +100,9 @@ public class PrimaryController {
 
     }
 
-    //todo make data class for strings
+    //todo? make data class for strings
     //todo read data from selected file
-    //todo insert data into selected file
+    //todo create new file
     @FXML
     private void createFile(ActionEvent actionEvent) {
 
@@ -116,5 +114,32 @@ public class PrimaryController {
         this.selectedFile.setText(fileManager.getSelectedFileName() + " selected");
         this.selectedFile.setId(fileManager.getSelectedFileName().equals("No file") ?
                 "selectedFile" : "selectedFileGreen");
+    }
+
+    public void insertIntoFile(ActionEvent actionEvent) {
+        String entry = FormatChecker.basicBibTeXCheck(inputArea.getText());
+
+        if (entry.equals("invalid")) {
+            throwAlert("Not a valid bib entry!");
+
+        } else if (!fileManager.isFileSelected()) {
+            throwAlert("Select a file first!");
+
+        } else {
+            try {
+                fileManager.writeToFile(entry);
+                inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
+            } catch (IOException e) {
+                e.printStackTrace();
+                throwAlert("Error while writing to file!");
+            }
+        }
+    }
+
+    private void throwAlert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
+        alert.setTitle("Entry not inserted!");
+        alert.getDialogPane().getScene().getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+        alert.show();
     }
 }
