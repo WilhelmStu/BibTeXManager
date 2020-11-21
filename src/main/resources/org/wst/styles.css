@@ -8,7 +8,7 @@
     -fx-pref-width: 300;
     -fx-alignment: center;
     -fx-text-fill: red;
-    -fx-font-size: 16;
+    -fx-font-size: 15;
 }
 
 #selectedFileGreen {
@@ -49,4 +49,8 @@
 
 .dialog-pane .button {
     -fx-cursor: hand;
+}
+
+#secondList{
+    -fx-font-size: 14;
 }

@@ -120,10 +120,10 @@ public class FileManager {
     }
 
     public void selectFileFromList(String filename) {
-        if(filesInsideRoot == null) return;
-        for (File f: filesInsideRoot
-             ) {
-            if(f.getName().equals(filename)) {
+        if (filesInsideRoot == null) return;
+        for (File f : filesInsideRoot
+        ) {
+            if (f.getName().equals(filename)) {
                 selectedFile = f;
             }
         }
@@ -133,7 +133,7 @@ public class FileManager {
         return selectedFile != null ? selectedFile.getName() : "No file";
     }
 
-    public boolean isFileSelected(){
+    public boolean isFileSelected() {
         return selectedFile != null;
     }
 
@@ -145,4 +145,33 @@ public class FileManager {
         writer.close();
     }
 
+    public boolean createFile(ActionEvent actionEvent) throws IOException {
+        Button b = (Button) actionEvent.getSource();
+        String oldText = b.getText();
+        b.setDisable(true);
+        b.setText("Creating a new bib file");
+
+        FileChooser fileChooser = new FileChooser();
+
+        if (selectedFile != null) {
+            fileChooser.setInitialDirectory(selectedFile.getParentFile());
+        }
+        fileChooser.setTitle("Create a new file");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("BibTeX Files", "*.bib"));
+        fileChooser.setInitialFileName("bibliography.bib");
+        File tmp = fileChooser.showSaveDialog(b.getScene().getWindow());
+        b.setDisable(false);
+        b.setText(oldText);
+        if (tmp != null) {
+            selectedFile = tmp;
+
+            if (!selectedFile.createNewFile()) {
+                FileWriter fw = new FileWriter(selectedFile, false);
+                fw.write("");
+                fw.flush();
+                fw.close();
+            }
+            return true;
+        } else return false;
+    }
 }

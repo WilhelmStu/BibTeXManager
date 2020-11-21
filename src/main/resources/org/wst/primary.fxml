@@ -55,12 +55,12 @@
         <VBox fx:id="colWithSecondListView" styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="3">
 
             <Label fx:id="secondList"
-                   text="TODO: second list that &#xD; will display bib entries &#xD;inside the selected bib file"/>
+                   text="WIP: second list &#xD; with bib entries"/>
 
         </VBox>
 
         <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="3"
-                  GridPane.columnSpan="4" />
+                  GridPane.columnSpan="4"/>
 
     </children>
 
