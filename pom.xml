@@ -36,6 +36,13 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.5</version>
                 <configuration>
+                    <stripDebug>true</stripDebug>
+                    <compress>2</compress>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                    <launcher>launcher</launcher>
+                    <jlinkImageName>output</jlinkImageName>
+                    <jlinkZipName>outputzip</jlinkZipName>
                     <mainClass>org.wst.App</mainClass>
                 </configuration>
             </plugin>
