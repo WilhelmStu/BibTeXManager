@@ -5,7 +5,7 @@ import org.wst.helper.FormatChecker;
 public class testMain {
     public static void main(String[] args) {
         String test = "ANY TEXT THAT IS NOT BIBTEX " +
-                " @misc     {   patashnik-bibtexing ,\n" +
+                " @misc     {   patashnik-123bibtexing ,\n" +
                 "       author = \"Oren Patashnik\",\n" +
                 "       title = \"BIBTEXing\",\n" +
                 "       year = \"1988\" }   " +
@@ -31,5 +31,9 @@ public class testMain {
         System.out.println(FormatChecker.basicBibTeXCheck(test));
         System.out.println(FormatChecker.basicBibTeXCheck(test2));
         System.out.println(FormatChecker.basicBibTeXCheck(test3));
+
+        System.out.println(FormatChecker.getBibEntryHead(test));
+        System.out.println(FormatChecker.getBibEntryHead(test2));
+        System.out.println(FormatChecker.getBibEntryHead(test3));
     }
 }

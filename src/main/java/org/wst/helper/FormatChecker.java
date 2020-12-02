@@ -24,7 +24,9 @@ public abstract class FormatChecker {
      */
     public static String basicBibTeXCheck(String raw) {
 
-        String re = "[@]\\w{4,}\\s*[{]\\s*((?s)[\\w-])*\\s*[,][^@]+[}]";
+        String re = "[@]\\w{4,}\\s*";
+        re += "[{]\\s*((?s)[\\w-\\s])*[,]";
+        re += "[^@]+[}]";
 
         Pattern pt = Pattern.compile(re);
         Matcher mt = pt.matcher(raw);
@@ -39,5 +41,24 @@ public abstract class FormatChecker {
             }
         }
         return firstEntry;
+    }
+
+    // todo add arrangement to config
+    public static String getBibEntryHead(String line) {
+        String re = "[@]\\w{4,}\\s*";
+        re += "[{]\\s*((?s)[\\w-\\s])*[,]";
+
+        Pattern pt = Pattern.compile(re);
+        Matcher mt = pt.matcher(line);
+        if (mt.find()) {
+            String entryHead = mt.group(0);
+            String type = entryHead.substring(entryHead.indexOf("@") + 1, entryHead.indexOf("{")).trim();
+            if (Arrays.asList(types).contains(type.toLowerCase())) {
+                String tmp = type + ", ";
+                tmp += entryHead.substring(entryHead.indexOf("{") + 1, entryHead.indexOf(",")).trim();
+                return tmp;
+            }
+        }
+        return "invalid";
     }
 }

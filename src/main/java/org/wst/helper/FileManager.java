@@ -1,6 +1,7 @@
 package org.wst.helper;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -8,10 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -159,6 +157,7 @@ public class FileManager {
         fileChooser.setTitle("Create a new file");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("BibTeX Files", "*.bib"));
         fileChooser.setInitialFileName("bibliography.bib");
+
         File tmp = fileChooser.showSaveDialog(b.getScene().getWindow());
         b.setDisable(false);
         b.setText(oldText);
@@ -173,5 +172,34 @@ public class FileManager {
             }
             return true;
         } else return false;
+    }
+
+    public ObservableList<String> populateBibList() {
+        ObservableList<String> entries = FXCollections.observableArrayList();
+        if (selectedFile == null) {
+            entries.add("Can't find selected File!");
+            return entries;
+        }
+        try {
+            FileReader fr = new FileReader(selectedFile);
+            BufferedReader reader = new BufferedReader(fr);
+            String line, tmp;
+            while ((line = reader.readLine()) != null) {
+                if (!(tmp = FormatChecker.getBibEntryHead(line)).equals("invalid")) {
+                    entries.add(tmp);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file!");
+            e.printStackTrace();
+            entries.add("Error reading from file!");
+        }
+
+
+        Collections.sort(entries);
+        if (entries.size() == 0) {
+            entries.add("No entries found!");
+        }
+        return entries;
     }
 }

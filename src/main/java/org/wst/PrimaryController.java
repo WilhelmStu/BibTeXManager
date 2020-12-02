@@ -26,6 +26,8 @@ public class PrimaryController {
     private Label rootDirectory;
     @FXML
     private Label selectedFile;
+    @FXML
+    private Label secondList;
 
     private ListView<String> fileList;
     private ListView<String> bibList;
@@ -95,7 +97,7 @@ public class PrimaryController {
     private void selectSingleFile(ActionEvent actionEvent) {
         fileManager.selectSingleFile(actionEvent);
         setSelectedFileLabel();
-
+        bibList.setItems(fileManager.populateBibList());
     }
 
 
@@ -105,24 +107,28 @@ public class PrimaryController {
             if (fileManager.createFile(actionEvent)) {
                 setSelectedFileLabel();
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             throwAlert("Error during file creation!");
         }
+        bibList.setItems(fileManager.populateBibList());
     }
 
     @FXML
     private void selectFileFromList(ActionEvent actionEvent) {
         fileManager.selectFileFromList(fileList.getSelectionModel().getSelectedItem());
         setSelectedFileLabel();
+        bibList.setItems(fileManager.populateBibList());
     }
 
     private void setSelectedFileLabel() {
         this.selectedFile.setText(fileManager.getSelectedFileName() + " selected");
         this.selectedFile.setId(fileManager.getSelectedFileName().equals("No file") ?
                 "selectedFile" : "selectedFileGreen");
+        this.secondList.setText("Entries inside " + fileManager.getSelectedFileName());
     }
 
+    // todo docu!
     public void insertIntoFile(ActionEvent actionEvent) {
         String entry = FormatChecker.basicBibTeXCheck(inputArea.getText());
 

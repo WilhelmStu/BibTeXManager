@@ -54,8 +54,7 @@
 
         <VBox fx:id="colWithSecondListView" styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="3">
 
-            <Label fx:id="secondList"
-                   text="WIP: second list &#xD; with bib entries"/>
+            <Label fx:id="secondList" text="No file selected"/>
 
         </VBox>
 
