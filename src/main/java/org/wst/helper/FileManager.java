@@ -33,6 +33,7 @@ public class FileManager {
     private File rootDirectory;
     private List<File> filesInsideRoot;
     private File selectedFile;
+    private String bibFileAsString;
 
     /**
      * Button is disabled during processing
@@ -136,7 +137,7 @@ public class FileManager {
      * will open same directory if called multiple times
      * Button is disabled during selection
      *
-     * @param actionEvent click button event
+     * @param actionEvent click button
      */
     public void selectSingleFile(ActionEvent actionEvent) {
         Button b = (Button) actionEvent.getSource();
@@ -181,6 +182,7 @@ public class FileManager {
         return selectedFile != null;
     }
 
+    // todo add check that no duplicates are entered!!!
     /**
      * Will write the given bib-entry into the selected file, validity should be checked before calling this function
      *
@@ -200,7 +202,6 @@ public class FileManager {
     }
 
     // todo add config to disable overwriting files?
-
     /**
      * Will create a new .bib file by prompting the user to select a location
      * An empty string will be written to the file to make sure it is created
@@ -267,11 +268,14 @@ public class FileManager {
                     FileReader fr = new FileReader(selectedFile);
                     BufferedReader reader = new BufferedReader(fr);
                     String line, tmp;
+                    StringBuilder builder = new StringBuilder();
                     while ((line = reader.readLine()) != null) {
+                        builder.append(line).append("\n");
                         if (!(tmp = FormatChecker.getBibEntryHead(line)).equals("invalid")) {
                             entries.add(tmp);
                         }
                     }
+                    bibFileAsString = builder.toString();
                 } catch (IOException e) {
                     System.err.println("Error reading from file!");
                     e.printStackTrace();
@@ -291,5 +295,34 @@ public class FileManager {
 
         Thread th = new Thread(task);
         th.start();
+    }
+
+
+    // todo improve this code
+    /**
+     * Will search the input file for the selected Item and then return
+     * the corresponding Bib-Entry, the loop is required, since the searched
+     * keyword can be a substring of another entry...
+     *
+     * @param selectedItem item selected from bibList
+     * @return selected Bib-Entry
+     */
+    public String getBibEntry(String selectedItem) {
+        if (bibFileAsString.isEmpty()) {
+            return "Cant edit empty file!";
+        } else {
+            boolean isEqual = false;
+            String tmp = bibFileAsString;
+            String startOfEntry;
+            do {
+                String keyword = selectedItem.split(",")[1].trim();
+                int startOfBibKey = tmp.indexOf(keyword);
+                startOfEntry = tmp.substring(tmp.lastIndexOf("@", startOfBibKey));
+                String possibleEntryHead = FormatChecker.getBibEntryHead(startOfEntry);
+                if (possibleEntryHead.equals(selectedItem)) break;
+                tmp = tmp.substring(startOfBibKey + keyword.length());
+            } while (true);
+            return FormatChecker.basicBibTeXCheck(startOfEntry);
+        }
     }
 }

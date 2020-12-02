@@ -55,8 +55,13 @@
         <VBox fx:id="colWithSecondListView" styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="3">
 
             <Label fx:id="secondList" text="No file selected"/>
+            <!--Button fx:id="selectEntry" text="\\/" onAction="#selectEntry"/-->
+            <Region minHeight="20"/>
 
         </VBox>
+
+        <Button fx:id="selectEntry" text="\\/" onAction="#selectEntry" GridPane.rowIndex="2"
+        GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM"/>
 
         <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="3"
                   GridPane.columnSpan="4"/>

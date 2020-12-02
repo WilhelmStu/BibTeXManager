@@ -94,7 +94,7 @@ public class PrimaryController {
         bibList = new ListView<>();
 
         colWithListView.getChildren().add(fileList);
-        colWithSecondListView.getChildren().add(bibList);
+        colWithSecondListView.getChildren().add(1, bibList);
 
     }
 
@@ -112,7 +112,7 @@ public class PrimaryController {
      * Will call FileManager to search for bib files and change the
      * label to the selected directory
      *
-     * @param actionEvent click button event
+     * @param actionEvent click button
      */
     @FXML
     private void selectRoot(ActionEvent actionEvent) {
@@ -124,7 +124,7 @@ public class PrimaryController {
      * Will call FileManager to let the user select a single file from file system
      * and fill the bibList with the entries in the file
      *
-     * @param actionEvent click button event
+     * @param actionEvent click button
      */
     @FXML
     private void selectSingleFile(ActionEvent actionEvent) {
@@ -137,7 +137,7 @@ public class PrimaryController {
      * Will call FileManager to let user save a new file on the file system and
      * change the bibList accordingly
      *
-     * @param actionEvent click button event
+     * @param actionEvent click button
      */
     @FXML
     private void createFile(ActionEvent actionEvent) {
@@ -152,7 +152,7 @@ public class PrimaryController {
     /**
      * Will call FileManager to set the selected file and update the bibList
      *
-     * @param actionEvent click button event
+     * @param actionEvent click button
      */
     @FXML
     private void selectFileFromList(ActionEvent actionEvent) {
@@ -178,7 +178,7 @@ public class PrimaryController {
      * valid entry with the fileManager
      * If the entry is not valid or there is no file selected an alert box will be opened
      *
-     * @param actionEvent click button event
+     * @param actionEvent click button
      */
     public void insertIntoFile(ActionEvent actionEvent) {
         String entry = FormatChecker.basicBibTeXCheck(inputArea.getText());
@@ -208,5 +208,18 @@ public class PrimaryController {
         alert.setTitle("Entry not inserted!");
         alert.getDialogPane().getScene().getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
         alert.show();
+    }
+
+    /**
+     * Will put the selected item into the TextArea for editing
+     * @param actionEvent click button
+     */
+    public void selectEntry(ActionEvent actionEvent) {
+        if(fileManager.isFileSelected()){
+            inputArea.setText(fileManager.getBibEntry(bibList.getSelectionModel().getSelectedItem()));
+
+        }else{
+            throwAlert("Select a file first!");
+        }
     }
 }

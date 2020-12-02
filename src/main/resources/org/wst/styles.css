@@ -21,9 +21,10 @@
     -fx-cursor: hand;
 }
 
-#selectFile {
+#selectFile, #selectEntry {
     -fx-min-width: 30;
     -fx-min-height: 30;
+    -fx-pref-width: 35;
 }
 
 .list-view {
