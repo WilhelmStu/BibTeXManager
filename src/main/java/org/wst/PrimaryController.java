@@ -103,15 +103,11 @@ public class PrimaryController {
 
     @FXML
     private void createFile(ActionEvent actionEvent) {
-        try {
-            if (fileManager.createFile(actionEvent)) {
-                setSelectedFileLabel();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            throwAlert("Error during file creation!");
+        if (fileManager.createFile(actionEvent)) {
+            setSelectedFileLabel();
+
+            bibList.setItems(fileManager.populateBibList());
         }
-        bibList.setItems(fileManager.populateBibList());
     }
 
     @FXML
@@ -139,13 +135,8 @@ public class PrimaryController {
             throwAlert("Select a file first!");
 
         } else {
-            try {
-                fileManager.writeToFile(entry);
-                inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
-            } catch (IOException e) {
-                e.printStackTrace();
-                throwAlert("Error while writing to file!");
-            }
+            fileManager.writeToFile(entry);
+            inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
         }
     }
 

@@ -135,15 +135,20 @@ public class FileManager {
         return selectedFile != null;
     }
 
-    public void writeToFile(String str) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), true));
-        writer.write("\n");
-        writer.write(str);
-        writer.flush();
-        writer.close();
+    public void writeToFile(String str) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), true));
+            writer.write("\n");
+            writer.write(str);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error writing to file");
+            e.printStackTrace();
+        }
     }
 
-    public boolean createFile(ActionEvent actionEvent) throws IOException {
+    public boolean createFile(ActionEvent actionEvent) {
         Button b = (Button) actionEvent.getSource();
         String oldText = b.getText();
         b.setDisable(true);
@@ -164,11 +169,16 @@ public class FileManager {
         if (tmp != null) {
             selectedFile = tmp;
 
-            if (!selectedFile.createNewFile()) {
-                FileWriter fw = new FileWriter(selectedFile, false);
-                fw.write("");
-                fw.flush();
-                fw.close();
+            try {
+                if (!selectedFile.createNewFile()) {
+                    FileWriter fw = new FileWriter(selectedFile, false);
+                    fw.write("");
+                    fw.flush();
+                    fw.close();
+                }
+            } catch (IOException e) {
+                System.err.println("Error writing file, during creation");
+                e.printStackTrace();
             }
             return true;
         } else return false;
