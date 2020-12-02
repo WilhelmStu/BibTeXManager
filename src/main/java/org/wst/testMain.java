@@ -2,6 +2,10 @@ package org.wst;
 
 import org.wst.helper.FormatChecker;
 
+/**
+ * Small test class to test some basic strings that will be
+ * processed through the FormatChecker...
+ */
 public class testMain {
     public static void main(String[] args) {
         String test = "ANY TEXT THAT IS NOT BIBTEX " +

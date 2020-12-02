@@ -1,7 +1,9 @@
 package org.wst;
 
 import java.io.IOException;
+import java.util.Collections;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -38,12 +40,23 @@ public class PrimaryController {
 
     }
 
+
+    /**
+     * This is called before the scene is displayed, but after the Classes Constructor
+     */
     @FXML
     public void initialize() {
         initListViews();
         initClipboardService();
     }
 
+    /**
+     * Will start the ClipboardService that is run every 200ms.
+     * Every iteration of the service will run until a valid Bib-Entry is found in the
+     * System clipboard.
+     * The TextField will be changed accordingly and if the entry is valid the
+     * program window will come to the front of the OS
+     */
     @FXML
     private void initClipboardService() {
         ClipboardService service = new ClipboardService();
@@ -70,6 +83,9 @@ public class PrimaryController {
         service.start();
     }
 
+    /**
+     * Creates both ListViews of the App and inserts them at the appropriate places in the UI
+     */
     @FXML
     private void initListViews() {
         //ObservableList<String> fileNames = FXCollections.observableArrayList("No root selected");
@@ -82,41 +98,74 @@ public class PrimaryController {
 
     }
 
+    /**
+     * Currently unused, might be needed later for a second scene
+     *
+     * @throws IOException
+     */
     @FXML
     private void switchToSecondary() throws IOException {
         App.setRoot("secondary");
     }
 
+    /**
+     * Will call FileManager to search for bib files and change the
+     * label to the selected directory
+     *
+     * @param actionEvent click button event
+     */
     @FXML
     private void selectRoot(ActionEvent actionEvent) {
         fileManager.selectDirectory(actionEvent, fileList);
         this.rootDirectory.setText(fileManager.getRootDirectory());
     }
 
+    /**
+     * Will call FileManager to let the user select a single file from file system
+     * and fill the bibList with the entries in the file
+     *
+     * @param actionEvent click button event
+     */
     @FXML
     private void selectSingleFile(ActionEvent actionEvent) {
         fileManager.selectSingleFile(actionEvent);
         setSelectedFileLabel();
-        bibList.setItems(fileManager.populateBibList());
+        fileManager.populateBibList(bibList);
     }
 
-
+    /**
+     * Will call FileManager to let user save a new file on the file system and
+     * change the bibList accordingly
+     *
+     * @param actionEvent click button event
+     */
     @FXML
     private void createFile(ActionEvent actionEvent) {
         if (fileManager.createFile(actionEvent)) {
             setSelectedFileLabel();
 
-            bibList.setItems(fileManager.populateBibList());
+            fileManager.populateBibList(bibList);
         }
     }
 
+
+    /**
+     * Will call FileManager to set the selected file and update the bibList
+     *
+     * @param actionEvent click button event
+     */
     @FXML
     private void selectFileFromList(ActionEvent actionEvent) {
         fileManager.selectFileFromList(fileList.getSelectionModel().getSelectedItem());
         setSelectedFileLabel();
-        bibList.setItems(fileManager.populateBibList());
+        fileManager.populateBibList(bibList);
     }
 
+    /**
+     * Called whenever the label of the selected file changes. It will be red if no file
+     * is selected and green otherwise.
+     * Also the Label of the bibList is set appropriately
+     */
     private void setSelectedFileLabel() {
         this.selectedFile.setText(fileManager.getSelectedFileName() + " selected");
         this.selectedFile.setId(fileManager.getSelectedFileName().equals("No file") ?
@@ -124,7 +173,13 @@ public class PrimaryController {
         this.secondList.setText("Entries inside " + fileManager.getSelectedFileName());
     }
 
-    // todo docu!
+    /**
+     * Will check if the current entry inside the TextArea is valid and insert the
+     * valid entry with the fileManager
+     * If the entry is not valid or there is no file selected an alert box will be opened
+     *
+     * @param actionEvent click button event
+     */
     public void insertIntoFile(ActionEvent actionEvent) {
         String entry = FormatChecker.basicBibTeXCheck(inputArea.getText());
 
@@ -136,10 +191,18 @@ public class PrimaryController {
 
         } else {
             fileManager.writeToFile(entry);
+            ObservableList<String> entries = bibList.getItems();
+            entries.add(FormatChecker.getBibEntryHead(entry));
+            Collections.sort(entries);
             inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
         }
     }
 
+    /**
+     * Displays an alert box that can be dismissed with an OK-button
+     *
+     * @param msg msg to display inside the alert box
+     */
     private void throwAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
         alert.setTitle("Entry not inserted!");

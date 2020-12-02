@@ -44,6 +44,12 @@ public abstract class FormatChecker {
     }
 
     // todo add arrangement to config
+
+    /**
+     * Will return the first BibEntry-Head in a given string or "invalid" if none is found
+     * @param line a string that can contain a BibEntry-Head
+     * @return first BibEntry-Head in the form "TYPE, keyword"
+     */
     public static String getBibEntryHead(String line) {
         String re = "[@]\\w{4,}\\s*";
         re += "[{]\\s*((?s)[\\w-\\s])*[,]";
@@ -54,7 +60,7 @@ public abstract class FormatChecker {
             String entryHead = mt.group(0);
             String type = entryHead.substring(entryHead.indexOf("@") + 1, entryHead.indexOf("{")).trim();
             if (Arrays.asList(types).contains(type.toLowerCase())) {
-                String tmp = type + ", ";
+                String tmp = type.toUpperCase() + ", "; // todo make this configurable
                 tmp += entryHead.substring(entryHead.indexOf("{") + 1, entryHead.indexOf(",")).trim();
                 return tmp;
             }
