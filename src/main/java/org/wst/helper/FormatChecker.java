@@ -1,5 +1,6 @@
 package org.wst.helper;
 
+import javafx.util.Pair;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,10 +48,11 @@ public abstract class FormatChecker {
 
     /**
      * Will return the first BibEntry-Head in a given string or "invalid" if none is found
+     *
      * @param line a string that can contain a BibEntry-Head
      * @return first BibEntry-Head in the form "TYPE, keyword"
      */
-    public static String getBibEntryHead(String line) {
+    public static Pair<String, String> getBibEntryHead(String line) {
         String re = "[@]\\w{4,}\\s*";
         re += "[{]\\s*((?s)[\\w-\\s])*[,]";
 
@@ -58,13 +60,12 @@ public abstract class FormatChecker {
         Matcher mt = pt.matcher(line);
         if (mt.find()) {
             String entryHead = mt.group(0);
-            String type = entryHead.substring(entryHead.indexOf("@") + 1, entryHead.indexOf("{")).trim();
+            String type = entryHead.substring(entryHead.indexOf("@") + 1, entryHead.indexOf("{")).trim().toUpperCase();
             if (Arrays.asList(types).contains(type.toLowerCase())) {
-                String tmp = type.toUpperCase() + ", "; // todo make this configurable
-                tmp += entryHead.substring(entryHead.indexOf("{") + 1, entryHead.indexOf(",")).trim();
-                return tmp;
+                String keyword = entryHead.substring(entryHead.indexOf("{") + 1, entryHead.indexOf(",")).trim();
+                return new Pair<>(type, keyword);
             }
         }
-        return "invalid";
+        return null;
     }
 }

@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.util.Pair;
 import org.wst.helper.ClipboardService;
 import org.wst.helper.FileManager;
 import org.wst.helper.FormatChecker;
@@ -60,6 +61,7 @@ public class PrimaryController {
     @FXML
     private void initClipboardService() {
         ClipboardService service = new ClipboardService();
+        inputArea.setText("Empty Clipboard!");
 
         // setup service to check clipboard every second
         service.setPeriod(Duration.millis(200));
@@ -76,8 +78,6 @@ public class PrimaryController {
                 Window st = textArea1.getScene().getWindow();
                 st.requestFocus();
                  */
-            } else {
-                inputArea.setText("Empty Clipboard!");
             }
         });
         service.start();
@@ -192,7 +192,11 @@ public class PrimaryController {
         } else {
             fileManager.writeToFile(entry);
             ObservableList<String> entries = bibList.getItems();
-            entries.add(FormatChecker.getBibEntryHead(entry));
+            Pair<String, String> headPair = FormatChecker.getBibEntryHead(entry);
+            if (headPair != null) {
+                String item = headPair.getKey() + ", " + headPair.getValue();
+                if (!entries.contains(item)) entries.add(item);
+            }
             Collections.sort(entries);
             inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
         }
@@ -212,13 +216,13 @@ public class PrimaryController {
 
     /**
      * Will put the selected item into the TextArea for editing
+     *
      * @param actionEvent click button
      */
     public void selectEntry(ActionEvent actionEvent) {
-        if(fileManager.isFileSelected()){
+        if (fileManager.isFileSelected() && bibList.getSelectionModel().getSelectedItem() != null) {
             inputArea.setText(fileManager.getBibEntry(bibList.getSelectionModel().getSelectedItem()));
-
-        }else{
+        } else {
             throwAlert("Select a file first!");
         }
     }

@@ -8,11 +8,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Singleton Class!
@@ -33,7 +32,7 @@ public class FileManager {
     private File rootDirectory;
     private List<File> filesInsideRoot;
     private File selectedFile;
-    private String bibFileAsString;
+    private Map<String, String> bibMap;
 
     /**
      * Button is disabled during processing
@@ -182,26 +181,49 @@ public class FileManager {
         return selectedFile != null;
     }
 
-    // todo add check that no duplicates are entered!!!
+
+    // todo caution duplicates will be removed | add _copy to already existing entries, except the one to insert now
+    // todo? file currently rewritten on insert to sort file alphabetically
+
     /**
      * Will write the given bib-entry into the selected file, validity should be checked before calling this function
+     * Synchronized, only one thread my write to a file at a time/ prevent any possible exceptions
      *
      * @param str bib entry to write
      */
-    public void writeToFile(String str) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), true));
-            writer.write("\n");
-            writer.write(str);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            System.err.println("Error writing to file");
-            e.printStackTrace();
-        }
+    public synchronized void writeToFile(String str) {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile()));
+
+                    Pair<String, String> entryHead = FormatChecker.getBibEntryHead(str);
+                    if (entryHead != null && !bibMap.containsKey(entryHead.getValue())) {
+                        bibMap.put(entryHead.getValue(), str);
+                    }
+
+                    for (Map.Entry<String, String> entry : bibMap.entrySet()
+                    ) {
+                        writer.write(entry.getValue() + "\n");
+                    }
+
+                    writer.flush();
+                    writer.close();
+                } catch (IOException e) {
+                    System.err.println("Error writing to file");
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        };
+        Thread th = new Thread(task);
+        th.start();
     }
 
+
     // todo add config to disable overwriting files?
+
     /**
      * Will create a new .bib file by prompting the user to select a location
      * An empty string will be written to the file to make sure it is created
@@ -249,17 +271,20 @@ public class FileManager {
     }
 
     /**
-     * Will read the selected file and check for every line if it is a Bib-Entry, will
-     * then add valid entries heads in the form "TYPE: keyword" to the list, or an
+     * Will read the selected file and check block wise if there is an bib entry. If there
+     * is an entire it will be added to the bibMap for later use and after that
+     * add valid entries heads in the form "TYPE, keyword" to the list, or an
      * appropriate message if none have been found | an error occurred
-     *
-     * @return List of Bib-Entries inside the selected file
+     * <p>
+     * Duplicates (same entry keyword) will only occur a single time in map!
+     * Synchronized to prevent bugs from quickly loading various large files
      */
-    public void populateBibList(ListView<String> view) {
+    public synchronized void populateBibList(ListView<String> view) {
         Task<ObservableList<String>> task = new Task<>() {
             @Override
             protected ObservableList<String> call() throws Exception {
                 ObservableList<String> entries = FXCollections.observableArrayList();
+                bibMap = new TreeMap<>();
                 if (selectedFile == null) {
                     entries.add("Can't find selected File!");
                     return entries;
@@ -267,15 +292,38 @@ public class FileManager {
                 try {
                     FileReader fr = new FileReader(selectedFile);
                     BufferedReader reader = new BufferedReader(fr);
-                    String line, tmp;
+                    String line, entry;
+                    Pair<String, String> headPair;
                     StringBuilder builder = new StringBuilder();
+
+                    String line2;
                     while ((line = reader.readLine()) != null) {
                         builder.append(line).append("\n");
-                        if (!(tmp = FormatChecker.getBibEntryHead(line)).equals("invalid")) {
-                            entries.add(tmp);
+                        if (builder.toString().contains("@")) {
+                            while ((line2 = reader.readLine()) != null) {
+                                builder.append(line2).append("\n");
+                                if (line2.contains("@")) {
+                                    line = line2;
+                                    break;
+                                }
+                            }
+                            // if entry is valid and not in map add it
+                            if (!(entry = FormatChecker.basicBibTeXCheck(builder.toString())).equals("invalid")) {
+                                headPair = FormatChecker.getBibEntryHead(entry);
+                                if (headPair != null) {
+                                    if (!bibMap.containsKey(headPair.getValue())) {
+                                        bibMap.put(headPair.getValue(), entry);
+                                        entries.add(headPair.getKey() + ", " + headPair.getValue());
+                                        builder.setLength(0);
+                                        builder.append(line).append("\n");
+                                    }
+                                }
+                            }
                         }
                     }
-                    bibFileAsString = builder.toString();
+
+                    reader.close();
+
                 } catch (IOException e) {
                     System.err.println("Error reading from file!");
                     e.printStackTrace();
@@ -297,8 +345,6 @@ public class FileManager {
         th.start();
     }
 
-
-    // todo improve this code
     /**
      * Will search the input file for the selected Item and then return
      * the corresponding Bib-Entry, the loop is required, since the searched
@@ -308,21 +354,15 @@ public class FileManager {
      * @return selected Bib-Entry
      */
     public String getBibEntry(String selectedItem) {
-        if (bibFileAsString.isEmpty()) {
+        if (bibMap.isEmpty()) {
             return "Cant edit empty file!";
         } else {
-            boolean isEqual = false;
-            String tmp = bibFileAsString;
-            String startOfEntry;
-            do {
-                String keyword = selectedItem.split(",")[1].trim();
-                int startOfBibKey = tmp.indexOf(keyword);
-                startOfEntry = tmp.substring(tmp.lastIndexOf("@", startOfBibKey));
-                String possibleEntryHead = FormatChecker.getBibEntryHead(startOfEntry);
-                if (possibleEntryHead.equals(selectedItem)) break;
-                tmp = tmp.substring(startOfBibKey + keyword.length());
-            } while (true);
-            return FormatChecker.basicBibTeXCheck(startOfEntry);
+            String keyword = selectedItem.split("\\s")[1].trim();
+            String entry = bibMap.get(keyword);
+            if (entry == null) {
+                return "Error could not find selected entry!";
+            }
+            return FormatChecker.basicBibTeXCheck(entry);
         }
     }
 }
