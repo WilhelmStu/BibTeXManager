@@ -183,7 +183,7 @@ public class FileManager {
 
 
     // todo caution duplicates will be removed | add _copy to already existing entries, except the one to insert now
-    // todo? file currently rewritten on insert to sort file alphabetically
+    // todo? file currently rewritten on insert to sort it alphabetically
 
     /**
      * Will write the given bib-entry into the selected file, validity should be checked before calling this function
@@ -199,7 +199,7 @@ public class FileManager {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile()));
 
                     Pair<String, String> entryHead = FormatChecker.getBibEntryHead(str);
-                    if (entryHead != null && !bibMap.containsKey(entryHead.getValue())) {
+                    if (entryHead != null) {
                         bibMap.put(entryHead.getValue(), str);
                     }
 
@@ -311,12 +311,10 @@ public class FileManager {
                             if (!(entry = FormatChecker.basicBibTeXCheck(builder.toString())).equals("invalid")) {
                                 headPair = FormatChecker.getBibEntryHead(entry);
                                 if (headPair != null) {
-                                    if (!bibMap.containsKey(headPair.getValue())) {
-                                        bibMap.put(headPair.getValue(), entry);
-                                        entries.add(headPair.getKey() + ", " + headPair.getValue());
-                                        builder.setLength(0);
-                                        builder.append(line).append("\n");
-                                    }
+                                    bibMap.put(headPair.getValue(), entry);
+                                    entries.add(headPair.getKey() + ", " + headPair.getValue());
+                                    builder.setLength(0);
+                                    builder.append(line).append("\n");
                                 }
                             }
                         }
@@ -346,9 +344,8 @@ public class FileManager {
     }
 
     /**
-     * Will search the input file for the selected Item and then return
-     * the corresponding Bib-Entry, the loop is required, since the searched
-     * keyword can be a substring of another entry...
+     * Will search the bibMap for the selected Item and then return
+     * the corresponding Bib-Entry
      *
      * @param selectedItem item selected from bibList
      * @return selected Bib-Entry
