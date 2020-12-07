@@ -15,15 +15,15 @@ public class testMain {
                 "       year = \"1988\" }   " +
                 " MORE COPIED TEXT THAT IS NOT BIBTEX        ";
 
-        String test2 = " @article      {nash51,\n" +
+        String test2 = "@article      {nash51,\n" +
                 "      author  = \"Nash, John\",\n" +
-                "      title   = \"Non-cooperative Games\",\n" +
+                "      title   = \"Non-c,,, , , ,oo,  ; ::; === == 0perative Games\",\n" +
                 "      journal = \"Annals of Mathematics\",\n" +
                 "      year    = 1951,\n" +
                 "      volume  = \"54\",\n" +
                 "      number  = \"2\",\n" +
                 "      pages   = \"286--295\"\n" +
-                "    }  ";
+                "    }";
 
         String test3 = "ANY TEXT THAT IS NOT BIBTEX " +
                 " @misc     {   patashnik-bibtexing ," +
@@ -32,6 +32,11 @@ public class testMain {
                 "       year = \"1988\" }   " +
                 " MORE COPIED TEXT THAT IS NOT BIBTEX        ";
 
+
+        System.out.println(FormatChecker.replaceQuotationMarks(test2));
+
+
+/*
         System.out.println(FormatChecker.basicBibTeXCheck(test));
         System.out.println(FormatChecker.basicBibTeXCheck(test2));
         System.out.println(FormatChecker.basicBibTeXCheck(test3));
@@ -39,5 +44,8 @@ public class testMain {
         System.out.println(FormatChecker.getBibEntryHead(test));
         System.out.println(FormatChecker.getBibEntryHead(test2));
         System.out.println(FormatChecker.getBibEntryHead(test3));
+
+ */
+
     }
 }

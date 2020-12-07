@@ -1,0 +1,1043 @@
+%%% ====================================================================
+%%%  BibTeX-file{
+%%%     author          = "Gerry Murray",
+%%%     version         = "1.2",
+%%%     date            = "2 April 2012",
+%%%     filename        = "acmsmall-sample-bibfile.bib",
+%%%     address         = "ACM, NY",
+%%%     email           = "murray at hq.acm.org",
+%%%     codetable       = "ISO/ASCII",
+%%%     keywords        = "ACM Reference Format, bibliography, citation, references",
+%%%     supported       = "yes",
+%%%     docstring       = "This BibTeX database file contains 'bibdata' entries
+%%%                        that 'match' the examples provided in the Specifications Document
+%%%                        AND, also, 'legacy'-type bibs. It should assist authors in
+%%%                        choosing the 'correct' at-bibtype and necessary bib-fields
+%%%                        so as to obtain the appropriate ACM Reference Format output.
+%%%                        It also contains many 'Standard Abbreviations'. "
+%%%  }
+%%% ====================================================================
+
+% Journals
+
+% First the Full Name is given, then the abbreviation used in the AMS Math
+% Reviews, with an indication if it could not be found there.
+% Note the 2nd overwrites the 1st, so swap them if you want the full name.
+
+ %{AMS}
+ @String{AMSTrans = "American Mathematical Society Translations" }
+ @String{AMSTrans = "Amer. Math. Soc. Transl." }
+ @String{BullAMS = "Bulletin of the American Mathematical Society" }
+ @String{BullAMS = "Bull. Amer. Math. Soc." }
+ @String{ProcAMS = "Proceedings of the American Mathematical Society" }
+ @String{ProcAMS = "Proc. Amer. Math. Soc." }
+ @String{TransAMS = "Transactions of the American Mathematical Society" }
+ @String{TransAMS = "Trans. Amer. Math. Soc." }
+
+ %ACM
+ @String{CACM = "Communications of the {ACM}" }
+ @String{CACM = "Commun. {ACM}" }
+ @String{CompServ = "Comput. Surveys" }
+ @String{JACM = "J. ACM" }
+ @String{ACMMathSoft = "{ACM} Transactions on Mathematical Software" }
+ @String{ACMMathSoft = "{ACM} Trans. Math. Software" }
+ @String{SIGNUM = "{ACM} {SIGNUM} Newsletter" }
+ @String{SIGNUM = "{ACM} {SIGNUM} Newslett." }
+
+ @String{AmerSocio = "American Journal of Sociology" }
+ @String{AmerStatAssoc = "Journal of the American Statistical Association" }
+ @String{AmerStatAssoc = "J. Amer. Statist. Assoc." }
+ @String{ApplMathComp = "Applied Mathematics and Computation" }
+ @String{ApplMathComp = "Appl. Math. Comput." }
+ @String{AmerMathMonthly = "American Mathematical Monthly" }
+ @String{AmerMathMonthly = "Amer. Math. Monthly" }
+ @String{BIT = "{BIT}" }
+ @String{BritStatPsych = "British Journal of Mathematical and Statistical
+          Psychology" }
+ @String{BritStatPsych = "Brit. J. Math. Statist. Psych." }
+ @String{CanMathBull = "Canadian Mathematical Bulletin" }
+ @String{CanMathBull = "Canad. Math. Bull." }
+ @String{CompApplMath = "Journal of Computational and Applied Mathematics" }
+ @String{CompApplMath = "J. Comput. Appl. Math." }
+ @String{CompPhys = "Journal of Computational Physics" }
+ @String{CompPhys = "J. Comput. Phys." }
+ @String{CompStruct = "Computers and Structures" }
+ @String{CompStruct = "Comput. \& Structures" }
+ @String{CompJour = "The Computer Journal" }
+ @String{CompJour = "Comput. J." }
+ @String{CompSysSci = "Journal of Computer and System Sciences" }
+ @String{CompSysSci = "J. Comput. System Sci." }
+ @String{Computing = "Computing" }
+ @String{ContempMath = "Contemporary Mathematics" }
+ @String{ContempMath = "Contemp. Math." }
+ @String{Crelle = "Crelle's Journal" }
+ @String{GiornaleMath = "Giornale di Mathematiche" }
+ @String{GiornaleMath = "Giorn. Mat." } % didn't find in AMS MR., ibid.
+
+ %IEEE
+ @String{Computer = "{IEEE} Computer" }
+ @String{IEEETransComp = "{IEEE} Transactions on Computers" }
+ @String{IEEETransComp = "{IEEE} Trans. Comput." }
+ @String{IEEETransAC = "{IEEE} Transactions on Automatic Control" }
+ @String{IEEETransAC = "{IEEE} Trans. Automat. Control" }
+ @String{IEEESpec = "{IEEE} Spectrum" } % didn't find in AMS MR
+ @String{ProcIEEE = "Proceedings of the {IEEE}" }
+ @String{ProcIEEE = "Proc. {IEEE}" } % didn't find in AMS MR
+ @String{IEEETransAeroElec = "{IEEE} Transactions on Aerospace and Electronic
+     Systems" }
+ @String{IEEETransAeroElec = "{IEEE} Trans. Aerospace Electron. Systems" }
+
+ @String{IMANumerAna = "{IMA} Journal of Numerical Analysis" }
+ @String{IMANumerAna = "{IMA} J. Numer. Anal." }
+ @String{InfProcLet = "Information Processing Letters" }
+ @String{InfProcLet = "Inform. Process. Lett." }
+ @String{InstMathApp = "Journal of the Institute of Mathematics and
+     its Applications" }
+ @String{InstMathApp = "J. Inst. Math. Appl." }
+ @String{IntControl = "International Journal of Control" }
+ @String{IntControl = "Internat. J. Control" }
+ @String{IntNumerEng = "International Journal for Numerical Methods in
+     Engineering" }
+ @String{IntNumerEng = "Internat. J. Numer. Methods Engrg." }
+ @String{IntSuper = "International Journal of Supercomputing Applications" }
+ @String{IntSuper = "Internat. J. Supercomputing Applic." } % didn't find
+%% in AMS MR
+ @String{Kibernetika = "Kibernetika" }
+ @String{JResNatBurStand = "Journal of Research of the National Bureau
+     of Standards" }
+ @String{JResNatBurStand = "J. Res. Nat. Bur. Standards" }
+ @String{LinAlgApp = "Linear Algebra and its Applications" }
+ @String{LinAlgApp = "Linear Algebra Appl." }
+ @String{MathAnaAppl = "Journal of Mathematical Analysis and Applications" }
+ @String{MathAnaAppl = "J. Math. Anal. Appl." }
+ @String{MathAnnalen = "Mathematische Annalen" }
+ @String{MathAnnalen = "Math. Ann." }
+ @String{MathPhys = "Journal of Mathematical Physics" }
+ @String{MathPhys = "J. Math. Phys." }
+ @String{MathComp = "Mathematics of Computation" }
+ @String{MathComp = "Math. Comp." }
+ @String{MathScand = "Mathematica Scandinavica" }
+ @String{MathScand = "Math. Scand." }
+ @String{TablesAidsComp = "Mathematical Tables and Other Aids to Computation" }
+ @String{TablesAidsComp = "Math. Tables Aids Comput." }
+ @String{NumerMath = "Numerische Mathematik" }
+ @String{NumerMath = "Numer. Math." }
+ @String{PacificMath = "Pacific Journal of Mathematics" }
+ @String{PacificMath = "Pacific J. Math." }
+ @String{ParDistComp = "Journal of Parallel and Distributed Computing" }
+ @String{ParDistComp = "J. Parallel and Distrib. Comput." } % didn't find
+%% in AMS MR
+ @String{ParComputing = "Parallel Computing" }
+ @String{ParComputing = "Parallel Comput." }
+ @String{PhilMag = "Philosophical Magazine" }
+ @String{PhilMag = "Philos. Mag." }
+ @String{ProcNAS = "Proceedings of the National Academy of Sciences
+                    of the USA" }
+ @String{ProcNAS = "Proc. Nat. Acad. Sci. U. S. A." }
+ @String{Psychometrika = "Psychometrika" }
+ @String{QuartMath = "Quarterly Journal of Mathematics, Oxford, Series (2)" }
+ @String{QuartMath = "Quart. J. Math. Oxford Ser. (2)" }
+ @String{QuartApplMath = "Quarterly of Applied Mathematics" }
+ @String{QuartApplMath = "Quart. Appl. Math." }
+ @String{RevueInstStat = "Review of the International Statisical Institute" }
+ @String{RevueInstStat = "Rev. Inst. Internat. Statist." }
+
+ %SIAM
+ @String{JSIAM = "Journal of the Society for Industrial and Applied
+     Mathematics" }
+ @String{JSIAM = "J. Soc. Indust. Appl. Math." }
+ @String{JSIAMB = "Journal of the Society for Industrial and Applied
+     Mathematics, Series B, Numerical Analysis" }
+ @String{JSIAMB = "J. Soc. Indust. Appl. Math. Ser. B Numer. Anal." }
+ @String{SIAMAlgMeth = "{SIAM} Journal on Algebraic and Discrete Methods" }
+ @String{SIAMAlgMeth = "{SIAM} J. Algebraic Discrete Methods" }
+ @String{SIAMAppMath = "{SIAM} Journal on Applied Mathematics" }
+ @String{SIAMAppMath = "{SIAM} J. Appl. Math." }
+ @String{SIAMComp = "{SIAM} Journal on Computing" }
+ @String{SIAMComp = "{SIAM} J. Comput." }
+ @String{SIAMMatrix = "{SIAM} Journal on Matrix Analysis and Applications" }
+ @String{SIAMMatrix = "{SIAM} J. Matrix Anal. Appl." }
+ @String{SIAMNumAnal = "{SIAM} Journal on Numerical Analysis" }
+ @String{SIAMNumAnal = "{SIAM} J. Numer. Anal." }
+ @String{SIAMReview = "{SIAM} Review" }
+ @String{SIAMReview = "{SIAM} Rev." }
+ @String{SIAMSciStat = "{SIAM} Journal on Scientific and Statistical
+     Computing" }
+ @String{SIAMSciStat = "{SIAM} J. Sci. Statist. Comput." }
+
+ @String{SoftPracExp = "Software Practice and Experience" }
+ @String{SoftPracExp = "Software Prac. Experience" } % didn't find in AMS MR
+ @String{StatScience = "Statistical Science" }
+ @String{StatScience = "Statist. Sci." }
+ @String{Techno = "Technometrics" }
+ @String{USSRCompMathPhys = "{USSR} Computational Mathematics and Mathematical
+     Physics" }
+ @String{USSRCompMathPhys = "{U. S. S. R.} Comput. Math. and Math. Phys." }
+ @String{VLSICompSys = "Journal of {VLSI} and Computer Systems" }
+ @String{VLSICompSys = "J. {VLSI} Comput. Syst." }
+ @String{ZAngewMathMech = "Zeitschrift fur Angewandte Mathematik und
+     Mechanik" }
+ @String{ZAngewMathMech = "Z. Angew. Math. Mech." }
+ @String{ZAngewMathPhys = "Zeitschrift fur Angewandte Mathematik und Physik" }
+ @String{ZAngewMathPhys = "Z. Angew. Math. Phys." }
+
+% Publishers % ================================================= |
+
+ @String{Academic = "Academic Press" }
+ @String{ACMPress = "{ACM} Press" }
+ @String{AdamHilger = "Adam Hilger" }
+ @String{AddisonWesley = "Addison-Wesley" }
+ @String{AllynBacon = "Allyn and Bacon" }
+ @String{AMS = "American Mathematical Society" }
+ @String{Birkhauser = "Birkha{\"u}ser" }
+ @String{CambridgePress = "Cambridge University Press" }
+ @String{Chelsea = "Chelsea" }
+ @String{ClaredonPress = "Claredon Press" }
+ @String{DoverPub = "Dover Publications" }
+ @String{Eyolles = "Eyolles" }
+ @String{HoltRinehartWinston = "Holt, Rinehart and Winston" }
+ @String{Interscience = "Interscience" }
+ @String{JohnsHopkinsPress = "The Johns Hopkins University Press" }
+ @String{JohnWileySons = "John Wiley and Sons" }
+ @String{Macmillan = "Macmillan" }
+ @String{MathWorks = "The Math Works Inc." }
+ @String{McGrawHill = "McGraw-Hill" }
+ @String{NatBurStd = "National Bureau of Standards" }
+ @String{NorthHolland = "North-Holland" }
+ @String{OxfordPress = "Oxford University Press" }  %address Oxford or London?
+ @String{PergamonPress = "Pergamon Press" }
+ @String{PlenumPress = "Plenum Press" }
+ @String{PrenticeHall = "Prentice-Hall" }
+ @String{SIAMPub = "{SIAM} Publications" }
+ @String{Springer = "Springer-Verlag" }
+ @String{TexasPress = "University of Texas Press" }
+ @String{VanNostrand = "Van Nostrand" }
+ @String{WHFreeman = "W. H. Freeman and Co." }
+
+@inproceedings{Bergstrom-Lehtovirta:2014,
+author = {Bergstrom-Lehtovirta, Joanna and Oulasvirta, Antti},
+title = {Modeling the Functional Area of the Thumb on Mobile Touchscreen Surfaces},
+year = {2014},
+isbn = {9781450324731},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2556288.2557354},
+doi = {10.1145/2556288.2557354},
+booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+pages = {1991–2000},
+numpages = {10},
+keywords = {predictive model, touchscreen, functional area, thumb},
+location = {Toronto, Ontario, Canada},
+series = {CHI ’14}
+}
+
+@inproceedings{Bi:2013,
+ author = {Bi, Xiaojun and Li, Yang and Zhai, Shumin},
+ title = {{FF}itts Law: Modeling Finger Touch with {F}itts' {L}aw},
+ booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+ series = {CHI '13},
+ year = {2013},
+ isbn = {978-1-4503-1899-0},
+ location = {Paris, France},
+ pages = {1363--1372},
+ url = {http://doi.acm.org/10.1145/2470654.2466180},
+ doi = {10.1145/2470654.2466180},
+ acmid = {2466180},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {finger input, fitts' law, touchscreen},
+}
+
+@inproceedings{Bi:2013_atouch,
+author = {Bi, Xiaojun and Zhai, Shumin},
+title = {Bayesian Touch: A Statistical Criterion of Target Selection with Finger Touch},
+year = {2013},
+isbn = {9781450322683},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2501988.2502058},
+doi = {10.1145/2501988.2502058},
+booktitle = {Proceedings of the 26th Annual ACM Symposium on User Interface Software and Technology},
+pages = {51--60},
+numpages = {10},
+keywords = {finger touch, target selection, bayes’ rule},
+location = {St. Andrews, Scotland, United Kingdom},
+series = {UIST '13}
+}
+
+@inproceedings{Bi:2016,
+author = {Bi, Xiaojun and Zhai, Shumin},
+title = {Predicting Finger-Touch Accuracy Based on the Dual Gaussian Distribution Model},
+year = {2016},
+isbn = {9781450341899},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2984511.2984546},
+doi = {10.1145/2984511.2984546},
+booktitle = {Proceedings of the 29th Annual Symposium on User Interface Software and Technology},
+pages = {313--319},
+numpages = {7},
+keywords = {modeling, target acquisition, finger touch},
+location = {Tokyo, Japan},
+series = {UIST '16}
+}
+  
+@inproceedings{Boring:2012,
+author = {Boring, Sebastian and Ledo, David and Chen, Xiang “Anthony” and Marquardt, Nicolai and Tang, Anthony and Greenberg, Saul},
+title = {The Fat Thumb: Using the Thumb’s Contact Size for Single-Handed Mobile Interaction},
+year = {2012},
+isbn = {9781450311052},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2371574.2371582},
+doi = {10.1145/2371574.2371582},
+booktitle = {Proceedings of the 14th International Conference on Human-Computer Interaction with Mobile Devices and Services},
+pages = {39–48},
+numpages = {10},
+keywords = {single-handed interaction, touch-screen, mobile device},
+location = {San Francisco, California, USA},
+series = {MobileHCI ’12}
+}
+
+  
+
+
+
+
+@inproceedings{Cao:2008,
+author = {Cao, Xiang and Li, Jacky Jie and Balakrishnan, Ravin},
+title = {Peephole Pointing: Modeling Acquisition of Dynamically Revealed Targets},
+year = {2008},
+isbn = {9781605580111},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1357054.1357320},
+doi = {10.1145/1357054.1357320},
+booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+pages = {1699--1708},
+numpages = {10},
+keywords = {modeling, peephole, pointing, Fitts’ law},
+location = {Florence, Italy},
+series = {CHI '08}
+}
+
+@inproceedings{10.1145/1357054.1357179,
+author = {Gustafson, Sean and Baudisch, Patrick and Gutwin, Carl and Irani, Pourang},
+title = {Wedge: Clutter-Free Visualization of off-Screen Locations},
+year = {2008},
+isbn = {9781605580111},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1357054.1357179},
+doi = {10.1145/1357054.1357179},
+booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+pages = {787–796},
+numpages = {10},
+keywords = {visualization, peripheral awareness, maps, off-screen, small screens, spatial cognition},
+location = {Florence, Italy},
+series = {CHI ’08}
+}
+
+
+
+@Article{Cockburn:2012,
+ author = 	 {Cockburn, Andy and Ahlstr\"om, David and Gutwin, Carl},
+ title = 	 {Understanding performance in touch selections: tap, drag and radial pointing 
+              drag with finger, stylus and mouse}, 
+ journal = 	 {International Journal of Human-Computer Studies},
+ year = 	 {2012},
+ doi = "https://doi.org/10.1016/j.ijhcs.2011.11.002",
+ url = "https://doi.org/10.1016/j.ijhcs.2011.11.002",
+ OPTkey = 	 {},
+ volume = 	 {70},
+ number = 	 {3},
+ pages = 	 {218-233},
+ OPTmonth =  {},
+ OPTnote = 	 {},
+ OPTannote = {}
+}
+
+@inproceedings{Corsten:2019,
+ author =    {Corsten, Christian and Lahaye, Marcel and Borchers, 
+              Jan and Voelker, Simon},
+ title =     {ForceRay: Extending Thumb Reach via Force Input 
+              Stabilizes Device Grip for Mobile Touch Input},
+ year =      {2019},
+ isbn =      {9781450359702},
+ publisher = {Association for Computing Machinery},
+ address =   {New York, NY, USA},
+ url =       {https://doi.org/10.1145/3290605.3300442},
+ doi =       {10.1145/3290605.3300442},
+ booktitle = {Proceedings of the 2019 CHI Conference on 
+              Human Factors in Computing Systems},
+ pages =     {1–12},
+ numpages =  {12},
+ OPTkeywords = {},
+ OPTlocation = {Glasgow, Scotland Uk},
+ OPTseries   = {CHI ’19}
+}
+
+@inproceedings{Eardley:2017,
+    author =    {Eardley, Rachel and Roudaut, Anne and Gill, Steve and Thompson, Stephen J.},
+    title =     {Understanding Grip Shifts: How Form Factors Impact Hand Movements on Mobile Phones},
+    year =      {2017},
+    isbn =      {9781450346559},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/3025453.3025835},
+    doi = {10.1145/3025453.3025835},
+    booktitle = {Proceedings of the 2017 CHI Conference on Human Factors in Computing Systems},
+    pages = {4680–4691},
+    numpages = {12},
+    keywords = {mobile device, grasp, interaction, design, handgrip},
+    location = {Denver, Colorado, USA},
+    series = {CHI ’17}
+}
+
+@article{Fitts:1954,
+    author = {Fitts, Paul M.},
+    title = {The Information Capacity of the Human Motor System in Controlling the Amplitude of Movement},
+    journal = {Journal of Experimental Psychology},
+    volume = {47},
+    OPTnumber = {0},
+    pages = {381-391},
+    year  = {1954},
+    OPTpublisher = {Taylor & Francis},
+    OPTdoi = {10.1080/10447318.2018.1554320},
+OPTOPTURL = {https://doi.org/10.1080/10447318.2018.1554320},
+}
+
+@inproceedings{Henze:2011,
+author = {Henze, Niels and Rukzio, Enrico and Boll, Susanne},
+title = {100,000,000 Taps: Analysis and Improvement of Touch Performance in the Large},
+year = {2011},
+isbn = {9781450305419},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2037373.2037395},
+doi = {10.1145/2037373.2037395},
+booktitle = {Proceedings of the 13th International Conference on Human Computer Interaction with Mobile Devices and Services},
+pages = {133–142},
+numpages = {10},
+keywords = {mobile phone, large-scale, Android Market, user study, touch screen, app store, public study},
+location = {Stockholm, Sweden},
+series = {MobileHCI ’11}
+}
+
+@inproceedings{Holz:2011,
+author = {Holz, Christian and Baudisch, Patrick},
+title = {Understanding Touch},
+year = {2011},
+isbn = {9781450302289},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1978942.1979308},
+doi = {10.1145/1978942.1979308},
+booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+pages = {2501–2510},
+numpages = {10},
+keywords = {experiment, generalized perceived input point model, targeting, touch input},
+location = {Vancouver, BC, Canada},
+series = {CHI ’11}
+}
+
+@inproceedings{Holz:2010,
+author = {Holz, Christian and Baudisch, Patrick},
+title = {The Generalized Perceived Input Point Model and How to Double Touch Accuracy by Extracting Fingerprints},
+year = {2010},
+isbn = {9781605589299},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1753326.1753413},
+doi = {10.1145/1753326.1753413},
+booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+pages = {581–590},
+numpages = {10},
+keywords = {mobile devices, fingerprint scanner, touch screen, targeting, touch, pointing, input, 6dof, touch pad, precision},
+location = {Atlanta, Georgia, USA},
+series = {CHI ’10}
+}
+
+  
+
+
+  
+
+@inproceedings{Gordon:2019,
+author = {Gordon, Mitchell L. and Zhai, Shumin},
+title = {Touchscreen Haptic Augmentation Effects on Tapping, Drag and Drop, and Path Following},
+year = {2019},
+isbn = {9781450359702},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3290605.3300603},
+doi = {10.1145/3290605.3300603},
+booktitle = {Proceedings of the 2019 CHI Conference on Human Factors in Computing Systems},
+pages = {1–12},
+numpages = {12},
+keywords = {haptics, mobile devices: phones/tablets, empirical study},
+location = {Glasgow, Scotland Uk},
+series = {CHI ’19}
+}
+
+@inproceedings{Gori:2018,
+author = {Gori, Julien and Rioul, Olivier and Guiard, Yves and Beaudouin-Lafon, Michel},
+title = {The Perils of Confounding Factors: How {F}itts' Law Experiments Can Lead to False Conclusions},
+year = {2018},
+isbn = {9781450356206},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3173574.3173770},
+doi = {10.1145/3173574.3173770},
+booktitle = {Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems},
+pages = {1--10},
+numpages = {10},
+keywords = {factor confounds, models, fitts’ law},
+location = {Montreal QC, Canada},
+series = {CHI '18}
+}
+
+@inproceedings{Hakka:2019,
+author = {Hakka, Kyohei and Isomoto, Toshiya and Shizuki, Buntarou},
+title = {One-Handed Interaction Technique for Single-Touch Gesture Input on Large Smartphones},
+year = {2019},
+isbn = {9781450369756},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3357251.3358750},
+doi = {10.1145/3357251.3358750},
+booktitle = {Symposium on Spatial User Interaction},
+articleno = {21},
+numpages = {2},
+keywords = {thumb interaction, touch pressure, cursor, force, touch screen},
+location = {New Orleans, LA, USA},
+series = {SUI ’19}
+}
+
+@inproceedings{Kabbash:1995,
+ author = {Kabbash, Paul and Buxton, William},
+ title = {`{P}rince'' Technique: Fitts' Law and Selection Using Area Cursors},
+ booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+ series = {CHI '95},
+ year = {1995},
+ isbn = {978-1-4503-1899-0},
+ location = {Paris, France},
+ pages = {273--279},
+ OPTurl = {http://doi.acm.org/10.1145/2470654.2466180},
+ doi = {10.1145/2470654.2466180},
+ acmid = {2466180},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+}
+
+@inproceedings{Kane:2008,
+author = {Kane, Shaun K. and Wobbrock, Jacob O. and Smith, Ian E.},
+title = {Getting off the Treadmill: Evaluating Walking User Interfaces for Mobile Devices in Public Spaces},
+year = {2008},
+isbn = {9781595939524},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1409240.1409253},
+doi = {10.1145/1409240.1409253},
+booktitle = {Proceedings of the 10th International Conference on Human Computer Interaction with Mobile Devices and Services},
+pages = {109–118},
+numpages = {10},
+keywords = {situational impairments, mobile device, media player, walking user interface, adaptive user interface},
+location = {Amsterdam, The Netherlands},
+series = {MobileHCI ’08}
+}
+
+@inproceedings{Kaufmann:2012,
+author = {Kaufmann, Bonifaz and Ahlstr\"{o}m, David},
+title = {Revisiting Peephole Pointing: A Study of Target Acquisition with a Handheld Projector},
+year = {2012},
+isbn = {9781450311052},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2371574.2371607},
+doi = {10.1145/2371574.2371607},
+booktitle = {Proceedings of the 14th International Conference on Human-Computer Interaction with Mobile Devices and Services},
+pages = {211--220},
+numpages = {10},
+keywords = {fitts’ law, pico projector, modeling, peephole pointing},
+location = {San Francisco, California, USA},
+series = {MobileHCI '12}
+}
+
+@article{Kim:2015,
+author = {Inki Kim and Jang Hyeon Jo},
+title = {Performance Comparisons Between Thumb-Based and Finger-Based Input on a Small Touch-Screen Under Realistic Variability},
+journal = {International Journal of Human-Computer Interaction},
+volume = {31},
+number = {11},
+pages = {746--760},
+year  = {2015},
+publisher = {Taylor & Francis},
+doi = {10.1080/10447318.2015.1045241},
+OPTURL = {https://doi.org/10.1080/10447318.2015.1045241},
+}
+
+@inproceedings{Kolly:2012,
+author = {Kolly, Sarah Martina and Wattenhofer, Roger and Welten, Samuel},
+title = {A Personal Touch: Recognizing Users Based on Touch Screen Behavior},
+year = {2012},
+isbn = {9781450317788},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2389148.2389149},
+doi = {10.1145/2389148.2389149},
+booktitle = {Proceedings of the Third International Workshop on Sensing Applications on Mobile Phones},
+articleno = {1},
+numpages = {5},
+keywords = {touch input, behavioral biometrics, large scale user studies, crowdsourcing},
+location = {Toronto, Ontario, Canada},
+series = {PhoneSense '12}
+}
+
+@inproceedings{Larsen:2019,
+author = {Larsen, Joachim Normann and Jacobsen, T\'{o}rur H\o{}jgaard and Boring, Sebastian and Bergstr\"{o}m, Joanna and Pohl, Henning},
+title = {The Influence of Hand Size on Touch Accuracy},
+year = {2019},
+isbn = {9781450368254},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3338286.3340115},
+doi = {10.1145/3338286.3340115},
+booktitle = {Proceedings of the 21st International Conference on Human-Computer Interaction with Mobile Devices and Services},
+articleno = {4},
+numpages = {11},
+keywords = {pointing, mobile interaction, Touch input},
+location = {Taipei, Taiwan},
+series = {MobileHCI ’19}
+}
+
+@article{Lee:2018,
+author = {Seul Chan Lee and Min Chul Cha and Yong Gu Ji},
+title = {Investigating Smartphone Touch Area with One-Handed Interaction: Effects of Target Distance and Direction on Touch Behaviors},
+journal = {International Journal of Human-Computer Interaction},
+volume = {0},
+number = {0},
+pages = {1-12},
+year  = {2018},
+publisher = {Taylor & Francis},
+doi = {10.1080/10447318.2018.1554320},
+OPTURL = {https://doi.org/10.1080/10447318.2018.1554320},
+}
+
+@inproceedings{Mayer:2019,
+author = {Mayer, Sven and Le, Huy Viet and Funk, Markus and Henze, Niels},
+title = {Finding the Sweet Spot: Analyzing Unrestricted Touchscreen Interaction In-the-Wild},
+year = {2019},
+isbn = {9781450368919},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3343055.3359705},
+doi = {10.1145/3343055.3359705},
+booktitle = {Proceedings of the 2019 ACM International Conference on Interactive Surfaces and Spaces},
+pages = {171–179},
+numpages = {9},
+keywords = {in-the-wild study, sweet spot, mobile device},
+location = {Daejeon, Republic of Korea},
+series = {ISS ’19}
+}
+
+  
+
+
+
+@inproceedings{Moscovich:2009,
+author = {Moscovich, Tomer},
+title = {Contact Area Interaction with Sliding Widgets},
+year = {2009},
+isbn = {9781605587455},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1622176.1622181},
+doi = {10.1145/1622176.1622181},
+booktitle = {Proceedings of the 22nd Annual ACM Symposium on User Interface Software and Technology},
+pages = {13–22},
+numpages = {10},
+keywords = {touch input, interactive surfaces, touchscreen},
+location = {Victoria, BC, Canada},
+series = {UIST ’09}
+}
+
+@inproceedings{Ng:2014,
+author = {Ng, Alexander and Brewster, Stephen A. and Williamson, John H.},
+title = {Investigating the Effects of Encumbrance on One- and Two- Handed Interactions with Mobile Devices},
+year = {2014},
+isbn = {9781450324731},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2556288.2557312},
+doi = {10.1145/2556288.2557312},
+booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+pages = {1981–1990},
+numpages = {10},
+keywords = {mobile interactions, one- and two- handed input, encumbrance, target acquisition},
+location = {Toronto, Ontario, Canada},
+series = {CHI ’14}
+}
+
+@inproceedings{Parhi:2006,
+author = {Parhi, Pekka and Karlson, Amy K. and Bederson, Benjamin B.},
+title = {Target Size Study for One-Handed Thumb Use on Small Touchscreen Devices},
+year = {2006},
+isbn = {1595933905},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1152215.1152260},
+doi = {10.1145/1152215.1152260},
+booktitle = {Proceedings of the 8th Conference on Human-Computer Interaction with Mobile Devices and Services},
+pages = {203–210},
+numpages = {8},
+keywords = {keypads, key size, one-handed, touch screens, mobile devices},
+location = {Helsinki, Finland},
+series = {MobileHCI ’06}
+}
+
+@Article{Park:2010a,
+ author = 	 {Park, Young S. and Han, Sung H.},
+ title = 	 {One-handed thumb interaction of mobile devices from the input accuracy perspective}, 
+ journal = 	 {International Journal of Industrial Ergonomics},
+ year = 	 {2010},
+ OPTkey = 	 {},
+ volume = 	 {40},
+ number = 	 {6},
+ pages = 	 {746-756},
+ OPTmonth =  {},
+ OPTnote = 	 {},
+ OPTannote = {}
+}
+
+@Article{Park:2010b,
+ author = 	 {Park, Young S. and Han, Sung H.},
+ title = 	 {Touch key design for one-handed thumb interaction with a mobile phone: Effects of touch key size and touch key location}, 
+ journal = 	 {International Journal of Industrial Ergonomics},
+ year = 	 {2010},
+ OPTkey = 	 {},
+ volume = 	 {40},
+ number = 	 {1},
+ pages = 	 {68-76},
+ OPTmonth =  {},
+ OPTnote = 	 {},
+ OPTannote = {}
+}
+
+@inproceedings{Park:2008,
+author = {Park, Yong S. and Han, Sung H. and Park, Jaehyun and Cho, Youngseok},
+title = {Touch Key Design for Target Selection on a Mobile Phone},
+year = {2008},
+isbn = {9781595939524},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1409240.1409304},
+doi = {10.1145/1409240.1409304},
+booktitle = {Proceedings of the 10th International Conference on Human Computer Interaction with Mobile Devices and Services},
+pages = {423–426},
+numpages = {4},
+keywords = {touch screen, mobile phones, usability, one-handed thumb input, hits distribution based algorithm},
+location = {Amsterdam, The Netherlands},
+series = {MobileHCI ’08}
+}
+
+@inproceedings{Perry:2008,
+author = {Perry, Keith B. and Hourcade, Juan Pablo},
+title = {Evaluating One Handed Thumb Tapping on Mobile Touchscreen Devices},
+year = {2008},
+isbn = {9781568814230},
+publisher = {Canadian Information Processing Society},
+address = {CAN},
+booktitle = {Proceedings of Graphics Interface 2008},
+pages = {57–64},
+numpages = {8},
+keywords = {thumb tap, non-preferred hand, mobile devices, touchscreens, thumb use, target size, one handed, handedness},
+location = {Windsor, Ontario, Canada},
+series = {GI ’08}
+}
+
+  
+
+
+
+@inproceedings{Rohs:2008,
+author = {Rohs, Michael and Oulasvirta, Antti},
+title = {Target Acquisition with Camera Phones When Used as Magic Lenses},
+year = {2008},
+isbn = {9781605580111},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1357054.1357275},
+doi = {10.1145/1357054.1357275},
+booktitle = {Proceedings of the SIGCHI Conference on Human Factors in Computing Systems},
+pages = {1409–1418},
+numpages = {10},
+keywords = {camera phone, target acquisition, Fitts’ law, human-performance modeling, augmented reality, magic lens pointing},
+location = {Florence, Italy},
+series = {CHI '08}
+}
+
+@inproceedings{Sarcar:2019,
+author = {Sarcar, Sayan and Silpasuwanchai, Chaklam and Delamare, William and Ono, Ayumu and Oulasvirta, Antti and Ren, Xiangshi},
+title = {Exploring Performance of Thumb Input for Pointing and Dragging Tasks on Mobile Device},
+year = {2019},
+isbn = {9781450366793},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3309700.3338434},
+doi = {10.1145/3309700.3338434},
+booktitle = {Proceedings of Asian CHI Symposium 2019: Emerging HCI Research Collection},
+pages = {38–45},
+numpages = {8},
+keywords = {error rates, thumb input, touchscreens, mobile HCI},
+location = {Glasgow, Scotland, United Kingdom},
+series = {AsianHCI ’19}
+}
+
+@Article{Trudeau:2016,
+ author = 	 {Trudeau, Matthieu B. and Asakawa, Deanna S. and Jindrich, Devin L. and Dennerlein, Jack T.},
+ title = 	 {Two-handed grip on a mobile phone affords greater thumb motor performance, decreased variability, and a more extended thumb posture than a one-handed grip}, 
+ journal = 	 {Applied Ergonomics},
+ year = 	 {2016},
+ OPTkey = 	 {},
+ volume = 	 {52},
+ number = 	 {},
+ pages = 	 {24-28},
+ OPTmonth =  {},
+ OPTnote = 	 {},
+ OPTannote = {}
+}
+
+@inproceedings{Usuba:2019,
+author = {Usuba, Hiroki and Yamanaka, Shota and Miyashita, Homei},
+title = {Touch Pointing Performance for Uncertain Touchable Sizes of 1D Targets},
+year = {2019},
+isbn = {9781450368254},
+publisher = {ACM},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3338286.3340131},
+doi = {10.1145/3338286.3340131},
+booktitle = {Proceedings of the 21st International Conference on Human-Computer Interaction with Mobile Devices and Services},
+articleno = {20},
+numpages = {8},
+keywords = {Effects of motor and visual widths, Fitts’ law, finger pointing, GUIs},
+location = {Taipei, Taiwan},
+series = {MobileHCI '19}
+}
+
+@inproceedings{Voelker:2020,
+author = {Voelker, Simon and Hueber, Sebastian and Corsten, Christian and Remy, Christian},
+title = {HeadReach: Using Head Tracking to Increase Reachability on Mobile Touch Devices},
+year = {2020},
+isbn = {9781450367080},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3313831.3376868},
+doi = {10.1145/3313831.3376868},
+booktitle = {Proceedings of the 2020 CHI Conference on Human Factors in Computing Systems},
+pages = {1–12},
+numpages = {12},
+keywords = {force input, walking, user study, touch input, reachability, head tracking, gaze selection},
+location = {Honolulu, HI, USA},
+series = {CHI ’20}
+}
+
+@article{Yamanaka:2020,
+author = {Yamanaka, Shota and Usuba, Hiroki},
+title = {Rethinking the Dual Gaussian Distribution Model for Predicting Touch Accuracy in On-Screen-Start Pointing Tasks},
+year = {2020},
+issue_date = {November 2020},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {4},
+number = {ISS},
+url = {https://doi.org/10.1145/3427333},
+doi = {10.1145/3427333},
+journal = {Proc. ACM Hum.-Comput. Interact.},
+month = nov,
+articleno = {205},
+numpages = {20},
+keywords = {finger input, dual gaussian distribution model, touchscreens, pointing}
+}  
+
+@Article{Zhai:2004,
+ author = 	 {Zhai, Shumin and Kong, Jing and Ren, Xiangshi},
+ title = 	 {Speed-accuracy tradeoff in {F}itts' law tasks--on the equivalency of actual and nominal pointing precision}, 
+ journal = 	 {International Journal of Human-Computer Studies},
+ year = 	 {2004},
+ OPTkey = 	 {},
+ volume = 	 {61},
+ number = 	 {6},
+ pages = 	 {823-856},
+ OPTmonth =  {},
+ OPTnote = 	 {},
+ OPTannote = {}
+}
+
+%XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+% Template Entries Below
+@Misc{CHINOSAUR:venue,
+  author =       {@\_CHINOSAUR},
+  key =          {_CHINOSAUR},
+  howpublished = {Tweet},
+  title =        {"VENUE IS TOO COLD" \#BINGO \#CHI2014},
+  month =        {May},
+  day =          1,
+  year =         2014,
+  note =         {Retrieved Febuary 2, 2015 from
+                  \url{https://twitter.com/_CHINOSAUR/status/461864317415989248}},
+  annote =       {Tweet}
+}
+
+@misc{supermetroid:snes,
+	Address = {Kyoto, Japan},
+	Author = {{Nintendo R\&D1} and {Intelligent Systems}},
+	Day = {18},
+	Howpublished = {Game [SNES]},
+	Month = {April},
+	Note = {Nintendo, Kyoto, Japan. Played August 2011.},
+	Publisher = {Nintendo},
+	Title = {\emph{Super Metroid}},
+	Year = {1994}
+}
+
+@inproceedings{Klemmer:2002:WSC:503376.503378,
+  author =       {Klemmer, Scott R. and Thomsen, Michael and
+                  Phelps-Goodman, Ethan and Lee, Robert and Landay,
+                  James A.},
+  title =        {Where Do Web Sites Come from?: Capturing and
+                  Interacting with Design History},
+  booktitle =    {Proceedings of the SIGCHI Conference on Human
+                  Factors in Computing Systems},
+  series =       {CHI '02},
+  year =         2002,
+  isbn =         {1-58113-453-3},
+  location =     {Minneapolis, Minnesota, USA},
+  pages =        {1--8},
+  url =          {http://doi.acm.org/10.1145/503376.503378},
+  doi =          {10.1145/503376.503378},
+  acmid =        503378,
+  publisher =    {ACM},
+  address =      {New York, NY, USA},
+  keywords =     {CSCW, activity capture, design rationale, history
+                  management, informal interfaces, sketching, tangible
+                  UI, web design},
+}
+
+@inproceedings{Mather:2000:MUT,
+  title =        {Making up titles for conference papers},
+  author =       {Mather, B. D.},
+  booktitle =    {Ext. Abstracts CHI 2000},
+  year =         2000,
+  publisher =    "ACM Press",
+  pages =        "1-2",
+}
+
+@book{Schwartz:1995:GBF,
+  title =        {Guidelines for Bias-Free Writing},
+  author =       {Marilyn Schwartz},
+  address =      {Bloomington, IN, USA},
+  year =         1995,
+  publisher =    {ERIC}
+}
+
+@inproceedings{Zellweger:2001:FAO:504216.504224,
+  author =       {Zellweger, Polle T. and Bouvin, Niels Olof and
+                  Jeh{\o}j, Henning and Mackinlay, Jock D.},
+  title =        {Fluid annotations in an open world},
+  booktitle =    {Proc. Hypertext 2001},
+  year =         2001,
+  pages =        {9--18},
+  publisher =    {ACM Press},
+}
+
+@misc{acm_categories,
+  key =          "ACM",
+  author =       {ACM},
+  title =        {How to Classify Works Using ACM's Computing
+                  Classification System},
+  year =         1998,
+  note =         {\url{http://www.acm.org/class/how_to_use.html}},
+}
+
+@Misc{cavender:writing,
+  author =       {Anna Cavender and Shari Trewin and Vicki Hanson},
+  title =        {Accessible Writing Guide},
+  year =         2014,
+  day =          22,
+  note =
+                  {\url{http://www.sigaccess.org/welcome-to-sigaccess/resources/accessible-writing-guide/}},
+  annote =       {URL}
+}
+
+@article{ethics,
+  title =        {{Social Impacts of Computing: Codes of Professional
+                  Ethics}},
+  author =       {R. E. Anderson},
+  doi =          "10.1177/089443939201000402",
+  journal =      "Social Science Computer Review December",
+  year =         1992,
+  volume =       10,
+  number =       4,
+  pages =        "453-469"
+}
+
+@Misc{heilig:sensorama,
+  author =       {Morton L. Heilig},
+  title =        {Sensorama Simulator},
+  howpublished = {U.S. Patent 3,050,870},
+  month =        {August},
+  day =          28,
+  year =         1962,
+  note =         {Filed Februrary 22, 1962.},
+  annote =       {is this right?}
+},
+
+@article{kaye:puc,
+  year =         2014,
+  issn =         {1617-4909},
+  journal =      {Personal and Ubiquitous Computing},
+  volume =       18,
+  number =       4,
+  doi =          {10.1007/s00779-014-0773-4},
+  title =        {Special issue on science fiction and ubiquitous
+                  computing},
+  url =          {http://dx.doi.org/10.1007/s00779-014-0773-4},
+  publisher =    {Springer London},
+  author =       {Kaye, Jofish and Dourish, Paul},
+  pages =        {765-766},
+  language =     {English}
+}
+
+@Misc{psy:gangnam,
+  author =       {Psy},
+  title =        {Gangnam Style},
+  howpublished = {Video},
+  month =        {July},
+  day =          15,
+  year =         2012,
+  note =         {Retrieved August 22, 2014 from
+                  \url{https://www.youtube.com/watch?v=9bZkp7q19f0}},
+  annote =       {Video URL}
+}
+
+@PhdThesis{sutherland:sketchpad,
+  author =       {Ivan E. Sutherland},
+  title =        {Sketchpad, a Man-Machine Graphical Communication
+                  System},
+  school =       {Massachusetts Institute of Technology},
+  year =         1963,
+  address =      {Cambridge, MA},
+}
+
+@InBook{winner:politics,
+  author =       {Langdon Winner},
+  title =        {The Social Shaping of Technology},
+  chapter =      {Do artifacts have politics?},
+  publisher =    {Open University Press},
+  year =         1999,
+  address =      {UK},
+  edition =      {2nd},
+  pages =        {28--40},
+}
+
