@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
-import javafx.util.Pair;
 
 import java.io.*;
 import java.util.*;
@@ -33,6 +32,7 @@ public class FileManager {
     private List<File> filesInsideRoot;
     private File selectedFile;
     private Map<String, String> bibMap;
+    private String fileAsString;
 
     /**
      * Button is disabled during processing
@@ -181,12 +181,9 @@ public class FileManager {
         return selectedFile != null;
     }
 
-
-    // todo caution duplicates will be removed | add _copy to already existing entries, except the one to insert now
-    // todo? file currently rewritten on insert to sort it alphabetically
-
     /**
      * Will write the given bib-entry into the selected file, validity should be checked before calling this function
+     * If an entry with a given keyword is already in the file it will replace the on in the file and the map
      * Synchronized, only one thread my write to a file at a time/ prevent any possible exceptions
      *
      * @param str bib entry to write
@@ -196,18 +193,24 @@ public class FileManager {
             @Override
             protected Void call() throws Exception {
                 try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile()));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), true));
 
-                    Pair<String, String> entryHead = FormatChecker.getBibEntryHead(str);
-                    if (entryHead != null) {
-                        bibMap.put(entryHead.getValue(), str);
+                    String keyword = FormatChecker.getBibEntryKeyword(str);
+                    if (keyword == null) {
+                        System.err.println("Cant insert invalid bib entry!");
+                    } else if (bibMap.containsKey(keyword)) { // entry already in file, overwrite whole file, including new entry
+                        String toReplace = bibMap.get(keyword);
+                        fileAsString = fileAsString.replace(toReplace, str);
+                        bibMap.put(keyword, str);
+                        writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
+                        writer.write(fileAsString);
+
+                    } else { // entry not in file append it
+                        bibMap.put(keyword, str);
+                        fileAsString += str;
+                        writer.write("\r\n");
+                        writer.write(str);
                     }
-
-                    for (Map.Entry<String, String> entry : bibMap.entrySet()
-                    ) {
-                        writer.write(entry.getValue() + "\n");
-                    }
-
                     writer.flush();
                     writer.close();
                 } catch (IOException e) {
@@ -271,8 +274,8 @@ public class FileManager {
     }
 
     /**
-     * Will read the selected file and check block wise if there is an bib entry. If there
-     * is an entire it will be added to the bibMap for later use and after that
+     * Will read the selected file and check block wise if there is a bib entry. If there
+     * is an entry it will be added to the bibMap for later use and after that
      * add valid entries heads in the form "TYPE, keyword" to the list, or an
      * appropriate message if none have been found | an error occurred
      * <p>
@@ -293,34 +296,37 @@ public class FileManager {
                     FileReader fr = new FileReader(selectedFile);
                     BufferedReader reader = new BufferedReader(fr);
                     String line, entry;
-                    Pair<String, String> headPair;
                     StringBuilder builder = new StringBuilder();
+                    StringBuilder bibBuilder = new StringBuilder();
 
                     String line2;
                     while ((line = reader.readLine()) != null) {
-                        builder.append(line).append("\n");
-                        if (builder.toString().contains("@")) {
+                        builder.append(line).append("\r\n");
+                        bibBuilder.append(line).append("\r\n");
+                        // ignore comment lines starting with '%'
+                        if ((!line.startsWith("%")) && bibBuilder.toString().contains("@")) {
                             while ((line2 = reader.readLine()) != null) {
-                                builder.append(line2).append("\n");
+                                builder.append(line2).append("\r\n");
+                                bibBuilder.append(line2).append("\r\n");
                                 if (line2.contains("@")) {
                                     line = line2;
                                     break;
                                 }
                             }
                             // if entry is valid and not in map add it
-                            if (!(entry = FormatChecker.basicBibTeXCheck(builder.toString())).equals("invalid")) {
-                                headPair = FormatChecker.getBibEntryHead(entry);
-                                if (headPair != null) {
-                                    bibMap.put(headPair.getValue(), entry);
-                                    entries.add(headPair.getKey() + ", " + headPair.getValue());
-                                    builder.setLength(0);
-                                    builder.append(line).append("\n");
+                            if (!(entry = FormatChecker.basicBibTeXCheck(bibBuilder.toString())).equals("invalid")) {
+                                String keyword = FormatChecker.getBibEntryKeyword(entry);
+                                if (keyword != null) {
+                                    bibMap.put(keyword, entry);
+                                    entries.add(keyword);
+                                    bibBuilder.setLength(0);
+                                    bibBuilder.append(line).append("\r\n");
                                 }
                             }
                         }
                     }
-
                     reader.close();
+                    fileAsString = builder.toString();
 
                 } catch (IOException e) {
                     System.err.println("Error reading from file!");
@@ -335,9 +341,7 @@ public class FileManager {
                 return entries;
             }
         };
-        task.setOnSucceeded(list -> {
-            view.setItems(task.getValue());
-        });
+        task.setOnSucceeded(list -> view.setItems(task.getValue()));
 
         Thread th = new Thread(task);
         th.start();
@@ -354,8 +358,7 @@ public class FileManager {
         if (bibMap.isEmpty()) {
             return "Cant edit empty file!";
         } else {
-            String keyword = selectedItem.split("\\s")[1].trim();
-            String entry = bibMap.get(keyword);
+            String entry = bibMap.get(selectedItem);
             if (entry == null) {
                 return "Error could not find selected entry!";
             }

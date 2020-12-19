@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import javafx.util.Pair;
 import org.wst.helper.ClipboardService;
 import org.wst.helper.FileManager;
 import org.wst.helper.FormatChecker;
@@ -69,10 +68,15 @@ public class PrimaryController {
             // get string from clipboard
             if (t.getSource().getValue() != null) {
                 String entry = FormatChecker.basicBibTeXCheck((String) t.getSource().getValue());
-                System.out.println(entry);
-                inputArea.setText(entry.equals("invalid") ? "Not a valid BibTeX entry!" : entry);
-
-                if (!entry.equals("invalid")) App.toFront();
+                boolean valid = (!entry.equals("invalid"));
+                if (valid) {
+                    entry = FormatChecker.replaceQuotationMarks(entry);
+                    System.out.println(entry);
+                    inputArea.setText(entry);
+                    App.toFront();
+                } else {
+                    inputArea.setText("Not a valid BibTeX entry!");
+                }
 
                 /* maybe used later
                 Window st = textArea1.getScene().getWindow();
@@ -192,10 +196,9 @@ public class PrimaryController {
         } else {
             fileManager.writeToFile(entry);
             ObservableList<String> entries = bibList.getItems();
-            Pair<String, String> headPair = FormatChecker.getBibEntryHead(entry);
-            if (headPair != null) {
-                String item = headPair.getKey() + ", " + headPair.getValue();
-                if (!entries.contains(item)) entries.add(item);
+            String keyword = FormatChecker.getBibEntryKeyword(entry);
+            if (keyword != null) {
+                if (!entries.contains(keyword)) entries.add(keyword);
             }
             Collections.sort(entries);
             inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
@@ -221,7 +224,8 @@ public class PrimaryController {
      */
     public void selectEntry(ActionEvent actionEvent) {
         if (fileManager.isFileSelected() && bibList.getSelectionModel().getSelectedItem() != null) {
-            inputArea.setText(fileManager.getBibEntry(bibList.getSelectionModel().getSelectedItem()));
+            inputArea.setText(FormatChecker.replaceQuotationMarks(
+                    fileManager.getBibEntry(bibList.getSelectionModel().getSelectedItem())));
         } else {
             throwAlert("Select a file first!");
         }

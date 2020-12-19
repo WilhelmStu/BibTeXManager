@@ -18,7 +18,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("primary"), 1024, 768);
         scene.getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
         stage.setTitle("BibTeX Manager");
         stage.setScene(scene);

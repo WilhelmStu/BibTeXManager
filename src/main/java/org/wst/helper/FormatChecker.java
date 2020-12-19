@@ -1,6 +1,5 @@
 package org.wst.helper;
 
-import javafx.util.Pair;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -16,7 +15,10 @@ public abstract class FormatChecker {
             "editor", "howpublished", "institution", "journal", "key", "month", "note", "number", "organization",
             "pages", "publisher", "school", "series", "title", "type", "volume", "year",};
 
-    // todo: Advanced check for required/optional fields for each type above...
+    // NOTE: ^,{}\()%"'#~= not allowed in keyword, but '@' is allowed
+    public final static String keywordRegEx = "[{][^,{}\\\\()%\"'#~=]*[,]";
+
+    // todo? Advanced check for required/optional fields for each type above...
     // todo? second check for field validity...
     // todo? allow multiple entries?
 
@@ -27,7 +29,7 @@ public abstract class FormatChecker {
     public static String basicBibTeXCheck(String raw) {
 
         String re = "[@]\\w{4,}\\s*";
-        re += "[{][^@,{}()]*[,]";
+        re += keywordRegEx;
         re += "[^@]+[}]";
 
         Pattern pt = Pattern.compile(re);
@@ -37,7 +39,8 @@ public abstract class FormatChecker {
             firstEntry = mt.group(0);
             String type = firstEntry.substring(firstEntry.indexOf("@") + 1, firstEntry.indexOf("{")).trim();
             if (Arrays.asList(types).contains(type.toLowerCase())) {
-                firstEntry = replaceQuotationMarks(firstEntry);
+                //firstEntry = replaceQuotationMarks(firstEntry);
+                firstEntry += "\r\n";
                 return firstEntry;
             } else {
                 return "invalid";
@@ -52,10 +55,10 @@ public abstract class FormatChecker {
     /**
      * Will take a valid bib entry and replace the "" for each value after an tag
      * e.g.: title = "this is a title" -> title = {this is a title}
-     * but e.g.: year = 2002 wont be changed
+     * but e.g.: year = 2002 wont be changed, but year = "2002" will get year = {2002}
      * and e.g.: title = "{}" will become {{}}
-     *
-     * Note this might remove a single ',' at the end the last value of an entry (very unlikely)
+     * <p>
+     * Note: this might remove a single ',' if it is the last value of an entry (very unlikely)
      *
      * @param entry valid bib entry
      * @return same as input but "" -> {}
@@ -79,10 +82,10 @@ public abstract class FormatChecker {
                 value[0] = '{';
                 value[value.length - 1] = '}';
             }
-            builder.append("\r\n  ").append(tagAndValue[0].trim()).append(" ").append(value).append(",");
+            builder.append("\r\n").append(tagAndValue[0].trim()).append(" ").append(value).append(",");
         }
         builder.setLength(builder.length() - 1);
-        builder.append("\r\n}");
+        builder.append("\r\n");
 
         return builder.toString();
     }
@@ -90,23 +93,21 @@ public abstract class FormatChecker {
     // todo add arrangement to config
 
     /**
-     * Will return the first BibEntry-Head in a given string or "invalid" if none is found
+     * Will return the first BibEntry-Keyword in a given string or "invalid" if none is found
      *
      * @param line a string that can contain a BibEntry-Head
-     * @return first BibEntry-Head in the form "TYPE, keyword"
+     * @return first BibEntry-Keyword in a given String
      */
-    public static Pair<String, String> getBibEntryHead(String line) {
+    public static String getBibEntryKeyword(String line) {
         String re = "[@]\\w{4,}\\s*";
-        re += "[{][^@,{}()]*[,]";
-
+        re += keywordRegEx;
         Pattern pt = Pattern.compile(re);
         Matcher mt = pt.matcher(line);
         if (mt.find()) {
             String entryHead = mt.group(0);
             String type = entryHead.substring(entryHead.indexOf("@") + 1, entryHead.indexOf("{")).trim().toUpperCase();
             if (Arrays.asList(types).contains(type.toLowerCase())) {
-                String keyword = entryHead.substring(entryHead.indexOf("{") + 1, entryHead.indexOf(",")).trim();
-                return new Pair<>(type, keyword);
+                return entryHead.substring(entryHead.indexOf("{") + 1, entryHead.indexOf(",")).trim();
             }
         }
         return null;
