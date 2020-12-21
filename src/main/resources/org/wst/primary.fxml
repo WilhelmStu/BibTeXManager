@@ -13,6 +13,8 @@
 
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ListView?>
 <GridPane fx:id="gridPane" alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.171"
           xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="org.wst.PrimaryController"
@@ -22,63 +24,68 @@
 
     <children>
 
-        <Label GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.columnSpan="4" text="Main Window"/>
+        <!--Label GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.columnSpan="4" text="Main Window"/-->
 
-        <VBox fx:id="colWithListView" styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="0">
+        <VBox fx:id="colWithListView" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="0">
 
-            <Button fx:id="selectRootButton" text="Select directory >" onAction="#selectRoot"/>
-            <Label fx:id="rootDirectory" text="No root selected" textOverrun="LEADING_ELLIPSIS"/>
-            <!-- ListView added here -->
+            <Label fx:id="rootDirectory" text="No directory selected" textOverrun="LEADING_ELLIPSIS"/>
+            <ListView fx:id="fileList"/>
+
+            <Region prefHeight="10"/>
+            <Label fx:id="selectedFile" text="Select a file/directory below"/>
+            <Region prefHeight="10"/>
+
+            <HBox fx:id="buttonBox" alignment="CENTER" spacing="25">
+                <Button fx:id="selectRootButton" onAction="#selectRoot"/>
+                <Button fx:id="selectSingleFileButton" onAction="#selectSingleFile"/>
+                <Button fx:id="createFileButton" onAction="#createFile"/>
+            </HBox>
+
 
         </VBox>
 
-        <VBox alignment="CENTER" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+        <VBox alignment="CENTER" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.halignment="CENTER">
             <Region prefHeight="35"/>
-            <Button fx:id="selectFile" text=">" onAction="#selectFileFromList"
+            <Button fx:id="selectFile" onAction="#selectFileFromList"
             />
         </VBox>
 
-        <VBox fx:id="centerColumn" styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="2"
+        <VBox fx:id="centerColumn" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="2"
               GridPane.valignment="CENTER">
-
-            <HBox alignment="CENTER" spacing="10">
-                <Button fx:id="selectSingleFileButton" text="Select" onAction="#selectSingleFile"/>
-                <Button fx:id="createFileButton" text="Create" onAction="#createFile"/>
-            </HBox>
-            <Label fx:id="selectedFile" text="No file selected"/>
-
         </VBox>
 
-        <Button fx:id="insertButton" text="/\" onAction="#insertIntoFile" GridPane.rowIndex="2"
-                GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM"/>
 
-        <VBox fx:id="colWithSecondListView" styleClass="Vbox" GridPane.rowIndex="1" GridPane.columnIndex="3">
+        <VBox fx:id="colWithSecondListView" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="2"
+              GridPane.columnSpan="2">
 
             <Label fx:id="secondList" text="No file selected"/>
+            <TableView fx:id="bibTable" VBox.vgrow="ALWAYS"/>
             <!--Button fx:id="selectEntry" text="\\/" onAction="#selectEntry"/-->
             <Region minHeight="20"/>
 
         </VBox>
 
-        <Button fx:id="selectEntry" text="\\/" onAction="#selectEntry" GridPane.rowIndex="2"
-        GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM"/>
+        <Button fx:id="insertButton"  onAction="#insertIntoFile" GridPane.rowIndex="1"
+                GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM"/>
 
-        <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="3"
+        <Button fx:id="selectEntry" onAction="#selectEntry" GridPane.rowIndex="1"
+                GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM"/>
+
+        <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="2"
                   GridPane.columnSpan="4"/>
 
     </children>
 
     <columnConstraints>
-        <ColumnConstraints percentWidth="30.0"/>
+        <ColumnConstraints minWidth="280"/>
         <ColumnConstraints percentWidth="5.0"/>
-        <ColumnConstraints percentWidth="35.0"/>
-        <ColumnConstraints percentWidth="35.0"/>
+        <ColumnConstraints prefWidth="1000"/>
+        <ColumnConstraints prefWidth="1000"/>
     </columnConstraints>
     <rowConstraints>
+        <RowConstraints percentHeight="55"/>
         <RowConstraints percentHeight="2"/>
-        <RowConstraints percentHeight="40"/>
-        <RowConstraints percentHeight="0"/>
-        <RowConstraints percentHeight="54"/>
+        <RowConstraints percentHeight="43"/>
     </rowConstraints>
 
     <padding>

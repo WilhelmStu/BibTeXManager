@@ -5,9 +5,12 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.wst.model.TableEntry;
 
 import java.io.*;
 import java.util.*;
@@ -35,6 +38,7 @@ public class FileManager {
     private String fileAsString;
 
     /**
+     * TODO: improve the way duplicate filenames are handled!
      * Button is disabled during processing
      * Will prompt the user to choose a directory, with possible .bib files
      * If a directory has already been chosen, the same directory will be opened
@@ -48,9 +52,9 @@ public class FileManager {
      */
     public void selectDirectory(ActionEvent actionEvent, ListView<String> view) {
         Button b = (Button) actionEvent.getSource();
-        String oldText = b.getText();
+        String id = b.getId();
         b.setDisable(true);
-        b.setText("Searching for bib files..");
+        b.setId("searchButton");
 
         DirectoryChooser chooser = new DirectoryChooser();
 
@@ -67,7 +71,7 @@ public class FileManager {
                 filesInsideRoot = t.getValue();
                 for (File f : filesInsideRoot
                 ) {
-                    fileNames.add(f.getName());
+                    fileNames.add(f.getParentFile().getName() + File.separator + f.getName());
                 }
 
                 Collections.sort(fileNames);
@@ -76,14 +80,14 @@ public class FileManager {
                 view.setItems(FXCollections.observableArrayList(fileNames));
 
                 b.setDisable(false);
-                b.setText(oldText);
+                b.setId(id);
 
             });
             Thread th = new Thread(t);
             th.start();
         } else {
             b.setDisable(false);
-            b.setText(oldText);
+            b.setId(id);
         }
     }
 
@@ -140,9 +144,9 @@ public class FileManager {
      */
     public void selectSingleFile(ActionEvent actionEvent) {
         Button b = (Button) actionEvent.getSource();
-        String oldText = b.getText();
+        String id = b.getId();
         b.setDisable(true);
-        b.setText("Selecting a bib file..");
+        b.setId("searchButton");
 
         FileChooser fileChooser = new FileChooser();
 
@@ -152,7 +156,7 @@ public class FileManager {
         fileChooser.setTitle("Select a single file");
         selectedFile = fileChooser.showOpenDialog(b.getScene().getWindow());
         b.setDisable(false);
-        b.setText(oldText);
+        b.setId(id);
     }
 
     /**
@@ -164,7 +168,7 @@ public class FileManager {
         if (filesInsideRoot == null) return;
         for (File f : filesInsideRoot
         ) {
-            if (f.getName().equals(filename)) {
+            if ((f.getParentFile().getName() + File.separator + f.getName()).equals(filename)) {
                 selectedFile = f;
             }
         }
@@ -239,12 +243,11 @@ public class FileManager {
      */
     public boolean createFile(ActionEvent actionEvent) {
         Button b = (Button) actionEvent.getSource();
-        String oldText = b.getText();
+        String id = b.getId();
         b.setDisable(true);
-        b.setText("Creating a new bib file");
+        b.setId("searchButton");
 
         FileChooser fileChooser = new FileChooser();
-
         if (selectedFile != null) {
             fileChooser.setInitialDirectory(selectedFile.getParentFile());
         }
@@ -254,7 +257,7 @@ public class FileManager {
 
         File tmp = fileChooser.showSaveDialog(b.getScene().getWindow());
         b.setDisable(false);
-        b.setText(oldText);
+        b.setId(id);
         if (tmp != null) {
             selectedFile = tmp;
 
@@ -275,21 +278,21 @@ public class FileManager {
 
     /**
      * Will read the selected file and check block wise if there is a bib entry. If there
-     * is an entry it will be added to the bibMap for later use and after that
-     * add valid entries heads in the form "TYPE, keyword" to the list, or an
-     * appropriate message if none have been found | an error occurred
+     * is an entry it will be added to the bibMap for later use.
+     * The complete File will be saved as String, in order to rewrite it later.
+     * This Method will fill the table with the data from the file
      * <p>
-     * Duplicates (same entry keyword) will only occur a single time in map!
+     * Duplicates (same entry keyword) will only occur a single time in the map!
      * Synchronized to prevent bugs from quickly loading various large files
      */
-    public synchronized void populateBibList(ListView<String> view) {
-        Task<ObservableList<String>> task = new Task<>() {
+    public synchronized void readFileIntoTable(TableView<TableEntry> view) {
+        Task<ObservableList<TableEntry>> task = new Task<>() {
             @Override
-            protected ObservableList<String> call() throws Exception {
-                ObservableList<String> entries = FXCollections.observableArrayList();
+            protected ObservableList<TableEntry> call() throws Exception {
+                ObservableList<TableEntry> entries = FXCollections.observableArrayList();
                 bibMap = new TreeMap<>();
                 if (selectedFile == null) {
-                    entries.add("Can't find selected File!");
+                    entries.add(new TableEntry(TableEntry.Error.FILE_NOT_FOUND));
                     return entries;
                 }
                 try {
@@ -315,10 +318,11 @@ public class FileManager {
                             }
                             // if entry is valid and not in map add it
                             if (!(entry = FormatChecker.basicBibTeXCheck(bibBuilder.toString())).equals("invalid")) {
-                                String keyword = FormatChecker.getBibEntryKeyword(entry);
-                                if (keyword != null) {
-                                    bibMap.put(keyword, entry);
-                                    entries.add(keyword);
+
+                                TableEntry tableEntry = FormatChecker.getBibTableEntry(entry);
+                                if (tableEntry != null) {
+                                    bibMap.put(tableEntry.getKeyword(), entry);
+                                    entries.add(tableEntry);
                                     bibBuilder.setLength(0);
                                     bibBuilder.append(line).append("\r\n");
                                 }
@@ -331,20 +335,38 @@ public class FileManager {
                 } catch (IOException e) {
                     System.err.println("Error reading from file!");
                     e.printStackTrace();
-                    entries.add("Error reading from file!");
+                    entries.add(new TableEntry(TableEntry.Error.FILE_READ_ERROR));
                 }
 
-                Collections.sort(entries);
                 if (entries.size() == 0) {
-                    entries.add("No entries found!");
+                    entries.add(new TableEntry(TableEntry.Error.NO_ENTRIES_FOUND));
                 }
                 return entries;
             }
         };
-        task.setOnSucceeded(list -> view.setItems(task.getValue()));
+        task.setOnSucceeded(list -> {
+            ObservableList<TableEntry> result = task.getValue();
+            switch (result.get(0).getError()) {
+                case NO_ENTRIES_FOUND:
+                    view.getItems().clear();
+                    view.setPlaceholder(new Label("No entries inside selected file!"));
+                    break;
+                case FILE_NOT_FOUND:
+                    view.getItems().clear();
+                    view.setPlaceholder(new Label("File could not be found!"));
+                    break;
+                case FILE_READ_ERROR:
+                    view.getItems().clear();
+                    view.setPlaceholder(new Label("Error while reading the file!"));
+                    break;
+                case NONE:
+                    view.setItems(result);
+            }
+        });
 
         Thread th = new Thread(task);
         th.start();
+
     }
 
     /**
@@ -354,11 +376,11 @@ public class FileManager {
      * @param selectedItem item selected from bibList
      * @return selected Bib-Entry
      */
-    public String getBibEntry(String selectedItem) {
+    public String getBibEntry(TableEntry selectedItem) {
         if (bibMap.isEmpty()) {
             return "Cant edit empty file!";
         } else {
-            String entry = bibMap.get(selectedItem);
+            String entry = bibMap.get(selectedItem.getKeyword());
             if (entry == null) {
                 return "Error could not find selected entry!";
             }

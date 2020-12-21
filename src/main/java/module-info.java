@@ -4,4 +4,6 @@ module org.wst {
 
     opens org.wst;
     exports org.wst;
+
+    opens org.wst.model;
 }

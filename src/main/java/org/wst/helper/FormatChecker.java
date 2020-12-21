@@ -1,6 +1,8 @@
 package org.wst.helper;
 
 
+import org.wst.model.TableEntry;
+
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,7 +52,8 @@ public abstract class FormatChecker {
     }
 
     // https://www.logicbig.com/tutorials/core-java-tutorial/java-regular-expressions/regex-lookahead.html
-    // todo add config for this!
+    // todo add config for this!,
+    // todo check if for example title = "asda, sd = asd" will cause problems
 
     /**
      * Will take a valid bib entry and replace the "" for each value after an tag
@@ -58,23 +61,31 @@ public abstract class FormatChecker {
      * but e.g.: year = 2002 wont be changed, but year = "2002" will get year = {2002}
      * and e.g.: title = "{}" will become {{}}
      * <p>
-     * Note: this might remove a single ',' if it is the last value of an entry (very unlikely)
+     * Note: this might remove a single ',' if it is the last value of an entry... todo fix this
      *
      * @param entry valid bib entry
      * @return same as input but "" -> {}
      */
     public static String replaceQuotationMarks(String entry) {
         String[] lines = entry.split("([,])(?=\\s*\\w+\\s*[=])");
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(); // todo error with last line replacement
+        boolean hadCommaAtEnd = false;
 
+        if(lines.length < 2 ) return entry;
         builder.append(lines[0]).append(",");
         for (int i = 1; i < lines.length; i++) {
-            String s = lines[i];
-            String[] tagAndValue = s.split("(?<==)", 2);
+            String[] tagAndValue = lines[i].split("(?<==)", 2);
             if (i == lines.length - 1) {
-                tagAndValue[1] = tagAndValue[1].substring(0, tagAndValue[1].length() - 1).trim();
-                if (tagAndValue[1].lastIndexOf(",") == tagAndValue[1].length() - 1) {
-                    tagAndValue[1] = tagAndValue[1].substring(0, tagAndValue[1].length() - 1);
+                String tmp = tagAndValue[1].trim();
+                tmp = tmp.substring(0, tmp.length() - 1).trim();
+                tagAndValue[1] = tmp;
+
+                if (tmp.lastIndexOf(",") == tmp.length() - 1) {
+                    tmp = tmp.substring(0, tmp.length() - 1).trim();
+                    if (tmp.endsWith("\"") || tmp.endsWith("}")) {
+                        hadCommaAtEnd = true;
+                        tagAndValue[1] = tmp;
+                    }
                 }
             }
             char[] value = tagAndValue[1].trim().toCharArray();
@@ -84,13 +95,11 @@ public abstract class FormatChecker {
             }
             builder.append("\r\n").append(tagAndValue[0].trim()).append(" ").append(value).append(",");
         }
-        builder.setLength(builder.length() - 1);
-        builder.append("\r\n");
+        if (!hadCommaAtEnd) builder.setLength(builder.length() - 1);
+        builder.append("\r\n}");
 
         return builder.toString();
     }
-
-    // todo add arrangement to config
 
     /**
      * Will return the first BibEntry-Keyword in a given string or "invalid" if none is found
@@ -111,5 +120,39 @@ public abstract class FormatChecker {
             }
         }
         return null;
+    }
+
+    public static TableEntry getBibTableEntry(String entry) {
+        String keyword = getBibEntryKeyword(entry);
+        if (keyword != null) {
+            String type = entry.substring(entry.indexOf("@") + 1, entry.indexOf("{")).trim().toUpperCase();
+            String[] lines = entry.split("([,])(?=\\s*\\w+\\s*[=])");
+            String author = "none", title = "none", year = "none";
+
+            for (int i = 1; i < lines.length; i++) {
+                String[] tagAndValue = lines[i].split("=", 2);
+                switch (tagAndValue[0].toUpperCase().trim()) {
+                    case "AUTHOR":
+                        author = removeClosure(tagAndValue[1]);
+                        break;
+                    case "TITLE":
+                        title = removeClosure(tagAndValue[1]);
+                        break;
+                    case "YEAR":
+                        year = tagAndValue[1].trim().replaceAll("[\n\r]*(\\s+)", " ")
+                                .replaceAll("[\"{},]", "").trim();
+                }
+            }
+            return new TableEntry(keyword, type, title, author, year);
+        } else return null;
+    }
+
+    private static String removeClosure(String str) {
+        str = str.trim().replaceAll("[\n\r]*(\\s+)", " ");
+        while ((str.startsWith("{") && str.endsWith("}")) ||
+                (str.startsWith("\"") && str.endsWith("\""))) {
+            str = str.substring(1, str.length() - 1);
+        }
+        return str.trim();
     }
 }

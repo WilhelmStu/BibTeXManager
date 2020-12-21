@@ -1,18 +1,18 @@
 package org.wst;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.wst.helper.ClipboardService;
 import org.wst.helper.FileManager;
 import org.wst.helper.FormatChecker;
+import org.wst.model.TableEntry;
 
 public class PrimaryController {
 
@@ -30,9 +30,12 @@ public class PrimaryController {
     private Label selectedFile;
     @FXML
     private Label secondList;
-
+    @FXML
+    private TableView<TableEntry> bibTable;
+    @FXML
     private ListView<String> fileList;
-    private ListView<String> bibList;
+    @FXML
+    private HBox buttonBox;
 
     private final FileManager fileManager = FileManager.getInstance();
 
@@ -46,7 +49,7 @@ public class PrimaryController {
      */
     @FXML
     public void initialize() {
-        initListViews();
+        initListAndTable();
         initClipboardService();
     }
 
@@ -77,28 +80,50 @@ public class PrimaryController {
                 } else {
                     inputArea.setText("Not a valid BibTeX entry!");
                 }
-
-                /* maybe used later
-                Window st = textArea1.getScene().getWindow();
-                st.requestFocus();
-                 */
             }
         });
         service.start();
     }
 
+    // todo config for more data in table
+
     /**
      * Creates both ListViews of the App and inserts them at the appropriate places in the UI
      */
     @FXML
-    private void initListViews() {
+    private void initListAndTable() {
         //ObservableList<String> fileNames = FXCollections.observableArrayList("No root selected");
-        fileList = new ListView<>();
 
-        bibList = new ListView<>();
+        TableColumn<TableEntry, String> keyColumn = new TableColumn<>("Key");
+        keyColumn.setCellValueFactory(new PropertyValueFactory<>("keyword"));
 
-        colWithListView.getChildren().add(fileList);
-        colWithSecondListView.getChildren().add(1, bibList);
+        TableColumn<TableEntry, String> authorColumn = new TableColumn<>("Author/s");
+        authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
+
+        TableColumn<TableEntry, String> titleColumn = new TableColumn<>("Title");
+        titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        TableColumn<TableEntry, String> yearColumn = new TableColumn<>("Year");
+        yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
+
+        bibTable.getColumns().add(keyColumn);
+        bibTable.getColumns().add(authorColumn);
+        bibTable.getColumns().add(titleColumn);
+        bibTable.getColumns().add(yearColumn);
+        bibTable.setPlaceholder(new Label("No Data to display yet!"));
+
+        bibTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        /* maybe used later
+        keyColumn.prefWidthProperty().bind(bibTable.widthProperty().multiply(0.2));
+        authorColumn.prefWidthProperty().bind(bibTable.widthProperty().multiply(0.35));
+        titleColumn.prefWidthProperty().bind(bibTable.widthProperty().multiply(0.35));
+        yearColumn.prefWidthProperty().bind(bibTable.widthProperty().multiply(0.1));
+         */
+
+        yearColumn.setMinWidth(60);
+        yearColumn.setMaxWidth(60);
+        yearColumn.setResizable(false);
 
     }
 
@@ -134,7 +159,7 @@ public class PrimaryController {
     private void selectSingleFile(ActionEvent actionEvent) {
         fileManager.selectSingleFile(actionEvent);
         setSelectedFileLabel();
-        fileManager.populateBibList(bibList);
+        fileManager.readFileIntoTable(bibTable);
     }
 
     /**
@@ -147,8 +172,7 @@ public class PrimaryController {
     private void createFile(ActionEvent actionEvent) {
         if (fileManager.createFile(actionEvent)) {
             setSelectedFileLabel();
-
-            fileManager.populateBibList(bibList);
+            fileManager.readFileIntoTable(bibTable);
         }
     }
 
@@ -162,7 +186,7 @@ public class PrimaryController {
     private void selectFileFromList(ActionEvent actionEvent) {
         fileManager.selectFileFromList(fileList.getSelectionModel().getSelectedItem());
         setSelectedFileLabel();
-        fileManager.populateBibList(bibList);
+        fileManager.readFileIntoTable(bibTable);
     }
 
     /**
@@ -195,12 +219,22 @@ public class PrimaryController {
 
         } else {
             fileManager.writeToFile(entry);
-            ObservableList<String> entries = bibList.getItems();
+            ObservableList<TableEntry> entries = bibTable.getItems();
             String keyword = FormatChecker.getBibEntryKeyword(entry);
             if (keyword != null) {
-                if (!entries.contains(keyword)) entries.add(keyword);
+                boolean isAlreadyInFile = false;
+                for (int i = 0; i < entries.size(); i++) {
+                    if (entries.get(i).getKeyword().equals(keyword)) {
+                        entries.set(i, FormatChecker.getBibTableEntry(entry));
+                        isAlreadyInFile = true;
+                        break;
+                    }
+                }
+                if (!isAlreadyInFile) {
+                    entries.add(FormatChecker.getBibTableEntry(entry));
+                }
+
             }
-            Collections.sort(entries);
             inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
         }
     }
@@ -223,9 +257,9 @@ public class PrimaryController {
      * @param actionEvent click button
      */
     public void selectEntry(ActionEvent actionEvent) {
-        if (fileManager.isFileSelected() && bibList.getSelectionModel().getSelectedItem() != null) {
+        if (fileManager.isFileSelected() && bibTable.getSelectionModel().getSelectedItem() != null) {
             inputArea.setText(FormatChecker.replaceQuotationMarks(
-                    fileManager.getBibEntry(bibList.getSelectionModel().getSelectedItem())));
+                    fileManager.getBibEntry(bibTable.getSelectionModel().getSelectedItem())));
         } else {
             throwAlert("Select a file first!");
         }
