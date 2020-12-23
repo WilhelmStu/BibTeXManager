@@ -119,3 +119,7 @@
 #openInBrowser{
     -fx-background-image: url('icon/browse.png');
 }
+
+.tooltip{
+    -fx-show-delay:300ms;
+}

@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import org.wst.helper.ClipboardService;
 import org.wst.helper.FileManager;
@@ -20,15 +21,12 @@ public class PrimaryController {
     @FXML
     private TextArea inputArea; // replace with textFlow?
     @FXML
-    private Label rootDirectory;
-    @FXML
-    private Label selectedFile;
-    @FXML
-    private Label secondList;
+    private Label rootDirectory, selectedFile, secondList;
     @FXML
     private TableView<TableEntry> bibTable;
     @FXML
     private ListView<String> fileList;
+
 
     private final FileManager fileManager = FileManager.getInstance();
 
@@ -87,17 +85,38 @@ public class PrimaryController {
     private void initListAndTable() {
         //ObservableList<String> fileNames = FXCollections.observableArrayList("No root selected");
 
+        // this is the callback that is used to create single cells, including a tooltip that shows the complete cell value
+        Callback<TableColumn<TableEntry, String>, TableCell<TableEntry, String>> cell = new Callback<>() {
+            @Override
+            public TableCell<TableEntry, String> call(TableColumn<TableEntry, String> tableEntryStringTableColumn) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(item);
+                        Tooltip tip = new Tooltip(item);
+                        tip.setShowDelay(new Duration(300));
+                        setTooltip(tip);
+                    }
+                };
+            }
+        };
+
         TableColumn<TableEntry, String> keyColumn = new TableColumn<>("Key");
         keyColumn.setCellValueFactory(new PropertyValueFactory<>("keyword"));
+        keyColumn.setCellFactory(cell);
 
         TableColumn<TableEntry, String> authorColumn = new TableColumn<>("Author/s");
         authorColumn.setCellValueFactory(new PropertyValueFactory<>("author"));
+        authorColumn.setCellFactory(cell);
 
         TableColumn<TableEntry, String> titleColumn = new TableColumn<>("Title");
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+        titleColumn.setCellFactory(cell);
 
         TableColumn<TableEntry, String> yearColumn = new TableColumn<>("Year");
         yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
+        yearColumn.setCellFactory(cell);
 
         bibTable.getColumns().add(keyColumn);
         bibTable.getColumns().add(authorColumn);
