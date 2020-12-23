@@ -90,8 +90,8 @@
         </Button>
 
         <HBox fx:id="buttonBox2" GridPane.rowIndex="1" GridPane.columnIndex="3"
-              GridPane.valignment="BOTTOM" spacing="10" >
-            <Button fx:id="selectEntry" onAction="#selectEntry" >
+              GridPane.valignment="BOTTOM" spacing="10">
+            <Button fx:id="selectEntry" onAction="#selectEntry">
                 <tooltip>
                     <Tooltip text="Edit selected entry"/>
                 </tooltip>
@@ -104,6 +104,11 @@
             <Button fx:id="openInBrowser" onAction="#openInBrowser">
                 <tooltip>
                     <Tooltip text="Open entries in browser"/>
+                </tooltip>
+            </Button>
+            <Button fx:id="replaceValueClosures" onAction="#replaceValueClosures">
+                <tooltip>
+                    <Tooltip text='Replace ALL [tag = "x"] with [tag = {x}]'/>
                 </tooltip>
             </Button>
         </HBox>

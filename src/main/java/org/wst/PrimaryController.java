@@ -359,4 +359,20 @@ public class PrimaryController {
             }
         }
     }
+
+    public void replaceValueClosures(ActionEvent actionEvent) {
+        if (!fileManager.isFileSelected()) {
+            throwAlert("Cant replace anything", "Select a file first!");
+            return;
+        }
+        String msg = "Do you really want to replace all outer \" \" in this file with { }?";
+        Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.YES, ButtonType.CANCEL);
+        alert.setTitle("Replacement confirmation");
+        alert.getDialogPane().getScene().getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                fileManager.replaceValueClosures();
+            }
+        });
+    }
 }

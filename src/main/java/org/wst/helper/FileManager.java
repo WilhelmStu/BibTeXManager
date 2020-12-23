@@ -242,32 +242,40 @@ public class FileManager {
      * @param keywords entry keyword to delete
      */
     public void deleteEntriesFromFile(List<String> keywords) {
-        synchronized (lock) {
-            try {
-                for (String key : keywords
-                ) {
-                    if (bibMap.containsKey(key)) {
-                        String toReplace = bibMap.get(key);
-                        if (fileAsString.contains("\r\n" + toReplace)) {
-                            fileAsString = fileAsString.replace("\r\n" + toReplace, "");
-                        } else {
-                            fileAsString = fileAsString.replace(toReplace, "");
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                synchronized (lock) {
+                    try {
+                        for (String key : keywords
+                        ) {
+                            if (bibMap.containsKey(key)) {
+                                String toReplace = bibMap.get(key);
+                                if (fileAsString.contains("\r\n" + toReplace)) {
+                                    fileAsString = fileAsString.replace("\r\n" + toReplace, "");
+                                } else {
+                                    fileAsString = fileAsString.replace(toReplace, "");
+                                }
+                                bibMap.remove(key);
+                            } else {
+                                System.err.println("Cant delete entry: '" + key + "' its not in the file");
+                            }
                         }
-                        bibMap.remove(key);
-                    } else {
-                        System.err.println("Cant delete entry: '" + key + "' its not in the file");
-                    }
-                }
-                BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
-                writer.write(fileAsString.trim() + "\r\n");
-                writer.flush();
-                writer.close();
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
+                        writer.write(fileAsString.trim() + "\r\n");
+                        writer.flush();
+                        writer.close();
 
-            } catch (IOException e) {
-                System.err.println("Error writing to file");
-                e.printStackTrace();
+                    } catch (IOException e) {
+                        System.err.println("Error writing to file");
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
             }
-        }
+        };
+        Thread th = new Thread(task);
+        th.start();
     }
 
 
@@ -429,4 +437,36 @@ public class FileManager {
             return FormatChecker.basicBibTeXCheck(entry);
         }
     }
+
+    public void replaceValueClosures() {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                synchronized (lock) {
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
+
+                        for (Map.Entry<String, String> entry : bibMap.entrySet()
+                        ) {
+                            String oldEntry = entry.getValue();
+                            String newValue = FormatChecker.replaceQuotationMarks(oldEntry) + "\r\n";
+                            fileAsString = fileAsString.replace(oldEntry, newValue);
+                            bibMap.put(entry.getKey(), newValue);
+                        }
+                        writer.write(fileAsString.trim() + "\r\n");
+                        writer.flush();
+                        writer.close();
+
+                    } catch (IOException e) {
+                        System.err.println("Error writing to file");
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+            }
+        };
+        Thread th = new Thread(task);
+        th.start();
+    }
+
 }

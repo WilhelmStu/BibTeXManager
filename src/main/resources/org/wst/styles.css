@@ -62,7 +62,7 @@
     -fx-font-size: 14px;
 }
 
-#buttonBox .button{
+#buttonBox .button {
     -fx-padding: 0;
     -fx-min-height: 60px;
     -fx-pref-width: 60px;
@@ -76,9 +76,10 @@
     -fx-background-image: url('icon/dir.png');
 }
 
-#searchButton{
+#searchButton {
     -fx-background-image: url('icon/search.png');
 }
+
 #selectSingleFileButton {
     -fx-background-image: url('icon/file.png');
 }
@@ -96,30 +97,34 @@
     -fx-background-position: center;
 }
 
-#insertButton{
+#insertButton {
     -fx-background-image: url('icon/insert2.png');
 }
 
-#selectEntry{
+#selectEntry {
     -fx-background-image: url('icon/edit2.png');
 }
 
-#selectFile{
+#selectFile {
     -fx-background-image: url('icon/arrow_r.png');
     -fx-min-height: 40px;
     -fx-pref-width: 40px;
     -fx-background-size: 30px;
 }
 
-#deleteEntry{
+#deleteEntry {
     -fx-background-image: url('icon/delete.png');
 }
 
 
-#openInBrowser{
+#openInBrowser {
     -fx-background-image: url('icon/browse.png');
 }
 
-.tooltip{
-    -fx-show-delay:300ms;
+#replaceValueClosures {
+    -fx-background-image: url('icon/replace.png');
+}
+
+.tooltip {
+    -fx-show-delay: 300ms;
 }
