@@ -60,18 +60,16 @@ public abstract class FormatChecker {
      * e.g.: title = "this is a title" -> title = {this is a title}
      * but e.g.: year = 2002 wont be changed, but year = "2002" will get year = {2002}
      * and e.g.: title = "{}" will become {{}}
-     * <p>
-     * Note: this might remove a single ',' if it is the last value of an entry... todo fix this
      *
      * @param entry valid bib entry
      * @return same as input but "" -> {}
      */
     public static String replaceQuotationMarks(String entry) {
         String[] lines = entry.split("([,])(?=\\s*\\w+\\s*[=])");
-        StringBuilder builder = new StringBuilder(); // todo error with last line replacement
+        StringBuilder builder = new StringBuilder();
         boolean hadCommaAtEnd = false;
 
-        if(lines.length < 2 ) return entry;
+        if (lines.length < 2) return entry;
         builder.append(lines[0]).append(",");
         for (int i = 1; i < lines.length; i++) {
             String[] tagAndValue = lines[i].split("(?<==)", 2);
@@ -93,7 +91,7 @@ public abstract class FormatChecker {
                 value[0] = '{';
                 value[value.length - 1] = '}';
             }
-            builder.append("\r\n").append(tagAndValue[0].trim()).append(" ").append(value).append(",");
+            builder.append("\r\n    ").append(tagAndValue[0].trim()).append(" ").append(value).append(",");
         }
         if (!hadCommaAtEnd) builder.setLength(builder.length() - 1);
         builder.append("\r\n}");
@@ -127,7 +125,7 @@ public abstract class FormatChecker {
         if (keyword != null) {
             String type = entry.substring(entry.indexOf("@") + 1, entry.indexOf("{")).trim().toUpperCase();
             String[] lines = entry.split("([,])(?=\\s*\\w+\\s*[=])");
-            String author = "none", title = "none", year = "none";
+            String author = "none", title = "none", year = "none", url = "none", doi = "none";
 
             for (int i = 1; i < lines.length; i++) {
                 String[] tagAndValue = lines[i].split("=", 2);
@@ -141,9 +139,15 @@ public abstract class FormatChecker {
                     case "YEAR":
                         year = tagAndValue[1].trim().replaceAll("[\n\r]*(\\s+)", " ")
                                 .replaceAll("[\"{},]", "").trim();
+                        break;
+                    case "URL":
+                        url = removeClosure(tagAndValue[1]);
+                        break;
+                    case "DOI":
+                        doi = removeClosure(tagAndValue[1]);
                 }
             }
-            return new TableEntry(keyword, type, title, author, year);
+            return new TableEntry(keyword, type, title, author, year, url, doi);
         } else return null;
     }
 

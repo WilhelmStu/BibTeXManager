@@ -6,27 +6,32 @@ public class TableEntry {
     private String title;
     private String author;
     private String year;
+    private String url;
+    private String doi;
 
-    public enum  Error {
+    public enum Error {
         NONE,
         FILE_NOT_FOUND,
         FILE_READ_ERROR,
         NO_ENTRIES_FOUND
 
     }
-   Error error = Error.NONE;
+
+    Error error = Error.NONE;
 
 
     public TableEntry(Error error) {
         this.error = error;
     }
 
-    public TableEntry(String keyword, String type, String title, String author, String year) {
+    public TableEntry(String keyword, String type, String title, String author, String year, String url, String doi) {
         this.keyword = keyword;
         this.type = type;
         this.title = title;
         this.author = author;
         this.year = year;
+        this.url = url;
+        this.doi = doi;
     }
 
     public TableEntry(String keyword, String title, String author, String year) {
@@ -78,5 +83,21 @@ public class TableEntry {
 
     public Error getError() {
         return error;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getDoi() {
+        return doi;
+    }
+
+    public void setDoi(String doi) {
+        this.doi = doi;
     }
 }

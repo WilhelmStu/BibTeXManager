@@ -1,13 +1,14 @@
 package org.wst;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import javafx.application.HostServices;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.wst.helper.ClipboardService;
 import org.wst.helper.FileManager;
@@ -19,12 +20,6 @@ public class PrimaryController {
     @FXML
     private TextArea inputArea; // replace with textFlow?
     @FXML
-    private VBox colWithListView;
-    @FXML
-    private VBox colWithSecondListView;
-    @FXML
-    private GridPane gridPane;
-    @FXML
     private Label rootDirectory;
     @FXML
     private Label selectedFile;
@@ -34,8 +29,6 @@ public class PrimaryController {
     private TableView<TableEntry> bibTable;
     @FXML
     private ListView<String> fileList;
-    @FXML
-    private HBox buttonBox;
 
     private final FileManager fileManager = FileManager.getInstance();
 
@@ -113,6 +106,7 @@ public class PrimaryController {
         bibTable.setPlaceholder(new Label("No Data to display yet!"));
 
         bibTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        bibTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         /* maybe used later
         keyColumn.prefWidthProperty().bind(bibTable.widthProperty().multiply(0.2));
@@ -130,7 +124,7 @@ public class PrimaryController {
     /**
      * Currently unused, might be needed later for a second scene
      *
-     * @throws IOException
+     * @throws IOException .
      */
     @FXML
     private void switchToSecondary() throws IOException {
@@ -212,10 +206,10 @@ public class PrimaryController {
         String entry = FormatChecker.basicBibTeXCheck(inputArea.getText());
 
         if (entry.equals("invalid")) {
-            throwAlert("Not a valid bib entry!");
+            throwAlert("Entry not inserted!", "Not a valid bib entry!");
 
         } else if (!fileManager.isFileSelected()) {
-            throwAlert("Select a file first!");
+            throwAlert("Entry not inserted!", "Select a file first!");
 
         } else {
             fileManager.writeToFile(entry);
@@ -244,9 +238,9 @@ public class PrimaryController {
      *
      * @param msg msg to display inside the alert box
      */
-    private void throwAlert(String msg) {
+    private void throwAlert(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
-        alert.setTitle("Entry not inserted!");
+        alert.setTitle(title);
         alert.getDialogPane().getScene().getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
         alert.show();
     }
@@ -261,7 +255,89 @@ public class PrimaryController {
             inputArea.setText(FormatChecker.replaceQuotationMarks(
                     fileManager.getBibEntry(bibTable.getSelectionModel().getSelectedItem())));
         } else {
-            throwAlert("Select a file first!");
+            throwAlert("File/s not deleted!", "Select a file first!");
+        }
+    }
+
+    /**
+     * Will delete all entries, that are selected in the table, from the file
+     * User will be asked if he is sure to delete x amount of entries in alert dialog
+     *
+     * @param actionEvent click button
+     */
+    public void deleteEntry(ActionEvent actionEvent) {
+        if (!fileManager.isFileSelected()) {
+            throwAlert("File/s not deleted!", "Select a file first!");
+            return;
+        }
+
+        ObservableList<TableEntry> selectedItems = bibTable.getSelectionModel().getSelectedItems();
+        if (selectedItems.size() < 1) {
+            throwAlert("File/s not deleted!", "Nothing selected!");
+            return;
+        }
+
+        String msg = selectedItems.size() == 1 ? "Delete 1 entry from the list?" :
+                "Delete " + selectedItems.size() + " entries from the list?";
+
+        Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.YES, ButtonType.CANCEL);
+        alert.setTitle("Delete confirmation");
+        alert.getDialogPane().getScene().getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.YES) {
+                ObservableList<TableEntry> items = bibTable.getSelectionModel().getSelectedItems();
+                if (items != null && items.size() > 0) {
+                    ArrayList<String> keywords = new ArrayList<>();
+                    for (TableEntry e : items) {
+                        keywords.add(e.getKeyword());
+                    }
+                    bibTable.getItems().removeAll(items);
+                    fileManager.deleteEntriesFromFile(keywords); // todo dialog to ask for removal with # of items
+                } else {
+                    throwAlert("File/s not deleted!", "Nothing selected!");
+                }
+            }
+        });
+    }
+
+    /**
+     * Will open the selected Entries in the browser based on their URL, if
+     * no URL is found based on their DOI nad if that is also not found based on
+     * a search of title + author.
+     * A search engine needs to be specified when there is no clear URL.
+     * If none is found throw an alert
+     *
+     * @param actionEvent button press
+     */
+    public void openInBrowser(ActionEvent actionEvent) {
+        if (!fileManager.isFileSelected()) {
+            throwAlert("Cant open in browser", "Select a file first!");
+            return;
+        }
+
+        ObservableList<TableEntry> selectedItems = bibTable.getSelectionModel().getSelectedItems();
+        if (selectedItems.size() < 1) {
+            throwAlert("Cant open in browser", "Select an entry first!");
+            return;
+        }
+
+        HostServices service = App.getInstance().getHostServices();
+
+        for (TableEntry entry : selectedItems
+        ) {
+            if (!entry.getUrl().equals("none") && entry.getUrl().length() > 2) {
+                service.showDocument(entry.getUrl());
+
+            } else if (!entry.getDoi().equals("none") && entry.getDoi().length() > 2) {
+                service.showDocument("https://doi.org/" + entry.getDoi());
+
+            } else if (!entry.getTitle().equals("none") && !entry.getAuthor().equals("none")) { //todo add config for search engine!
+                service.showDocument("https://duckduckgo.com/?q=" + entry.getTitle() + ", " + entry.getAuthor());
+                //service.showDocument("https://www.google.at/search?q=" + entry.getTitle() + ", " + entry.getAuthor());
+
+            } else {
+                throwAlert("Cant open in browser", "Not enough information to search!");
+            }
         }
     }
 }

@@ -87,7 +87,7 @@
     -fx-background-image: url('icon/create.png');
 }
 
-#insertButton, #selectEntry, #selectFile {
+#insertButton, #selectFile, #buttonBox2 .button {
     -fx-padding: 0;
     -fx-min-height: 50px;
     -fx-pref-width: 50px;
@@ -109,4 +109,13 @@
     -fx-min-height: 40px;
     -fx-pref-width: 40px;
     -fx-background-size: 30px;
+}
+
+#deleteEntry{
+    -fx-background-image: url('icon/delete.png');
+}
+
+
+#openInBrowser{
+    -fx-background-image: url('icon/browse.png');
 }

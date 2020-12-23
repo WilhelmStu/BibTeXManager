@@ -36,6 +36,7 @@ public class FileManager {
     private File selectedFile;
     private Map<String, String> bibMap;
     private String fileAsString;
+    private final Object lock = new Object();
 
     /**
      * TODO: improve the way duplicate filenames are handled!
@@ -187,45 +188,86 @@ public class FileManager {
 
     /**
      * Will write the given bib-entry into the selected file, validity should be checked before calling this function
-     * If an entry with a given keyword is already in the file it will replace the on in the file and the map
-     * Synchronized, only one thread my write to a file at a time/ prevent any possible exceptions
+     * If an entry with a given keyword is already in the file it will replace the one in the file and the map
+     * Synchronized on lock object, only one thread may write to a file change the file-String at a time
+     * -> prevent any possible exceptions
+     * Will remove any empty lines at the start and end of the file
      *
      * @param str bib entry to write
      */
-    public synchronized void writeToFile(String str) {
+    public void writeToFile(String str) {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
-                try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), true));
+                synchronized (lock) {
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), true));
 
-                    String keyword = FormatChecker.getBibEntryKeyword(str);
-                    if (keyword == null) {
-                        System.err.println("Cant insert invalid bib entry!");
-                    } else if (bibMap.containsKey(keyword)) { // entry already in file, overwrite whole file, including new entry
-                        String toReplace = bibMap.get(keyword);
-                        fileAsString = fileAsString.replace(toReplace, str);
-                        bibMap.put(keyword, str);
-                        writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
-                        writer.write(fileAsString);
+                        String keyword = FormatChecker.getBibEntryKeyword(str);
+                        if (keyword == null) {
+                            System.err.println("Cant insert invalid bib entry!");
+                        } else if (bibMap.containsKey(keyword)) { // entry already in file, overwrite whole file, including new entry
+                            String toReplace = bibMap.get(keyword);
+                            fileAsString = fileAsString.replace(toReplace, str).trim() + "\r\n";
+                            bibMap.put(keyword, str);
+                            writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
+                            writer.write(fileAsString);
 
-                    } else { // entry not in file append it
-                        bibMap.put(keyword, str);
-                        fileAsString += str;
-                        writer.write("\r\n");
-                        writer.write(str);
+                        } else { // entry not in file append it
+                            bibMap.put(keyword, str);
+                            fileAsString += "\r\n" + str;
+                            writer.write("\r\n");
+                            writer.write(str);
+                        }
+                        writer.flush();
+                        writer.close();
+                    } catch (IOException e) {
+                        System.err.println("Error writing to file");
+                        e.printStackTrace();
                     }
-                    writer.flush();
-                    writer.close();
-                } catch (IOException e) {
-                    System.err.println("Error writing to file");
-                    e.printStackTrace();
+                    return null;
                 }
-                return null;
             }
         };
         Thread th = new Thread(task);
         th.start();
+    }
+
+    /**
+     * This will rewrite the file without the selected Entries, deleting them this way
+     * If an entry is not part of the bibMap nothing will happen with that entry
+     * Will remove any empty lines at the start and end (except 1) of the file
+     * Will remove any double empty lines from the file
+     *
+     * @param keywords entry keyword to delete
+     */
+    public void deleteEntriesFromFile(List<String> keywords) {
+        synchronized (lock) {
+            try {
+                for (String key : keywords
+                ) {
+                    if (bibMap.containsKey(key)) {
+                        String toReplace = bibMap.get(key);
+                        if (fileAsString.contains("\r\n" + toReplace)) {
+                            fileAsString = fileAsString.replace("\r\n" + toReplace, "");
+                        } else {
+                            fileAsString = fileAsString.replace(toReplace, "");
+                        }
+                        bibMap.remove(key);
+                    } else {
+                        System.err.println("Cant delete entry: '" + key + "' its not in the file");
+                    }
+                }
+                BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
+                writer.write(fileAsString.trim() + "\r\n");
+                writer.flush();
+                writer.close();
+
+            } catch (IOException e) {
+                System.err.println("Error writing to file");
+                e.printStackTrace();
+            }
+        }
     }
 
 

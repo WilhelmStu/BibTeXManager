@@ -65,11 +65,15 @@
 
         </VBox>
 
-        <Button fx:id="insertButton"  onAction="#insertIntoFile" GridPane.rowIndex="1"
+        <Button fx:id="insertButton" onAction="#insertIntoFile" GridPane.rowIndex="1"
                 GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM"/>
 
-        <Button fx:id="selectEntry" onAction="#selectEntry" GridPane.rowIndex="1"
-                GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM"/>
+        <HBox fx:id="buttonBox2" GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER"
+              GridPane.valignment="BOTTOM" spacing="10">
+            <Button fx:id="selectEntry" onAction="#selectEntry"/>
+            <Button fx:id="deleteEntry" onAction="#deleteEntry"/>
+            <Button fx:id="openInBrowser" onAction="#openInBrowser"/>
+        </HBox>
 
         <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="2"
                   GridPane.columnSpan="4"/>
