@@ -360,6 +360,12 @@ public class PrimaryController {
         }
     }
 
+    /**
+     * Will call the function in FileManager to replace quotation marks
+     * Throws alert when no file is selected and will prompt the user to confirm the replacement
+     *
+     * @param actionEvent button press
+     */
     public void replaceValueClosures(ActionEvent actionEvent) {
         if (!fileManager.isFileSelected()) {
             throwAlert("Cant replace anything", "Select a file first!");

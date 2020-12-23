@@ -238,6 +238,7 @@ public class FileManager {
      * If an entry is not part of the bibMap nothing will happen with that entry
      * Will remove any empty lines at the start and end (except 1) of the file
      * Will remove any double empty lines from the file
+     * Synchronized on lock object, only one thread may write to a file change the file-String at a time
      *
      * @param keywords entry keyword to delete
      */
@@ -438,6 +439,13 @@ public class FileManager {
         }
     }
 
+    /**
+     * This function will replace the quotation marks of every tag and value pair with curly brackets
+     * This will happen in the whole file that is currently selected
+     * e.g. [tag = "x"] will be replaced with [tag = {x}]
+     * <p>
+     * Synchronized on lock object, only one thread may write to a file change the file-String at a time
+     */
     public void replaceValueClosures() {
         Task<Void> task = new Task<>() {
             @Override
