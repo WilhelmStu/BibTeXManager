@@ -2,6 +2,7 @@ package org.wst;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.*;
 
 import javafx.application.HostServices;
 import javafx.collections.ObservableList;
@@ -15,10 +16,14 @@ import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import org.jnativehook.GlobalScreen;
+import org.jnativehook.NativeHookException;
 import org.wst.helper.ClipboardService;
 import org.wst.helper.FileManager;
 import org.wst.helper.FormatChecker;
+import org.wst.helper.ShortCutListener;
 import org.wst.model.TableEntry;
+
 
 public class PrimaryController {
 
@@ -50,9 +55,11 @@ public class PrimaryController {
      * This is called before the scene is displayed, but after the Classes Constructor
      */
     @FXML
-    public void initialize() {
+    public void initialize() throws NativeHookException {
         initListAndTable();
         initClipboardService();
+        initShortCutListener();
+
     }
 
     /**
@@ -149,6 +156,27 @@ public class PrimaryController {
         yearColumn.setMaxWidth(60);
         yearColumn.setResizable(false);
 
+    }
+
+    /**
+     * Creates a listener that detects keyboard inputs, with the help of jnativehook
+     * Detects key input of F1 to auto-press ctrl/cmd + a +c to copy a bib entry
+     */
+    private void initShortCutListener() {
+        // Get the logger for "org.jnativehook" and disable warnings
+        LogManager.getLogManager().reset();
+        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+        logger.setLevel(Level.WARNING);
+
+        // Don't forget to disable the parent handlers.
+        logger.setUseParentHandlers(false);
+
+        try {
+            GlobalScreen.registerNativeHook();
+        } catch (NativeHookException e) {
+            System.err.println("Problem registering native hook / Key hook");
+        }
+        GlobalScreen.addNativeKeyListener(new ShortCutListener());
     }
 
     /**

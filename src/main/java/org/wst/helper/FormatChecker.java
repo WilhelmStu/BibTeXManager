@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 // https://www.openoffice.org/bibliographic/bibtex-defs.html
 // https://www.verbosus.com/bibtex-style-examples.html
+// https://dl.acm.org/action/doSearch?AllField=ui&expand=all&ConceptID=118230
 public abstract class FormatChecker {
     public final static String[] types = {"article", "book", "booklet", "conference", "inbook", "incollection", "inproceedings",
             "manual", "mastersthesis", "misc", "phdthesis", "proceedings", "techreport", "unpublished"};
