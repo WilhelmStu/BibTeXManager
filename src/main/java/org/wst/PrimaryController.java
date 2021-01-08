@@ -7,8 +7,12 @@ import javafx.application.HostServices;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import org.wst.helper.ClipboardService;
@@ -18,6 +22,7 @@ import org.wst.model.TableEntry;
 
 public class PrimaryController {
 
+
     @FXML
     private TextArea inputArea; // replace with textFlow?
     @FXML
@@ -26,8 +31,14 @@ public class PrimaryController {
     private TableView<TableEntry> bibTable;
     @FXML
     private ListView<String> fileList;
+    @FXML
+    private HBox buttonBox2;
+    @FXML
+    private Button insertButton;
+    @FXML
+    private RowConstraints rowWithButtons;
 
-
+    private boolean isBelowWidth = false;
     private final FileManager fileManager = FileManager.getInstance();
 
     public PrimaryController() {
@@ -138,6 +149,65 @@ public class PrimaryController {
         yearColumn.setMaxWidth(60);
         yearColumn.setResizable(false);
 
+    }
+
+    /**
+     * TODO improve visuals of tiny window
+     * This function will add Listeners to the height and width property of the window,
+     * in order to scale elements like the buttons to smaller window sizes
+     *
+     * @param stage stage from creation of the App window
+     */
+    public void setStageAndListeners(Stage stage) {
+        final String smallStyle = "-fx-padding: 0;\n" +
+                "    -fx-min-height: 45px;\n" + // change to 40 if another button is added
+                "    -fx-pref-width: 45px;\n" +
+                "    -fx-min-width: 45px;\n" +
+                "    -fx-background-size: 35px;\n" +
+                "    -fx-background-repeat: no-repeat;\n" +
+                "    -fx-background-position: center;";
+
+        final String largeStyle = "-fx-padding: 0;\n" +
+                "    -fx-min-height: 50px;\n" +
+                "    -fx-pref-width: 50px;\n" +
+                "    -fx-background-size: 40px;\n" +
+                "    -fx-background-repeat: no-repeat;\n" +
+                "    -fx-background-position: center;";
+
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            //System.out.println("New width: " + newVal);
+
+            if (!this.isBelowWidth && newVal.doubleValue() <= 820) {
+                this.isBelowWidth = true;
+                ObservableList<Node> buttons = this.buttonBox2.getChildren();
+                for (Node node : buttons
+                ) {
+                    if (node.getClass() == Button.class) {
+                        node.setStyle(smallStyle);
+                    }
+                }
+                insertButton.setStyle(smallStyle);
+                this.rowWithButtons.setPrefHeight(15);
+                this.rowWithButtons.setMinHeight(15);
+
+            } else if (this.isBelowWidth && newVal.doubleValue() > 820) {
+                this.isBelowWidth = false;
+                ObservableList<Node> buttons = this.buttonBox2.getChildren();
+                for (Node node : buttons
+                ) {
+                    if (node.getClass() == Button.class) {
+                        node.setStyle(largeStyle);
+                    }
+                }
+                insertButton.setStyle(largeStyle);
+                this.rowWithButtons.setPrefHeight(20);
+                this.rowWithButtons.setMinHeight(20);
+            }
+        });
+
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
+            //System.out.println("New height: " + newVal);
+        });
     }
 
     /**

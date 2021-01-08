@@ -111,6 +111,11 @@
                     <Tooltip text='Replace ALL [tag = "x"] with [tag = {x}]'/>
                 </tooltip>
             </Button>
+            <!--Button fx:id="replaceValueClosuresBack" onAction="#replaceValueClosures">
+                <tooltip>
+                    <Tooltip text='Replace ALL [tag = "x"] with [tag = {x}]'/>
+                </tooltip>
+            </Button-->
         </HBox>
 
         <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="2"
@@ -126,12 +131,12 @@
     </columnConstraints>
     <rowConstraints>
         <RowConstraints percentHeight="55"/>
-        <RowConstraints percentHeight="2"/>
-        <RowConstraints percentHeight="43"/>
+        <RowConstraints fx:id="rowWithButtons" minHeight="20" prefHeight="20"/>
+        <RowConstraints percentHeight="42"/>
     </rowConstraints>
 
     <padding>
-        <Insets bottom="10.0" left="20.0" right="20.0" top="5.0"/>
+        <Insets bottom="15.0" left="15.0" right="15.0" top="5.0"/>
     </padding>
 </GridPane>
 

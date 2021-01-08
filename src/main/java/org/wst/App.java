@@ -17,6 +17,7 @@ public class App extends Application {
     private static Scene scene;
     private static Stage stage1;
     private static App instance;
+    private static PrimaryController controller;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -30,6 +31,7 @@ public class App extends Application {
         stage.setMinWidth(640);
         stage.show();
         stage1 = stage;
+        controller.setStageAndListeners(stage);
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -38,7 +40,9 @@ public class App extends Application {
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        Parent p = fxmlLoader.load();
+        controller = (PrimaryController) fxmlLoader.getController();
+        return p;
     }
 
     /**
