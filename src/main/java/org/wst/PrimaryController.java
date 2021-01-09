@@ -18,10 +18,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
-import org.wst.helper.ClipboardService;
-import org.wst.helper.FileManager;
-import org.wst.helper.FormatChecker;
-import org.wst.helper.ShortCutListener;
+import org.wst.helper.*;
 import org.wst.model.TableEntry;
 
 
@@ -55,11 +52,10 @@ public class PrimaryController {
      * This is called before the scene is displayed, but after the Classes Constructor
      */
     @FXML
-    public void initialize() throws NativeHookException {
-        initListAndTable();
+    public void initialize() {
         initClipboardService();
+        initListAndTable();
         initShortCutListener();
-
     }
 
     /**
@@ -87,7 +83,7 @@ public class PrimaryController {
                     inputArea.setText(entry);
                     App.toFront();
                 } else {
-                    inputArea.setText("Not a valid BibTeX entry!");
+                    inputArea.setText("Not a valid BibTeX entry! (from Clipboard)");
                 }
             }
         });
@@ -112,6 +108,7 @@ public class PrimaryController {
                     protected void updateItem(String item, boolean empty) {
                         super.updateItem(item, empty);
                         setText(item);
+                        if (item == null || item.equals("")) item = "none";
                         Tooltip tip = new Tooltip(item);
                         tip.setShowDelay(new Duration(300));
                         setTooltip(tip);
@@ -449,9 +446,11 @@ public class PrimaryController {
                 service.showDocument("https://doi.org/" + entry.getDoi());
 
             } else if (!entry.getTitle().equals("none") && !entry.getAuthor().equals("none")) { //todo add config for search engine!
-                service.showDocument("https://duckduckgo.com/?q=" + entry.getTitle() + ", " + entry.getAuthor());
-                //service.showDocument("https://www.google.at/search?q=" + entry.getTitle() + ", " + entry.getAuthor());
+                String engine = "https://duckduckgo.com/?q="; // or GOOGLE: https://www.google.at/search?q=
+                String query = entry.getTitle().trim() + "+" + entry.getAuthor().trim();
+                query = query.replaceAll(" ", "+").replaceAll("[\\[\\]{}|\\\\”%~#<>$–_.!*‘()]", "");
 
+                service.showDocument(engine + query);
             } else {
                 throwAlert("Cant open in browser", "Not enough information to search!");
             }

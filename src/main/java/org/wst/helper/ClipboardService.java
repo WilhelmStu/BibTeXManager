@@ -6,7 +6,11 @@ import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.input.Clipboard;
 
-
+/**
+ * This is the background service that detects changes in the system clipboard and
+ * returns if the clipboard has new content, that can be a BibTeX-Entry
+ * The clipboard is checked every 200ms
+ */
 public class ClipboardService extends ScheduledService<String> {
 
     private final Clipboard clipboard = Clipboard.getSystemClipboard();

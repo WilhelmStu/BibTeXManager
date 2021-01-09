@@ -1,6 +1,7 @@
 package org.wst;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,6 +31,11 @@ public class App extends Application {
         stage.setMinHeight(480);
         stage.setMinWidth(640);
         stage.show();
+        stage.setOnCloseRequest(t -> {
+            System.out.println("Closing app and all background Threads!");
+            Platform.exit();
+            System.exit(0);
+        });
         stage1 = stage;
         controller.setStageAndListeners(stage);
     }
@@ -41,7 +47,7 @@ public class App extends Application {
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         Parent p = fxmlLoader.load();
-        controller = (PrimaryController) fxmlLoader.getController();
+        controller = fxmlLoader.getController();
         return p;
     }
 
