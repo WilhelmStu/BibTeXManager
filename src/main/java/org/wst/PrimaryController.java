@@ -5,14 +5,16 @@ import java.util.ArrayList;
 import java.util.logging.*;
 
 import javafx.application.HostServices;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -28,7 +30,7 @@ public class PrimaryController {
     @FXML
     private TextArea inputArea; // replace with textFlow?
     @FXML
-    private Label rootDirectory, selectedFile, secondList;
+    private Label rootDirectory, secondList;
     @FXML
     private TableView<TableEntry> bibTable;
     @FXML
@@ -36,15 +38,20 @@ public class PrimaryController {
     @FXML
     private HBox buttonBox2;
     @FXML
-    private Button insertButton;
+    private VBox buttonBox3;
     @FXML
-    private RowConstraints rowWithButtons;
+    private Button insertButton, selectFile;
 
-    private boolean isBelowWidth = false;
+    private boolean isBelowSize = false;
+    private double height = 768;
+    private double width = 1024;
+    private final ObservableList<Node> buttons = FXCollections.observableArrayList();
+    private Stage stage;
+    private boolean isDarkMode = true;
     private final FileManager fileManager = FileManager.getInstance();
+    private ClipboardService clipboardService;
 
     public PrimaryController() {
-
     }
 
 
@@ -56,6 +63,7 @@ public class PrimaryController {
         initClipboardService();
         initListAndTable();
         initShortCutListener();
+        getAllButtons();
     }
 
     /**
@@ -67,12 +75,12 @@ public class PrimaryController {
      */
     @FXML
     private void initClipboardService() {
-        ClipboardService service = new ClipboardService();
+        this.clipboardService = new ClipboardService();
         inputArea.setText("Empty Clipboard!");
 
         // setup service to check clipboard every second
-        service.setPeriod(Duration.millis(200));
-        service.setOnSucceeded(t -> {
+        clipboardService.setPeriod(Duration.millis(200));
+        clipboardService.setOnSucceeded(t -> {
             // get string from clipboard
             if (t.getSource().getValue() != null) {
                 String entry = FormatChecker.basicBibTeXCheck((String) t.getSource().getValue());
@@ -83,17 +91,19 @@ public class PrimaryController {
                     inputArea.setText(entry);
                     App.toFront();
                 } else {
-                    inputArea.setText("Not a valid BibTeX entry! (from Clipboard)");
+                    // do nothing for now, since user might copy to change previous entry
+                    //inputArea.setText("Not a valid BibTeX entry! (from Clipboard)");
                 }
             }
         });
-        service.start();
+        clipboardService.start();
     }
 
     // todo config for more data in table
 
     /**
-     * Creates both ListViews of the App and inserts them at the appropriate places in the UI
+     * Creates the layout and columns of the tableview, also defines custom
+     * table cells that allow the display of tooltips
      */
     @FXML
     private void initListAndTable() {
@@ -177,62 +187,83 @@ public class PrimaryController {
     }
 
     /**
-     * TODO improve visuals of tiny window
      * This function will add Listeners to the height and width property of the window,
      * in order to scale elements like the buttons to smaller window sizes
      *
      * @param stage stage from creation of the App window
      */
     public void setStageAndListeners(Stage stage) {
+        this.stage = stage;
+
+        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
+            // System.out.println("New height: " + newVal);
+            this.height = newVal.doubleValue();
+            updateSize();
+        });
+
+        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            //System.out.println("New width: " + newVal);
+            this.width = newVal.doubleValue();
+            updateSize();
+        });
+    }
+
+    /**
+     * Updates the size of the button elements in the window, depending on
+     * the width AND height, if either is too small, buttons will be shrunk
+     */
+    private void updateSize() {
         final String smallStyle = "-fx-padding: 0;\n" +
-                "    -fx-min-height: 45px;\n" + // change to 40 if another button is added
-                "    -fx-pref-width: 45px;\n" +
-                "    -fx-min-width: 45px;\n" +
-                "    -fx-background-size: 35px;\n" +
+                "    -fx-min-height: 35px;\n" + // change to 40 if another button is added
+                "    -fx-pref-width: 35px;\n" +
+                "    -fx-min-width: 35px;\n" +
+                "    -fx-background-size: 25px;\n" +
                 "    -fx-background-repeat: no-repeat;\n" +
                 "    -fx-background-position: center;";
 
         final String largeStyle = "-fx-padding: 0;\n" +
-                "    -fx-min-height: 50px;\n" +
-                "    -fx-pref-width: 50px;\n" +
-                "    -fx-background-size: 40px;\n" +
+                "    -fx-min-height: 45px;\n" +
+                "    -fx-min-width: 45px;\n" +
+                "    -fx-pref-width: 45px;\n" +
+                "    -fx-background-size: 35px;\n" +
                 "    -fx-background-repeat: no-repeat;\n" +
                 "    -fx-background-position: center;";
 
-        stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            //System.out.println("New width: " + newVal);
-
-            if (!this.isBelowWidth && newVal.doubleValue() <= 820) {
-                this.isBelowWidth = true;
-                ObservableList<Node> buttons = this.buttonBox2.getChildren();
-                for (Node node : buttons
-                ) {
-                    if (node.getClass() == Button.class) {
-                        node.setStyle(smallStyle);
-                    }
+        if (!this.isBelowSize && (this.width <= 680 || this.height <= 600)) {
+            this.isBelowSize = true;
+            for (Node node : this.buttons
+            ) {
+                if (node.getClass() == Button.class) {
+                    node.setStyle(smallStyle);
                 }
-                insertButton.setStyle(smallStyle);
-                this.rowWithButtons.setPrefHeight(15);
-                this.rowWithButtons.setMinHeight(15);
-
-            } else if (this.isBelowWidth && newVal.doubleValue() > 820) {
-                this.isBelowWidth = false;
-                ObservableList<Node> buttons = this.buttonBox2.getChildren();
-                for (Node node : buttons
-                ) {
-                    if (node.getClass() == Button.class) {
-                        node.setStyle(largeStyle);
-                    }
-                }
-                insertButton.setStyle(largeStyle);
-                this.rowWithButtons.setPrefHeight(20);
-                this.rowWithButtons.setMinHeight(20);
             }
-        });
 
-        stage.heightProperty().addListener((obs, oldVal, newVal) -> {
-            //System.out.println("New height: " + newVal);
-        });
+        } else if (this.isBelowSize && (this.width > 680 && this.height > 600)) {
+            this.isBelowSize = false;
+            for (Node node : this.buttons
+            ) {
+                if (node.getClass() == Button.class) {
+                    node.setStyle(largeStyle);
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds all buttons in the app to a single list for easier changing
+     */
+    private void getAllButtons() {
+        //this.buttons.addAll(buttonBox1.getChildren());
+        for (Node n : buttonBox2.getChildren()) {
+            if (n.getClass() == Button.class) {
+                buttons.add(n);
+            } else if (n.getClass() == HBox.class) {
+                buttons.addAll(((HBox) n).getChildren());
+            }
+        }
+        this.buttons.addAll(buttonBox3.getChildren());
+        this.buttons.add(insertButton);
+        this.buttons.add(selectFile);
     }
 
     /**
@@ -266,7 +297,7 @@ public class PrimaryController {
     @FXML
     private void selectSingleFile(ActionEvent actionEvent) {
         fileManager.selectSingleFile(actionEvent);
-        setSelectedFileLabel();
+        this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
         fileManager.readFileIntoTable(bibTable);
     }
 
@@ -279,11 +310,10 @@ public class PrimaryController {
     @FXML
     private void createFile(ActionEvent actionEvent) {
         if (fileManager.createFile(actionEvent)) {
-            setSelectedFileLabel();
+            this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
             fileManager.readFileIntoTable(bibTable);
         }
     }
-
 
     /**
      * Will call FileManager to set the selected file and update the bibList
@@ -293,21 +323,10 @@ public class PrimaryController {
     @FXML
     private void selectFileFromList(ActionEvent actionEvent) {
         fileManager.selectFileFromList(fileList.getSelectionModel().getSelectedItem());
-        setSelectedFileLabel();
+        this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
         fileManager.readFileIntoTable(bibTable);
     }
 
-    /**
-     * Called whenever the label of the selected file changes. It will be red if no file
-     * is selected and green otherwise.
-     * Also the Label of the bibList is set appropriately
-     */
-    private void setSelectedFileLabel() {
-        this.selectedFile.setText(fileManager.getSelectedFileName() + " selected");
-        this.selectedFile.setId(fileManager.getSelectedFileName().equals("No file") ?
-                "selectedFile" : "selectedFileGreen");
-        this.secondList.setText("Entries inside " + fileManager.getSelectedFileName());
-    }
 
     /**
      * Will check if the current entry inside the TextArea is valid and insert the
@@ -349,13 +368,17 @@ public class PrimaryController {
 
     /**
      * Displays an alert box that can be dismissed with an OK-button
+     * Styles are defined in corresponding dark/light css
      *
      * @param msg msg to display inside the alert box
      */
     private void throwAlert(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
         alert.setTitle(title);
-        alert.getDialogPane().getScene().getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+        alert.getDialogPane().getScene().getStylesheets()
+                .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
         alert.show();
     }
 
@@ -396,7 +419,10 @@ public class PrimaryController {
 
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.YES, ButtonType.CANCEL);
         alert.setTitle("Delete confirmation");
-        alert.getDialogPane().getScene().getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+        alert.getDialogPane().getScene().getStylesheets()
+                .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 ObservableList<TableEntry> items = bibTable.getSelectionModel().getSelectedItems();
@@ -471,11 +497,40 @@ public class PrimaryController {
         String msg = "Do you really want to replace all outer \" \" in this file with { }?";
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.YES, ButtonType.CANCEL);
         alert.setTitle("Replacement confirmation");
-        alert.getDialogPane().getScene().getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+        alert.getDialogPane().getScene().getStylesheets()
+                .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 fileManager.replaceValueClosures();
             }
         });
+    }
+
+    /**
+     * Switches the current color theme between dark and light
+     * The default theme is dark
+     *
+     * @param actionEvent button click
+     */
+    public void changeColorMode(ActionEvent actionEvent) {
+        ObservableList<String> styleSheets = this.stage.getScene().getStylesheets();
+        styleSheets.clear();
+        styleSheets.add(getClass().getResource("styles.css").toExternalForm());
+        styleSheets.add(getClass().getResource(isDarkMode ? "lightStyles.css" : "darkStyles.css").toExternalForm());
+        isDarkMode = !isDarkMode;
+    }
+
+    /**
+     * Disables or enables the background clipboard service
+     * This is helpful when you want to copy around bibEntries without
+     * adding them to the text-field
+     *
+     * @param actionEvent button click
+     */
+    public void toggleAutoInsert(ActionEvent actionEvent) {
+        if (this.clipboardService.isRunning()) this.clipboardService.cancel();
+        else this.clipboardService.restart();
     }
 }

@@ -1,26 +1,4 @@
 
-#selectedFile, #selectedFileGreen {
-    -fx-background-color: white;
-    -fx-border-color: grey;
-    -fx-border-width: 1;
-    -fx-padding: 4;
-    -fx-max-width: 300;
-    -fx-pref-width: 300;
-    -fx-alignment: center;
-    -fx-text-fill: red;
-    -fx-font-size: 16;
-}
-
-#selectedFileGreen {
-    -fx-text-fill: green;
-}
-
-.button {
-    -fx-pref-width: 145;
-    -fx-font-size: 14;
-    -fx-cursor: hand;
-}
-
 .list-view {
     -fx-min-width: 40;
     -fx-font-size: 14;
@@ -30,51 +8,41 @@
     -fx-font-size: 14;
 }
 
-.Vbox {
-    -fx-alignment: center;
-    -fx-spacing: 5;
-    -fx-padding: 5 5 5 5;
-}
-
 #inputArea {
     -fx-font-size: 14;
 }
 
-/* https://stackoverflow.com/questions/37354686/customize-javafx-alert-with-css */
-.dialog-pane > .content.label {
-    -fx-text-fill: red;
-    -fx-font-size: 16;
-    -fx-padding: 10 10 10 10;
+#gridPane{
+    -fx-padding: 0 10 10 10;
 }
 
-.dialog-pane .button {
-    -fx-cursor: hand;
+#colWithListView{
+    -fx-padding: 10 0 0 0;
 }
 
 #secondList {
     -fx-font-size: 16;
-}
-
-.table-view .table-column {
+    -fx-padding: 0;
+    -fx-pref-height: 20px;
 }
 
 .table-view .table-cell {
     -fx-font-size: 14px;
 }
 
-#colWithSecondListView{
-    -fx-padding: 5 0 5 5;
-}
-
-#buttonBox .button {
+.table-view *.scroll-bar:horizontal *.increment-button,
+.table-view *.scroll-bar:horizontal *.decrement-button {
     -fx-padding: 0;
-    -fx-min-height: 55px;
-    -fx-pref-width: 55px;
-    -fx-background-size: 45px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
 }
 
+.table-view *.scroll-bar:horizontal *.increment-arrow,
+.table-view *.scroll-bar:horizontal *.decrement-arrow {
+    -fx-padding: 0;
+}
+
+#colWithSecondListView{
+    -fx-padding: 10 0 5 0;
+}
 
 #selectRootButton {
     -fx-background-image: url('icon/dir.png');
@@ -92,13 +60,16 @@
     -fx-background-image: url('icon/create.png');
 }
 
-#insertButton, #selectFile, #buttonBox2 .button {
+.button {
     -fx-padding: 0;
-    -fx-min-height: 50px;
-    -fx-pref-width: 50px;
-    -fx-background-size: 40px;
+    -fx-min-height: 45px;
+    -fx-min-width: 45px;
+    -fx-pref-width: 45px;
+    -fx-background-size: 35px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
+    -fx-font-size: 14;
+    -fx-cursor: hand;
 }
 
 #insertButton {
@@ -115,6 +86,7 @@
     -fx-min-width: 45px;
     -fx-pref-width: 45px;
     -fx-background-size: 30px;
+    -fx-padding: 5;
 }
 
 #deleteEntry {

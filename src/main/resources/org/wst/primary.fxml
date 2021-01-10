@@ -3,7 +3,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
-<?import javafx.geometry.Insets?>
 
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.GridPane?>
@@ -20,24 +19,17 @@
 <GridPane fx:id="gridPane" alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.171"
           xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="org.wst.PrimaryController"
-          hgap="10"
-          vgap="10"
+          hgap="0"
+          vgap="8"
           gridLinesVisible="false">
 
     <children>
 
         <!--Label GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.columnSpan="4" text="Main Window"/-->
 
-        <VBox fx:id="colWithListView" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="0">
+        <VBox fx:id="colWithListView" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="0"  spacing="5" alignment="CENTER">
 
-            <Label fx:id="rootDirectory" text="No directory selected" textOverrun="LEADING_ELLIPSIS"/>
-            <ListView fx:id="fileList"/>
-
-            <Region prefHeight="10"/>
-            <Label fx:id="selectedFile" text="Select a file/directory below"/>
-            <Region prefHeight="10"/>
-
-            <HBox fx:id="buttonBox" alignment="CENTER" spacing="25">
+            <HBox fx:id="buttonBox1" alignment="CENTER" spacing="10">
                 <Button fx:id="selectRootButton" onAction="#selectRoot">
                     <tooltip>
                         <Tooltip text="Choose a directory with .bib files"/>
@@ -55,6 +47,12 @@
                 </Button>
             </HBox>
 
+            <!--Label fx:id="selectedFile" text="Select a file/directory first"/-->
+            <!--Region prefHeight="10"/-->
+
+            <ListView fx:id="fileList"/>
+            <Label fx:id="rootDirectory" text="No directory selected" textOverrun="LEADING_ELLIPSIS"/>
+            <Region minHeight="10"/>
 
         </VBox>
 
@@ -67,77 +65,101 @@
             </Button>
         </VBox>
 
-        <VBox fx:id="centerColumn" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="2"
-              GridPane.valignment="CENTER">
-        </VBox>
 
-
-        <VBox fx:id="colWithSecondListView" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="2"
+        <VBox fx:id="colWithTableView" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="2"
               GridPane.columnSpan="2">
 
-            <Label fx:id="secondList" text="No file selected"/>
-            <TableView fx:id="bibTable" VBox.vgrow="ALWAYS"/>
-            <!--Button fx:id="selectEntry" text="\\/" onAction="#selectEntry"/-->
-            <Region minHeight="20"/>
+            <HBox spacing="8">
+                <VBox HBox.hgrow="ALWAYS" alignment="CENTER">
+
+                    <Label fx:id="secondList" text="No file selected"/>
+                    <TableView fx:id="bibTable" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" prefHeight="2000"/>
+                    <Region minHeight="8"/>
+                    <!--Button fx:id="selectEntry" text="\\/" onAction="#selectEntry"/-->
+                    <HBox fx:id="buttonBox2" alignment="CENTER">
+
+                        <Button fx:id="insertButton" onAction="#insertIntoFile" GridPane.rowIndex="1"
+                                GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                            <tooltip>
+                                <Tooltip text="Add entry below to the file"/>
+                            </tooltip>
+                        </Button>
+                        <Region prefWidth="1000" minWidth="0"/>
+                        <HBox spacing="8">
+                            <Button fx:id="selectEntry" onAction="#selectEntry">
+                                <tooltip>
+                                    <Tooltip text="Edit selected entry"/>
+                                </tooltip>
+                            </Button>
+                            <Button fx:id="toggleAutoInsert" onAction="#toggleAutoInsert">
+                                <tooltip>
+                                    <Tooltip text='Disable insert of clipboard content'/>
+                                </tooltip>
+                            </Button>
+                        </HBox>
+                        <Region prefWidth="1000"  minWidth="0"/>
+                        <HBox spacing="8">
+                            <Button fx:id="changeColorMode" onAction="#changeColorMode">
+                                <tooltip>
+                                    <Tooltip text='Change between dark and light mode'/>
+                                </tooltip>
+                            </Button>
+                            <Button fx:id="undoLastMove" onAction="#replaceValueClosures">
+                                <tooltip>
+                                    <Tooltip text='Undo the last action'/>
+                                </tooltip>
+                            </Button>
+                            <Button fx:id="redoLastMove" onAction="#replaceValueClosures">
+                                <tooltip>
+                                    <Tooltip text='Redo the last undone action'/>
+                                </tooltip>
+                            </Button>
+                        </HBox>
+
+                    </HBox>
+                </VBox>
+                <VBox fx:id="buttonBox3" spacing="8" alignment="CENTER_RIGHT">
+                    <Button fx:id="deleteEntry" onAction="#deleteEntry">
+                        <tooltip>
+                            <Tooltip text="Delete selected entries"/>
+                        </tooltip>
+                    </Button>
+                    <Button fx:id="openInBrowser" onAction="#openInBrowser">
+                        <tooltip>
+                            <Tooltip text="Open entries in browser"/>
+                        </tooltip>
+                    </Button>
+                    <Button fx:id="replaceValueClosures" onAction="#replaceValueClosures">
+                        <tooltip>
+                            <Tooltip text='Replace ALL [tag = "x"] with [tag = {x}]'/>
+                        </tooltip>
+                    </Button>
+                    <Button fx:id="replaceValueClosuresBack" onAction="#replaceValueClosures">
+                        <tooltip>
+                            <Tooltip text='Replace ALL [tag = {x}] with [tag = "x"]'/>
+                        </tooltip>
+                    </Button>
+                </VBox>
+            </HBox>
+
 
         </VBox>
 
-        <Button fx:id="insertButton" onAction="#insertIntoFile" GridPane.rowIndex="1"
-                GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-            <tooltip>
-                <Tooltip text="Add entry below to the file"/>
-            </tooltip>
-        </Button>
-
-        <HBox fx:id="buttonBox2" GridPane.rowIndex="1" GridPane.columnIndex="3"
-              GridPane.valignment="BOTTOM" spacing="10">
-            <Button fx:id="selectEntry" onAction="#selectEntry">
-                <tooltip>
-                    <Tooltip text="Edit selected entry"/>
-                </tooltip>
-            </Button>
-            <Button fx:id="deleteEntry" onAction="#deleteEntry">
-                <tooltip>
-                    <Tooltip text="Delete selected entries"/>
-                </tooltip>
-            </Button>
-            <Button fx:id="openInBrowser" onAction="#openInBrowser">
-                <tooltip>
-                    <Tooltip text="Open entries in browser"/>
-                </tooltip>
-            </Button>
-            <Button fx:id="replaceValueClosures" onAction="#replaceValueClosures">
-                <tooltip>
-                    <Tooltip text='Replace ALL [tag = "x"] with [tag = {x}]'/>
-                </tooltip>
-            </Button>
-            <!--Button fx:id="replaceValueClosuresBack" onAction="#replaceValueClosures">
-                <tooltip>
-                    <Tooltip text='Replace ALL [tag = "x"] with [tag = {x}]'/>
-                </tooltip>
-            </Button-->
-        </HBox>
-
-        <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="2"
-                  GridPane.columnSpan="4"/>
+        <TextArea fx:id="inputArea" prefHeight="300" text="From clipboard:" GridPane.rowIndex="1"
+                  GridPane.columnSpan="3"/>
 
     </children>
 
     <columnConstraints>
-        <ColumnConstraints minWidth="280"/>
-        <ColumnConstraints percentWidth="5.0"/>
-        <ColumnConstraints prefWidth="1000"/>
-        <ColumnConstraints prefWidth="1000"/>
+        <ColumnConstraints minWidth="220"/>
+        <ColumnConstraints percentWidth="7" prefWidth="50"/>
+        <ColumnConstraints prefWidth="4000"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints percentHeight="55"/>
-        <RowConstraints fx:id="rowWithButtons" minHeight="20" prefHeight="20"/>
-        <RowConstraints percentHeight="42"/>
+        <RowConstraints percentHeight="45"/>
     </rowConstraints>
 
-    <padding>
-        <Insets bottom="15.0" left="15.0" right="15.0" top="5.0"/>
-    </padding>
 </GridPane>
 
 

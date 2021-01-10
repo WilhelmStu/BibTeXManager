@@ -25,6 +25,7 @@ public class App extends Application {
         instance = this;
         scene = new Scene(loadFXML("primary"), 1024, 768);
         scene.getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
+        scene.getStylesheets().add(App.class.getResource("darkStyles.css").toExternalForm());
         stage.setTitle("BibTeX Manager");
         stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
         stage.setScene(scene);

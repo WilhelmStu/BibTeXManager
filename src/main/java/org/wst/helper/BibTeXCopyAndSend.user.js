@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name     BibTeXCopyAndSend
-// @version  1.0.1
-// @grant    GM.setClipboard
-// @include	 https://dl.acm.org/*
-// @author   Wilhelm Stuhlpfarrer
+// @name        BibTeXCopyAndSend
+// @version     1.0.2
+// @grant       GM.setClipboard
+// @include	    https://dl.acm.org/*
+// @author      Wilhelm Stuhlpfarrer
+// @description Script to copy bibTex from acm.org
 // ==/UserScript==
 
 /**
@@ -11,8 +12,8 @@
  * It will work on: https://dl.acm.org/ and detect when a BibTeX Citation is within the
  * specified div container and then copy it to clipboard, to be used inside BibTeXManager
  */
-// LINK plugin: https://addons.mozilla.org/de/firefox/addon/greasemonkey/
-// SCRIPT: https://gist.github.com/WilhelmStu/cf1b994d934bd6f6d89dc07ab65b09d3/raw/b439585cdee97d74fc8286afe0c7fd9160e0b44c/BibTeXCopyAndSend.user.js
+// LINK plugin: https://www.tampermonkey.net/
+// SCRIPT: https://gist.github.com/WilhelmStu/cf1b994d934bd6f6d89dc07ab65b09d3/raw/d92be233918bef9945d263d4954c0eb6dd33d0cb/BibTeXCopyAndSend.user.js
 if (window.location.origin === "https://dl.acm.org") {
 
     let divWithCit = document.body.querySelector("#exportCitation");

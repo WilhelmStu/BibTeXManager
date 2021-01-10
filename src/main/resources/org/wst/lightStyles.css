@@ -1,0 +1,20 @@
+
+.root {
+    -fx-base: rgba(240, 248, 255, 255);
+}
+
+/* https://stackoverflow.com/questions/28417140/styling-default-javafx-dialogs/28421229#28421229 */
+.dialog-pane{
+    -fx-background-color: #e2e2e2;
+}
+
+.dialog-pane > .content.label {
+    -fx-text-fill: #242424;
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-padding: 10 10 10 10;
+}
+
+.dialog-pane .button {
+    -fx-cursor: hand;
+}
