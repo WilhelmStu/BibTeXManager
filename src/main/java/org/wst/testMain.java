@@ -33,7 +33,7 @@ public class testMain {
                 " MORE COPIED TEXT THAT IS NOT BIBTEX        ";
 
 
-        System.out.println(FormatChecker.replaceQuotationMarks(test2));
+       // System.out.println(FormatChecker.replaceValueClosures(test2, true));
 
 
 /*

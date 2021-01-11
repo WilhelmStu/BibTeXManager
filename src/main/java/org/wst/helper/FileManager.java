@@ -1,5 +1,6 @@
 package org.wst.helper;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -10,6 +11,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import org.wst.PrimaryController;
 import org.wst.model.TableEntry;
 
 import java.io.*;
@@ -155,7 +157,8 @@ public class FileManager {
             fileChooser.setInitialDirectory(selectedFile.getParentFile());
         }
         fileChooser.setTitle("Select a single file");
-        selectedFile = fileChooser.showOpenDialog(b.getScene().getWindow());
+        File tmp = fileChooser.showOpenDialog(b.getScene().getWindow());
+        if (tmp != null) selectedFile = tmp;
         b.setDisable(false);
         b.setId(id);
     }
@@ -279,6 +282,60 @@ public class FileManager {
         th.start();
     }
 
+    /**
+     * Will check if the current entries inside the TextArea are valid and insert them all
+     * into the file
+     * Throw an alert if there are no entries to insert, and one telling how many entries where inserted
+     *
+     * @param text text block from textArea
+     * @param entries entries inside the table for updates
+     * @param event button press event
+     */
+    public void insertIntoFile(String text, ObservableList<TableEntry> entries, ActionEvent event) {
+        Button b = (Button) event.getSource();
+        b.setDisable(true);
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+
+                ArrayList<String> entryArray = FormatChecker.getBibEntries(text);
+                if (entryArray.isEmpty()) {
+                    Platform.runLater(() -> PrimaryController.throwAlert("Entry/ies not inserted!", "No valid entry found!"));
+                } else {
+                    for (String entry : entryArray) {
+                        fileManager.writeToFile(entry);
+                        String keyword = FormatChecker.getBibEntryKeyword(entry);
+                        if (keyword != null) {
+                            boolean isAlreadyInFile = false;
+                            for (int i = 0; i < entries.size(); i++) {
+                                if (entries.get(i).getKeyword().equals(keyword)) {
+                                    entries.set(i, FormatChecker.getBibTableEntry(entry));
+                                    isAlreadyInFile = true;
+                                    break;
+                                }
+                            }
+                            if (!isAlreadyInFile) {
+                                entries.add(FormatChecker.getBibTableEntry(entry));
+                            }
+                        }
+                    }
+                    //inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
+                    boolean isSingle = entryArray.size() == 1;
+                    Platform.runLater(() -> {
+                        PrimaryController.throwAlert(isSingle ? "Bib-Entry inserted!" : "Entries inserted!",
+                                isSingle ? "The single Bib-Entry was inserted" : entryArray.size() + " Bib-Entries successfully inserted");
+                        b.setDisable(false);
+                    });
+
+
+                }
+                return null;
+            }
+        };
+        Thread th = new Thread(task);
+        th.start();
+
+    }
 
     // todo add config to disable overwriting files?
 
@@ -368,7 +425,7 @@ public class FileManager {
                                 }
                             }
                             // if entry is valid and not in map add it
-                            if (!(entry = FormatChecker.basicBibTeXCheck(bibBuilder.toString())).equals("invalid")) {
+                            if (!(entry = FormatChecker.basicBibTeXCheck(bibBuilder.toString())).isEmpty()) {
 
                                 TableEntry tableEntry = FormatChecker.getBibTableEntry(entry);
                                 if (tableEntry != null) {
@@ -424,16 +481,16 @@ public class FileManager {
      * Will search the bibMap for the selected Item and then return
      * the corresponding Bib-Entry
      *
-     * @param selectedItem item selected from bibList
+     * @param keyword item selected from bibList
      * @return selected Bib-Entry
      */
-    public String getBibEntry(TableEntry selectedItem) {
-        if (bibMap.isEmpty()) {
-            return "Cant edit empty file!";
+    public String getBibEntry(String keyword) {
+        if (bibMap == null || bibMap.isEmpty()) {
+            return "";
         } else {
-            String entry = bibMap.get(selectedItem.getKeyword());
+            String entry = bibMap.get(keyword);
             if (entry == null) {
-                return "Error could not find selected entry!";
+                return "";
             }
             return FormatChecker.basicBibTeXCheck(entry);
         }
@@ -441,12 +498,13 @@ public class FileManager {
 
     /**
      * This function will replace the quotation marks of every tag and value pair with curly brackets
+     * OR THE OTHER WAY AROUND!
      * This will happen in the whole file that is currently selected
-     * e.g. [tag = "x"] will be replaced with [tag = {x}]
+     * e.g. [tag = "x"] will be replaced with [tag = {x}] OR other way around
      * <p>
      * Synchronized on lock object, only one thread may write to a file change the file-String at a time
      */
-    public void replaceValueClosures() {
+    public void replaceValueClosures(boolean toCurlyBraces) {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -457,7 +515,7 @@ public class FileManager {
                         for (Map.Entry<String, String> entry : bibMap.entrySet()
                         ) {
                             String oldEntry = entry.getValue();
-                            String newValue = FormatChecker.replaceQuotationMarks(oldEntry) + "\r\n";
+                            String newValue = FormatChecker.replaceValueClosures(oldEntry, toCurlyBraces) + "\r\n";
                             fileAsString = fileAsString.replace(oldEntry, newValue);
                             bibMap.put(entry.getKey(), newValue);
                         }

@@ -85,10 +85,10 @@
                             </tooltip>
                         </Button>
                         <Region prefWidth="1000" minWidth="0"/>
-                        <HBox spacing="8">
+                        <HBox fx:id="buttonBox2_1" spacing="8">
                             <Button fx:id="selectEntry" onAction="#selectEntry">
                                 <tooltip>
-                                    <Tooltip text="Edit selected entry"/>
+                                    <Tooltip text="Edit selected entry/ies"/>
                                 </tooltip>
                             </Button>
                             <Button fx:id="toggleAutoInsert" onAction="#toggleAutoInsert">
@@ -96,20 +96,25 @@
                                     <Tooltip text='Disable insert of clipboard content'/>
                                 </tooltip>
                             </Button>
+                            <Button fx:id="clearTextArea" onAction="#clearTextArea">
+                                <tooltip>
+                                    <Tooltip text='Clear content of TextArea below'/>
+                                </tooltip>
+                            </Button>
                         </HBox>
                         <Region prefWidth="1000"  minWidth="0"/>
-                        <HBox spacing="8">
+                        <HBox fx:id="buttonBox2_2" spacing="8">
                             <Button fx:id="changeColorMode" onAction="#changeColorMode">
                                 <tooltip>
                                     <Tooltip text='Change between dark and light mode'/>
                                 </tooltip>
                             </Button>
-                            <Button fx:id="undoLastMove" onAction="#replaceValueClosures">
+                            <Button fx:id="undoLastMove" onAction="#changeColorMode">
                                 <tooltip>
                                     <Tooltip text='Undo the last action'/>
                                 </tooltip>
                             </Button>
-                            <Button fx:id="redoLastMove" onAction="#replaceValueClosures">
+                            <Button fx:id="redoLastMove" onAction="#changeColorMode">
                                 <tooltip>
                                     <Tooltip text='Redo the last undone action'/>
                                 </tooltip>
@@ -119,6 +124,11 @@
                     </HBox>
                 </VBox>
                 <VBox fx:id="buttonBox3" spacing="8" alignment="CENTER_RIGHT">
+                    <Button fx:id="selectAll" onAction="#selectAllEntries">
+                        <tooltip>
+                            <Tooltip text="Select all entries in table"/>
+                        </tooltip>
+                    </Button>
                     <Button fx:id="deleteEntry" onAction="#deleteEntry">
                         <tooltip>
                             <Tooltip text="Delete selected entries"/>
@@ -129,12 +139,12 @@
                             <Tooltip text="Open entries in browser"/>
                         </tooltip>
                     </Button>
-                    <Button fx:id="replaceValueClosures" onAction="#replaceValueClosures">
+                    <Button fx:id="replaceQuotationMarks" onAction="#replaceQuotationMarks">
                         <tooltip>
                             <Tooltip text='Replace ALL [tag = "x"] with [tag = {x}]'/>
                         </tooltip>
                     </Button>
-                    <Button fx:id="replaceValueClosuresBack" onAction="#replaceValueClosures">
+                    <Button fx:id="replaceCurlyBraces" onAction="#replaceCurlyBraces">
                         <tooltip>
                             <Tooltip text='Replace ALL [tag = {x}] with [tag = "x"]'/>
                         </tooltip>

@@ -3,6 +3,7 @@ package org.wst.helper;
 
 import org.wst.model.TableEntry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +28,7 @@ public abstract class FormatChecker {
 
     /**
      * @param raw input from system clipboard, that can contain a BibTeX entry
-     * @return "invalid" if no BibTeX entry is found, else the first found valid entry
+     * @return "" if no BibTeX entry is found, else the first found valid entry
      */
     public static String basicBibTeXCheck(String raw) {
 
@@ -37,7 +38,7 @@ public abstract class FormatChecker {
 
         Pattern pt = Pattern.compile(re);
         Matcher mt = pt.matcher(raw);
-        String firstEntry = "invalid";
+        String firstEntry = "";
         if (mt.find()) { // will check for the first entry matching above regex
             firstEntry = mt.group(0);
             String type = firstEntry.substring(firstEntry.indexOf("@") + 1, firstEntry.indexOf("{")).trim();
@@ -46,26 +47,25 @@ public abstract class FormatChecker {
                 firstEntry += "\r\n";
                 return firstEntry;
             } else {
-                return "invalid";
+                return "";
             }
         }
         return firstEntry;
     }
 
     // https://www.logicbig.com/tutorials/core-java-tutorial/java-regular-expressions/regex-lookahead.html
-    // todo add config for this!,
-    // todo check if for example title = "asda, sd = asd" will cause problems
+    // todo add config for this!
 
     /**
-     * Will take a valid bib entry and replace the "" for each value after an tag
-     * e.g.: title = "this is a title" -> title = {this is a title}
-     * but e.g.: year = 2002 wont be changed, but year = "2002" will get year = {2002}
-     * and e.g.: title = "{}" will become {{}}
+     * Will take a valid bib entry and replace the ""/{} for each value after an tag
+     * e.g.: title = "this is a title" <-> title = {this is a title}
+     * but e.g.: year = 2002 wont be changed, but year = "2002" <-> year = {2002}
+     * and e.g.: title = "{}" will become {{}} or """"
      *
      * @param entry valid bib entry
-     * @return same as input but "" -> {}
+     * @return same as input but "" <-> {}
      */
-    public static String replaceQuotationMarks(String entry) {
+    public static String replaceValueClosures(String entry, boolean toCurlyBraces) {
         String[] lines = entry.split("([,])(?=\\s*\\w+\\s*[=])");
         StringBuilder builder = new StringBuilder();
         boolean hadCommaAtEnd = false;
@@ -88,10 +88,18 @@ public abstract class FormatChecker {
                 }
             }
             char[] value = tagAndValue[1].trim().toCharArray();
-            if (value[0] == '"' && value[value.length - 1] == '"') {
-                value[0] = '{';
-                value[value.length - 1] = '}';
+            if (toCurlyBraces) {
+                if (value[0] == '"' && value[value.length - 1] == '"') {
+                    value[0] = '{';
+                    value[value.length - 1] = '}';
+                }
+            } else {
+                if (value[0] == '{' && value[value.length - 1] == '}') {
+                    value[0] = '"';
+                    value[value.length - 1] = '"';
+                }
             }
+
             builder.append("\r\n    ").append(tagAndValue[0].trim()).append(" ").append(value).append(",");
         }
         if (!hadCommaAtEnd) builder.setLength(builder.length() - 1);
@@ -101,7 +109,7 @@ public abstract class FormatChecker {
     }
 
     /**
-     * Will return the first BibEntry-Keyword in a given string or "invalid" if none is found
+     * Will return the first BibEntry-Keyword in a given string or null if none is found
      *
      * @param line a string that can contain a BibEntry-Head
      * @return first BibEntry-Keyword in a given String
@@ -159,5 +167,25 @@ public abstract class FormatChecker {
             str = str.substring(1, str.length() - 1);
         }
         return str.trim();
+    }
+
+    /**
+     * Will go through the given text block and search for bibEntries
+     * and add all to the list of entries
+     *
+     * @param text ram text from textArea
+     * @return all bib entries in the given text block (no complete duplicates)
+     */
+    public static ArrayList<String> getBibEntries(String text) {
+        ArrayList<String> entries = new ArrayList<>();
+
+        String entry;
+        while (!(entry = basicBibTeXCheck(text)).isEmpty()) {
+            entries.add(entry);
+            if (text.length() > entry.length()) {
+                text = text.replace(entry.substring(0, entry.length() - 2), "");
+            } else break;
+        }
+        return entries;
     }
 }

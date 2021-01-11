@@ -8,7 +8,7 @@
 // ==/UserScript==
 
 /**
- * This is a simple userscript build to work with the Greasemonkey plugin.
+ * This is a simple userscript build to work with the Tampermonkey plugin.
  * It will work on: https://dl.acm.org/ and detect when a BibTeX Citation is within the
  * specified div container and then copy it to clipboard, to be used inside BibTeXManager
  */

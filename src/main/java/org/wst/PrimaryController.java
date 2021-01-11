@@ -36,7 +36,7 @@ public class PrimaryController {
     @FXML
     private ListView<String> fileList;
     @FXML
-    private HBox buttonBox2;
+    private HBox buttonBox2, buttonBox2_1, buttonBox2_2;
     @FXML
     private VBox buttonBox3;
     @FXML
@@ -47,7 +47,7 @@ public class PrimaryController {
     private double width = 1024;
     private final ObservableList<Node> buttons = FXCollections.observableArrayList();
     private Stage stage;
-    private boolean isDarkMode = true;
+    private static boolean isDarkMode = true;
     private final FileManager fileManager = FileManager.getInstance();
     private ClipboardService clipboardService;
 
@@ -62,7 +62,7 @@ public class PrimaryController {
     public void initialize() {
         initClipboardService();
         initListAndTable();
-        initShortCutListener();
+        //initShortCutListener();
         getAllButtons();
     }
 
@@ -84,11 +84,17 @@ public class PrimaryController {
             // get string from clipboard
             if (t.getSource().getValue() != null) {
                 String entry = FormatChecker.basicBibTeXCheck((String) t.getSource().getValue());
-                boolean valid = (!entry.equals("invalid"));
+                boolean valid = (!entry.isEmpty());
                 if (valid) {
-                    entry = FormatChecker.replaceQuotationMarks(entry);
+                    entry = FormatChecker.replaceValueClosures(entry, true); //todo
                     System.out.println(entry);
-                    inputArea.setText(entry);
+
+                    String currentText = inputArea.getText();
+                    if (currentText.length() < 30) {
+                        inputArea.setText(entry);
+                    } else {
+                        inputArea.setText(inputArea.getText() + "\n\n" + entry);
+                    }
                     App.toFront();
                 } else {
                     // do nothing for now, since user might copy to change previous entry
@@ -214,10 +220,10 @@ public class PrimaryController {
      */
     private void updateSize() {
         final String smallStyle = "-fx-padding: 0;\n" +
-                "    -fx-min-height: 35px;\n" + // change to 40 if another button is added
-                "    -fx-pref-width: 35px;\n" +
-                "    -fx-min-width: 35px;\n" +
-                "    -fx-background-size: 25px;\n" +
+                "    -fx-min-height: 32px;\n" + // change to 40 if another button is added
+                "    -fx-pref-width: 32px;\n" +
+                "    -fx-min-width: 32px;\n" +
+                "    -fx-background-size: 22px;\n" +
                 "    -fx-background-repeat: no-repeat;\n" +
                 "    -fx-background-position: center;";
 
@@ -229,7 +235,7 @@ public class PrimaryController {
                 "    -fx-background-repeat: no-repeat;\n" +
                 "    -fx-background-position: center;";
 
-        if (!this.isBelowSize && (this.width <= 680 || this.height <= 600)) {
+        if (!this.isBelowSize && (this.width <= 680 || this.height <= 650)) {
             this.isBelowSize = true;
             for (Node node : this.buttons
             ) {
@@ -237,8 +243,11 @@ public class PrimaryController {
                     node.setStyle(smallStyle);
                 }
             }
+            buttonBox3.setSpacing(3);
+            buttonBox2_1.setSpacing(5);
+            buttonBox2_2.setSpacing(5);
 
-        } else if (this.isBelowSize && (this.width > 680 && this.height > 600)) {
+        } else if (this.isBelowSize && (this.width > 680 && this.height > 650)) {
             this.isBelowSize = false;
             for (Node node : this.buttons
             ) {
@@ -246,6 +255,9 @@ public class PrimaryController {
                     node.setStyle(largeStyle);
                 }
             }
+            buttonBox3.setSpacing(8);
+            buttonBox2_1.setSpacing(8);
+            buttonBox2_2.setSpacing(8);
         }
     }
 
@@ -296,9 +308,12 @@ public class PrimaryController {
      */
     @FXML
     private void selectSingleFile(ActionEvent actionEvent) {
+        String selectedFileName = fileManager.getSelectedFileName();
         fileManager.selectSingleFile(actionEvent);
-        this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
-        fileManager.readFileIntoTable(bibTable);
+        if (!selectedFileName.equals(fileManager.getSelectedFileName())) {
+            this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
+            fileManager.readFileIntoTable(bibTable);
+        }
     }
 
     /**
@@ -329,40 +344,17 @@ public class PrimaryController {
 
 
     /**
-     * Will check if the current entry inside the TextArea is valid and insert the
-     * valid entry with the fileManager
-     * If the entry is not valid or there is no file selected an alert box will be opened
+     * Will call the fileManger to insert all entries inside the textArea
+     * This runs on an extra thread to prevent UI from blocking on large inserts
+     * Throw an alert if there is no file selected
      *
      * @param actionEvent click button
      */
     public void insertIntoFile(ActionEvent actionEvent) {
-        String entry = FormatChecker.basicBibTeXCheck(inputArea.getText());
-
-        if (entry.equals("invalid")) {
-            throwAlert("Entry not inserted!", "Not a valid bib entry!");
-
-        } else if (!fileManager.isFileSelected()) {
-            throwAlert("Entry not inserted!", "Select a file first!");
-
+        if (!fileManager.isFileSelected()) {
+            throwAlert("Entry/ies not inserted!", "Select a file first!");
         } else {
-            fileManager.writeToFile(entry);
-            ObservableList<TableEntry> entries = bibTable.getItems();
-            String keyword = FormatChecker.getBibEntryKeyword(entry);
-            if (keyword != null) {
-                boolean isAlreadyInFile = false;
-                for (int i = 0; i < entries.size(); i++) {
-                    if (entries.get(i).getKeyword().equals(keyword)) {
-                        entries.set(i, FormatChecker.getBibTableEntry(entry));
-                        isAlreadyInFile = true;
-                        break;
-                    }
-                }
-                if (!isAlreadyInFile) {
-                    entries.add(FormatChecker.getBibTableEntry(entry));
-                }
-
-            }
-            inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
+            fileManager.insertIntoFile(inputArea.getText(), bibTable.getItems(), actionEvent);
         }
     }
 
@@ -372,7 +364,7 @@ public class PrimaryController {
      *
      * @param msg msg to display inside the alert box
      */
-    private void throwAlert(String title, String msg) {
+    public static void throwAlert(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.OK);
         alert.setTitle(title);
         alert.getDialogPane().getScene().getStylesheets()
@@ -383,16 +375,26 @@ public class PrimaryController {
     }
 
     /**
-     * Will put the selected item into the TextArea for editing
+     * Will put the selected item(s) into the TextArea for editing
      *
      * @param actionEvent click button
      */
     public void selectEntry(ActionEvent actionEvent) {
-        if (fileManager.isFileSelected() && bibTable.getSelectionModel().getSelectedItem() != null) {
-            inputArea.setText(FormatChecker.replaceQuotationMarks(
-                    fileManager.getBibEntry(bibTable.getSelectionModel().getSelectedItem())));
+        if (fileManager.isFileSelected()) {
+            ObservableList<TableEntry> items = bibTable.getSelectionModel().getSelectedItems();
+            String oldText = this.inputArea.getText();
+            StringBuilder builder = new StringBuilder(oldText.length() < 30 ? "" : oldText + "\n\n");
+
+            for (TableEntry tableEntry : items
+            ) {
+                String entry = fileManager.getBibEntry(tableEntry.getKeyword());
+                builder.append(FormatChecker.replaceValueClosures(entry, true)).append("\n\n"); //todo
+            }
+            builder.setLength(builder.length() - 2);
+            this.inputArea.setText(builder.toString());
+
         } else {
-            throwAlert("File/s not deleted!", "Select a file first!");
+            throwAlert("No file selected!", "Select a file first!");
         }
     }
 
@@ -432,7 +434,7 @@ public class PrimaryController {
                         keywords.add(e.getKeyword());
                     }
                     bibTable.getItems().removeAll(items);
-                    fileManager.deleteEntriesFromFile(keywords); // todo dialog to ask for removal with # of items
+                    fileManager.deleteEntriesFromFile(keywords);
                 } else {
                     throwAlert("File/s not deleted!", "Nothing selected!");
                 }
@@ -471,6 +473,9 @@ public class PrimaryController {
             } else if (!entry.getDoi().equals("none") && entry.getDoi().length() > 2) {
                 service.showDocument("https://doi.org/" + entry.getDoi());
 
+            } else if (entry.getKeyword().startsWith("10.") && entry.getKeyword().charAt(7) == '/') {
+                service.showDocument("https://doi.org/" + entry.getKeyword());
+
             } else if (!entry.getTitle().equals("none") && !entry.getAuthor().equals("none")) { //todo add config for search engine!
                 String engine = "https://duckduckgo.com/?q="; // or GOOGLE: https://www.google.at/search?q=
                 String query = entry.getTitle().trim() + "+" + entry.getAuthor().trim();
@@ -483,18 +488,25 @@ public class PrimaryController {
         }
     }
 
+    public void replaceQuotationMarks(ActionEvent actionEvent) {
+        replaceValueClosures(true);
+    }
+
+    public void replaceCurlyBraces(ActionEvent actionEvent) {
+        replaceValueClosures(false);
+    }
+
     /**
-     * Will call the function in FileManager to replace quotation marks
+     * Will call the function in FileManager to replace quotation marks or curly braces
      * Throws alert when no file is selected and will prompt the user to confirm the replacement
-     *
-     * @param actionEvent button press
      */
-    public void replaceValueClosures(ActionEvent actionEvent) {
+    private void replaceValueClosures(boolean toCurlyBraces) {
         if (!fileManager.isFileSelected()) {
             throwAlert("Cant replace anything", "Select a file first!");
             return;
         }
-        String msg = "Do you really want to replace all outer \" \" in this file with { }?";
+        String msg = toCurlyBraces ? "Do you really want to replace all outer \n\" \" in this file with { }?" :
+                "Do you really want to replace all outer \n{ } in this file with \" \"?";
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.YES, ButtonType.CANCEL);
         alert.setTitle("Replacement confirmation");
         alert.getDialogPane().getScene().getStylesheets()
@@ -503,7 +515,7 @@ public class PrimaryController {
         stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
-                fileManager.replaceValueClosures();
+                fileManager.replaceValueClosures(toCurlyBraces);
             }
         });
     }
@@ -532,5 +544,27 @@ public class PrimaryController {
     public void toggleAutoInsert(ActionEvent actionEvent) {
         if (this.clipboardService.isRunning()) this.clipboardService.cancel();
         else this.clipboardService.restart();
+    }
+
+    /**
+     * Removes all text from the TextArea
+     *
+     * @param actionEvent button click
+     */
+    public void clearTextArea(ActionEvent actionEvent) {
+        this.inputArea.setText("Content cleared.");
+    }
+
+    /**
+     * Selects all items in the bibTable
+     *
+     * @param actionEvent button click
+     */
+    public void selectAllEntries(ActionEvent actionEvent) {
+        if(bibTable.getSelectionModel().getSelectedItems().size() == bibTable.getItems().size()){
+           bibTable.getSelectionModel().clearSelection();
+        }else{
+            bibTable.getSelectionModel().selectAll();
+        }
     }
 }
