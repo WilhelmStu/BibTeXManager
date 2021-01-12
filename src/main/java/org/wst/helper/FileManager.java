@@ -504,7 +504,9 @@ public class FileManager {
      * <p>
      * Synchronized on lock object, only one thread may write to a file change the file-String at a time
      */
-    public void replaceValueClosures(boolean toCurlyBraces) {
+    public void replaceValueClosures(boolean toCurlyBraces, ActionEvent actionEvent) {
+        Button b = (Button) actionEvent.getSource();
+        b.setDisable(true);
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -527,6 +529,7 @@ public class FileManager {
                         System.err.println("Error writing to file");
                         e.printStackTrace();
                     }
+                    b.setDisable(false);
                     return null;
                 }
             }

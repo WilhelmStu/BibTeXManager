@@ -1,5 +1,11 @@
 package org.wst.model;
 
+/**
+ * Table entry class for the TableView in the App
+ * Every row in the table requires an entry
+ * The entries are also used to store additional information's
+ * like URL, DOI and type OR an Error if there is a problem during creation
+ */
 public class TableEntry {
     private String keyword;
     private String type;
@@ -14,7 +20,6 @@ public class TableEntry {
         FILE_NOT_FOUND,
         FILE_READ_ERROR,
         NO_ENTRIES_FOUND
-
     }
 
     Error error = Error.NONE;

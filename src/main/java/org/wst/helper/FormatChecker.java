@@ -5,6 +5,7 @@ import org.wst.model.TableEntry;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,11 +23,11 @@ public abstract class FormatChecker {
     // NOTE: ^,{}\()%"'#~= not allowed in keyword, but '@' is allowed
     public final static String keywordRegEx = "[{][^,{}\\\\()%\"'#~=]*[,]";
 
-    // todo? Advanced check for required/optional fields for each type above...
-    // todo? second check for field validity...
-    // todo? allow multiple entries?
 
     /**
+     * Will search for the larges possible bib entry inside the raw input from clipboard
+     * If one is found and if the curly braces are correct return the exact entry
+     *
      * @param raw input from system clipboard, that can contain a BibTeX entry
      * @return "" if no BibTeX entry is found, else the first found valid entry
      */
@@ -41,6 +42,17 @@ public abstract class FormatChecker {
         String firstEntry = "";
         if (mt.find()) { // will check for the first entry matching above regex
             firstEntry = mt.group(0);
+            int index;
+            while (!areCurlyBracesOkay(firstEntry)) {
+                index = firstEntry.lastIndexOf('}') + 1;
+                if (index == 0) return "";
+                else if (index == firstEntry.length()) index--;
+                firstEntry = firstEntry.substring(0, index);
+            }
+            index = firstEntry.lastIndexOf('}') + 1;
+            if (index == 0) return "";
+            else firstEntry = firstEntry.substring(0, index);
+
             String type = firstEntry.substring(firstEntry.indexOf("@") + 1, firstEntry.indexOf("{")).trim();
             if (Arrays.asList(types).contains(type.toLowerCase())) {
                 //firstEntry = replaceQuotationMarks(firstEntry);
@@ -51,6 +63,35 @@ public abstract class FormatChecker {
             }
         }
         return firstEntry;
+    }
+
+    /**
+     * Will check if the placement of curly braces for this entry is valid
+     * Invalid if:  - unequal amount,
+     * - closing } before opening {,
+     * - opening after stack is already empty
+     *
+     * @param entry entry to check
+     * @return if valid
+     */
+    private static boolean areCurlyBracesOkay(String entry) {
+        Stack<Character> stack = new Stack<>();
+
+        char c;
+        boolean foundOneBrace = false;
+        for (int i = 0; i < entry.length(); i++) {
+            c = entry.charAt(i);
+            if (c == '{') {
+                if (stack.isEmpty() && foundOneBrace) return false;
+                stack.push(c);
+                foundOneBrace = true;
+            } else if (c == '}') {
+                if (stack.empty()) return false;
+                else if (stack.peek() == '{') stack.pop();
+                else return false;
+            }
+        }
+        return (stack.empty() && foundOneBrace);
     }
 
     // https://www.logicbig.com/tutorials/core-java-tutorial/java-regular-expressions/regex-lookahead.html
@@ -129,6 +170,13 @@ public abstract class FormatChecker {
         return null;
     }
 
+    /**
+     * Creates a new TableEntry to store important values from the given Bib-Entry
+     * If a value is not given "none" is stored
+     *
+     * @param entry valid Bib-Entry
+     * @return tableEntry for the TableView in the App
+     */
     public static TableEntry getBibTableEntry(String entry) {
         String keyword = getBibEntryKeyword(entry);
         if (keyword != null) {
@@ -160,6 +208,14 @@ public abstract class FormatChecker {
         } else return null;
     }
 
+    /**
+     * Removes the closure from the given string
+     * Each value in a Bib-Entry can have 0 to multiple closures,
+     * that are either "" or {} or combinations of those
+     *
+     * @param str string with closure
+     * @return string without closure
+     */
     private static String removeClosure(String str) {
         str = str.trim().replaceAll("[\n\r]*(\\s+)", " ");
         while ((str.startsWith("{") && str.endsWith("}")) ||

@@ -92,7 +92,7 @@ public class PrimaryController {
                     String currentText = inputArea.getText();
                     if (currentText.length() < 30) {
                         inputArea.setText(entry);
-                    } else {
+                    } else if (!inputArea.getText().contains(entry.replaceAll("\r", "").trim())) {
                         inputArea.setText(inputArea.getText() + "\n\n" + entry);
                     }
                     App.toFront();
@@ -235,7 +235,7 @@ public class PrimaryController {
                 "    -fx-background-repeat: no-repeat;\n" +
                 "    -fx-background-position: center;";
 
-        if (!this.isBelowSize && (this.width <= 680 || this.height <= 650)) {
+        if (!this.isBelowSize && (this.width <= 720 || this.height <= 650)) {
             this.isBelowSize = true;
             for (Node node : this.buttons
             ) {
@@ -247,7 +247,7 @@ public class PrimaryController {
             buttonBox2_1.setSpacing(5);
             buttonBox2_2.setSpacing(5);
 
-        } else if (this.isBelowSize && (this.width > 680 && this.height > 650)) {
+        } else if (this.isBelowSize && (this.width > 720 && this.height > 650)) {
             this.isBelowSize = false;
             for (Node node : this.buttons
             ) {
@@ -382,13 +382,19 @@ public class PrimaryController {
     public void selectEntry(ActionEvent actionEvent) {
         if (fileManager.isFileSelected()) {
             ObservableList<TableEntry> items = bibTable.getSelectionModel().getSelectedItems();
+            if(items.size() == 0){
+                throwAlert("No entry selected!", "Select an entry from the table first!");
+                return;
+            }
             String oldText = this.inputArea.getText();
             StringBuilder builder = new StringBuilder(oldText.length() < 30 ? "" : oldText + "\n\n");
 
             for (TableEntry tableEntry : items
             ) {
                 String entry = fileManager.getBibEntry(tableEntry.getKeyword());
-                builder.append(FormatChecker.replaceValueClosures(entry, true)).append("\n\n"); //todo
+                if (!oldText.contains(entry.replaceAll("\r", "").trim())) {
+                    builder.append(FormatChecker.replaceValueClosures(entry, true)).append("\n\n"); //todo
+                }
             }
             builder.setLength(builder.length() - 2);
             this.inputArea.setText(builder.toString());
@@ -489,18 +495,18 @@ public class PrimaryController {
     }
 
     public void replaceQuotationMarks(ActionEvent actionEvent) {
-        replaceValueClosures(true);
+        replaceValueClosures(true, actionEvent);
     }
 
     public void replaceCurlyBraces(ActionEvent actionEvent) {
-        replaceValueClosures(false);
+        replaceValueClosures(false, actionEvent);
     }
 
     /**
      * Will call the function in FileManager to replace quotation marks or curly braces
      * Throws alert when no file is selected and will prompt the user to confirm the replacement
      */
-    private void replaceValueClosures(boolean toCurlyBraces) {
+    private void replaceValueClosures(boolean toCurlyBraces, ActionEvent actionEvent) {
         if (!fileManager.isFileSelected()) {
             throwAlert("Cant replace anything", "Select a file first!");
             return;
@@ -515,7 +521,7 @@ public class PrimaryController {
         stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
-                fileManager.replaceValueClosures(toCurlyBraces);
+                fileManager.replaceValueClosures(toCurlyBraces, actionEvent);
             }
         });
     }
@@ -561,9 +567,9 @@ public class PrimaryController {
      * @param actionEvent button click
      */
     public void selectAllEntries(ActionEvent actionEvent) {
-        if(bibTable.getSelectionModel().getSelectedItems().size() == bibTable.getItems().size()){
-           bibTable.getSelectionModel().clearSelection();
-        }else{
+        if (bibTable.getSelectionModel().getSelectedItems().size() == bibTable.getItems().size()) {
+            bibTable.getSelectionModel().clearSelection();
+        } else {
             bibTable.getSelectionModel().selectAll();
         }
     }
