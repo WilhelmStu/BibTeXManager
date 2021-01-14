@@ -44,21 +44,6 @@
     -fx-padding: 10 0 5 0;
 }
 
-#selectRootButton {
-    -fx-background-image: url('icon/dir.png');
-}
-
-#searchButton {
-    -fx-background-image: url('icon/search.png');
-}
-
-#selectSingleFileButton {
-    -fx-background-image: url('icon/file.png');
-}
-
-#createFileButton {
-    -fx-background-image: url('icon/create.png');
-}
 
 .button {
     -fx-padding: 0;
@@ -77,36 +62,6 @@
     -fx-min-width: 17;
     -fx-pref-width: 17;
     -fx-font-size: 16;
-}
-
-#insertButton {
-    -fx-background-image: url('icon/insert2.png');
-}
-
-#selectEntry {
-    -fx-background-image: url('icon/edit2.png');
-}
-
-#selectFile {
-    -fx-background-image: url('icon/arrow_r.png');
-    -fx-min-height: 45px;
-    -fx-min-width: 45px;
-    -fx-pref-width: 45px;
-    -fx-background-size: 30px;
-    -fx-padding: 5;
-}
-
-#deleteEntry {
-    -fx-background-image: url('icon/delete.png');
-}
-
-
-#openInBrowser {
-    -fx-background-image: url('icon/browse.png');
-}
-
-#replaceQuotationMarks {
-    -fx-background-image: url('icon/replace.png');
 }
 
 .tooltip {

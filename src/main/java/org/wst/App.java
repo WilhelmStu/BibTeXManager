@@ -27,7 +27,7 @@ public class App extends Application {
         scene.getStylesheets().add(App.class.getResource("styles.css").toExternalForm());
         scene.getStylesheets().add(App.class.getResource("darkStyles.css").toExternalForm());
         stage.setTitle("BibTeX Manager");
-        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+        stage.getIcons().add(new Image(App.class.getResource("icons/icon.png").toExternalForm()));
         stage.setScene(scene);
         stage.setMinHeight(480);
         stage.setMinWidth(640);

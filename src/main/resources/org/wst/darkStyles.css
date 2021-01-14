@@ -24,3 +24,92 @@
 .table-view .table-cell{
     -fx-border-color: #4a4a4a;
 }
+
+#selectRootButton {
+    -fx-background-image: url('icons/dark_mode/dir.png');
+}
+
+#searchButton {
+    -fx-background-image: url('icons/dark_mode/search.png');
+}
+
+#searchButton:hover{
+    -fx-background-image: url('icons/dark_mode/cancel_search.png');
+}
+
+#selectSingleFileButton {
+    -fx-background-image: url('icons/dark_mode/file.png');
+}
+
+#createFileButton {
+    -fx-background-image: url('icons/dark_mode/create.png');
+}
+
+#disableFileList {
+    -fx-background-image: url('icons/dark_mode/blend_out.png');
+}
+
+#selectFile {
+    -fx-background-image: url('icons/dark_mode/arrow_r.png');
+    -fx-padding: 5;
+}
+
+#insertButton {
+    -fx-background-image: url('icons/dark_mode/insert.png');
+}
+
+#selectEntry {
+    -fx-background-image: url('icons/dark_mode/edit.png');
+}
+
+#toggleAutoInsert {
+    -fx-background-image: url('icons/dark_mode/copy_enabled.png');
+}
+
+#toggleAutoInsert2 {
+    -fx-background-image: url('icons/dark_mode/copy_disabled.png');
+}
+
+#changeClosureMode {
+    -fx-background-image: url('icons/dark_mode/curly_mode.png');
+}
+
+#changeClosureMode2 {
+    -fx-background-image: url('icons/dark_mode/quotation_mode.png');
+}
+
+#clearTextArea {
+    -fx-background-image: url('icons/dark_mode/clear_text_field.png');
+}
+
+#changeColorMode {
+    -fx-background-image: url('icons/dark_mode/dark_light.png');
+}
+
+#undoMoveButton {
+    -fx-background-image: url('icons/dark_mode/undo.png');
+}
+
+#redoMoveButton {
+    -fx-background-image: url('icons/dark_mode/redo.png');
+}
+
+#selectAll {
+    -fx-background-image: url('icons/dark_mode/select_all.png');
+}
+
+#deleteEntry {
+    -fx-background-image: url('icons/dark_mode/delete.png');
+}
+
+#openInBrowser {
+    -fx-background-image: url('icons/dark_mode/browse.png');
+}
+
+#replaceQuotationMarks {
+    -fx-background-image: url('icons/dark_mode/replace_quotations.png');
+}
+
+#replaceCurlyBraces {
+    -fx-background-image: url('icons/dark_mode/replace_curly.png');
+}

@@ -4,7 +4,7 @@
 }
 
 /* https://stackoverflow.com/questions/28417140/styling-default-javafx-dialogs/28421229#28421229 */
-.dialog-pane{
+.dialog-pane {
     -fx-background-color: #e2e2e2;
 }
 
@@ -17,4 +17,93 @@
 
 .dialog-pane .button {
     -fx-cursor: hand;
+}
+
+#selectRootButton {
+    -fx-background-image: url('icons/light_mode/dir.png');
+}
+
+#searchButton {
+    -fx-background-image: url('icons/light_mode/search.png');
+}
+
+#searchButton:hover{
+    -fx-background-image: url('icons/light_mode/cancel_search.png');
+}
+
+#selectSingleFileButton {
+    -fx-background-image: url('icons/light_mode/file.png');
+}
+
+#createFileButton {
+    -fx-background-image: url('icons/light_mode/create.png');
+}
+
+#disableFileList {
+    -fx-background-image: url('icons/light_mode/blend_out.png');
+}
+
+#selectFile {
+    -fx-background-image: url('icons/light_mode/arrow_r.png');
+    -fx-padding: 5;
+}
+
+#insertButton {
+    -fx-background-image: url('icons/light_mode/insert.png');
+}
+
+#selectEntry {
+    -fx-background-image: url('icons/light_mode/edit.png');
+}
+
+#toggleAutoInsert {
+    -fx-background-image: url('icons/light_mode/copy_enabled.png');
+}
+
+#toggleAutoInsert2 {
+    -fx-background-image: url('icons/light_mode/copy_disabled.png');
+}
+
+#changeClosureMode {
+    -fx-background-image: url('icons/light_mode/curly_mode.png');
+}
+
+#changeClosureMode2 {
+    -fx-background-image: url('icons/light_mode/quotation_mode.png');
+}
+
+#clearTextArea {
+    -fx-background-image: url('icons/light_mode/clear_text_field.png');
+}
+
+#changeColorMode {
+    -fx-background-image: url('icons/light_mode/dark_light.png');
+}
+
+#undoMoveButton {
+    -fx-background-image: url('icons/light_mode/undo.png');
+}
+
+#redoMoveButton {
+    -fx-background-image: url('icons/light_mode/redo.png');
+}
+
+#selectAll {
+    -fx-background-image: url('icons/light_mode/select_all.png');
+}
+
+#deleteEntry {
+    -fx-background-image: url('icons/light_mode/delete.png');
+}
+
+#openInBrowser {
+    -fx-background-image: url('icons/light_mode/browse.png');
+}
+
+#replaceQuotationMarks {
+    -fx-background-image: url('icons/light_mode/replace_quotations.png');
+}
+
+#replaceCurlyBraces {
+    -fx-background-image: url('icons/light_mode/replace_curly.png');
 }

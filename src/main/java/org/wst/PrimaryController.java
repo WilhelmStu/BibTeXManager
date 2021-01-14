@@ -45,7 +45,8 @@ public class PrimaryController {
     @FXML
     private VBox buttonBox3, colWithListView, secondColumnBox;
     @FXML
-    private Button insertButton, selectFile, enableFileListButton, undoMoveButton, redoMoveButton;
+    private Button insertButton, selectFile, enableFileListButton, undoMoveButton, redoMoveButton,
+            toggleAutoInsert, changeClosureMode;
     @FXML
     private ColumnConstraints listViewColumnConstraints, secondColumnConstraints;
     @FXML
@@ -74,7 +75,7 @@ public class PrimaryController {
     public void initialize() {
         initClipboardService();
         initListAndTable();
-        //initShortCutListener();
+        initShortCutListener();
         fileManager.setUndoRedoButtons(undoMoveButton, redoMoveButton);
         getAllButtons();
     }
@@ -569,8 +570,13 @@ public class PrimaryController {
      * @param actionEvent button click
      */
     public void toggleAutoInsert(ActionEvent actionEvent) {
-        if (this.clipboardService.isRunning()) this.clipboardService.cancel();
-        else this.clipboardService.restart();
+        if (this.clipboardService.isRunning()) {
+            this.clipboardService.cancel();
+            this.toggleAutoInsert.setId("toggleAutoInsert2");
+        } else {
+            this.clipboardService.restart();
+            this.toggleAutoInsert.setId("toggleAutoInsert");
+        }
     }
 
     /**
@@ -588,10 +594,14 @@ public class PrimaryController {
      * @param actionEvent button click
      */
     public void selectAllEntries(ActionEvent actionEvent) {
-        if (bibTable.getSelectionModel().getSelectedItems().size() == bibTable.getItems().size()) {
-            bibTable.getSelectionModel().clearSelection();
+        if (!fileManager.isFileSelected()) {
+            throwAlert("Entry/ies not inserted!", "Select a file first!");
         } else {
-            bibTable.getSelectionModel().selectAll();
+            if (bibTable.getSelectionModel().getSelectedItems().size() == bibTable.getItems().size()) {
+                bibTable.getSelectionModel().clearSelection();
+            } else {
+                bibTable.getSelectionModel().selectAll();
+            }
         }
     }
 
@@ -603,6 +613,8 @@ public class PrimaryController {
      */
     public void changeClosureMode(ActionEvent actionEvent) {
         toCurlyMode = !toCurlyMode;
+        if (toCurlyMode) this.changeClosureMode.setId("changeClosureMode");
+        else this.changeClosureMode.setId("changeClosureMode2");
     }
 
     public static boolean isToCurlyMode() {

@@ -48,7 +48,7 @@
                 </Button>
                 <Button fx:id="disableFileList" onAction="#disableFileList">
                     <tooltip>
-                        <Tooltip text="Create a new .bib file"/>
+                        <Tooltip text="Blend out file list"/>
                     </tooltip>
                 </Button>
             </HBox>
