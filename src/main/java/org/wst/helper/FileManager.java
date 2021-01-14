@@ -5,12 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import org.wst.App;
 import org.wst.PrimaryController;
 import org.wst.model.TableEntry;
 
@@ -24,21 +24,36 @@ public class FileManager {
     private FileManager() {
     }
 
-    private static FileManager fileManager = null;
+    private final static FileManager fileManager = new FileManager();
 
     public static FileManager getInstance() {
-        if (fileManager == null) {
-            fileManager = new FileManager();
-        }
         return fileManager;
     }
 
     private File rootDirectory;
+    private Task<List<File>> directorySearchTask;
     private List<File> filesInsideRoot;
     private File selectedFile;
     private Map<String, String> bibMap;
     private String fileAsString;
+    private UndoRedoManager undoRedo;
+    private Button undoButton, redoButton;
     private final Object lock = new Object();
+
+    /**
+     * Needed by UndoRedoManager, in order to make fileWrites on the same lock
+     *
+     * @return lock
+     */
+    public Object getLock() {
+        return lock;
+    }
+
+    public void setUndoRedoButtons(Button undo, Button redo) {
+        this.undoButton = undo;
+        this.redoButton = redo;
+        this.undoRedo = UndoRedoManager.getInstance();
+    }
 
     /**
      * TODO: improve the way duplicate filenames are handled!
@@ -56,7 +71,25 @@ public class FileManager {
     public void selectDirectory(ActionEvent actionEvent, ListView<String> view) {
         Button b = (Button) actionEvent.getSource();
         String id = b.getId();
-        b.setDisable(true);
+        if (id.equals("searchButton")) {
+
+            Alert alert = new Alert(Alert.AlertType.NONE,
+                    "The search for .bib entries will be canceled!",
+                    ButtonType.OK, ButtonType.CANCEL);
+            alert.setTitle("Do you want to cancel?");
+            alert.getDialogPane().getScene().getStylesheets()
+                    .add(App.class.getResource(PrimaryController.isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    b.setId("selectRootButton");
+                    directorySearchTask.cancel();
+                }
+            });
+            return;
+        }
+        //b.setDisable(true);
         b.setId("searchButton");
 
         DirectoryChooser chooser = new DirectoryChooser();
@@ -67,11 +100,11 @@ public class FileManager {
         rootDirectory = chooser.showDialog(b.getScene().getWindow());
 
         if (rootDirectory != null) {
-            Task<List<File>> t = getFileSearchTask(rootDirectory);
-            t.setOnSucceeded(list -> {
+            directorySearchTask = getFileSearchTask(rootDirectory);
+            directorySearchTask.setOnSucceeded(list -> {
                 List<String> fileNames = new ArrayList<>();
 
-                filesInsideRoot = t.getValue();
+                filesInsideRoot = directorySearchTask.getValue();
                 for (File f : filesInsideRoot
                 ) {
                     fileNames.add(f.getParentFile().getName() + File.separator + f.getName());
@@ -86,10 +119,10 @@ public class FileManager {
                 b.setId(id);
 
             });
-            Thread th = new Thread(t);
+            Thread th = new Thread(directorySearchTask);
             th.start();
         } else {
-            b.setDisable(false);
+            //b.setDisable(false);
             b.setId(id);
         }
     }
@@ -117,6 +150,7 @@ public class FileManager {
      * @return subList of .bib Files
      */
     private List<File> getAllSubFiles(File dir, List<File> list) {
+        if (directorySearchTask.isCancelled()) return list;
         File[] sub = dir.listFiles();
         if (sub != null) {
             for (File f : sub
@@ -189,6 +223,10 @@ public class FileManager {
         return selectedFile != null;
     }
 
+    public void setSelectedFile(File selectedFile) {
+        this.selectedFile = selectedFile;
+    }
+
     /**
      * Will write the given bib-entry into the selected file, validity should be checked before calling this function
      * If an entry with a given keyword is already in the file it will replace the one in the file and the map
@@ -198,7 +236,7 @@ public class FileManager {
      *
      * @param str bib entry to write
      */
-    public void writeToFile(String str) {
+    public void writeSingleEntryToFile(String str) {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -266,14 +304,17 @@ public class FileManager {
                             }
                         }
                         BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
-                        writer.write(fileAsString.trim() + "\r\n");
+                        fileAsString = fileAsString.trim() + "\r\n";
+                        writer.write(fileAsString);
                         writer.flush();
                         writer.close();
-
+                        undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.DELETE);
                     } catch (IOException e) {
                         System.err.println("Error writing to file");
                         e.printStackTrace();
                     }
+                    undoButton.setDisable(!undoRedo.isUndoPossible());
+                    redoButton.setDisable(!undoRedo.isRedoPossible());
                     return null;
                 }
             }
@@ -284,29 +325,52 @@ public class FileManager {
 
     /**
      * Will check if the current entries inside the TextArea are valid and insert them all
-     * into the file
+     * into the file, if all entries are new they will be appended to the file, else the file is rewritten
+     * The map of bib entries will also be updated accordingly
+     * Will also update the TableView with new/updated entries
+     * Any change of fileAsString and write operation is synchronized on variable "lock"
      * Throw an alert if there are no entries to insert, and one telling how many entries where inserted
      *
-     * @param text text block from textArea
+     * @param text    text block from textArea
      * @param entries entries inside the table for updates
-     * @param event button press event
+     * @param event   button press event
      */
     public void insertIntoFile(String text, ObservableList<TableEntry> entries, ActionEvent event) {
         Button b = (Button) event.getSource();
         b.setDisable(true);
         Task<Void> task = new Task<>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
 
                 ArrayList<String> entryArray = FormatChecker.getBibEntries(text);
                 if (entryArray.isEmpty()) {
                     Platform.runLater(() -> PrimaryController.throwAlert("Entry/ies not inserted!", "No valid entry found!"));
                 } else {
+                    boolean needsRewrite = false;
+                    String fileAsStringTmp = fileAsString;
+                    StringBuilder rewriteBuilder = new StringBuilder(fileAsStringTmp);
+                    StringBuilder appendBuilder = new StringBuilder();
+
                     for (String entry : entryArray) {
-                        fileManager.writeToFile(entry);
                         String keyword = FormatChecker.getBibEntryKeyword(entry);
-                        if (keyword != null) {
-                            boolean isAlreadyInFile = false;
+                        if (keyword == null) {
+                            System.err.println("Insert into file, invalid entry");
+                        } else {
+                            if (bibMap.containsKey(keyword)) { // entry already in file, replace old one
+                                String toReplace = bibMap.get(keyword);
+                                fileAsStringTmp = rewriteBuilder.toString();
+                                fileAsStringTmp = fileAsStringTmp.replace(toReplace, entry).trim() + "\r\n";
+                                rewriteBuilder = new StringBuilder(fileAsStringTmp);
+                                bibMap.put(keyword, entry);
+                                needsRewrite = true;
+
+                            } else { // entry not in file yet append it
+                                bibMap.put(keyword, entry);
+                                rewriteBuilder.append("\r\n").append(entry);
+                                appendBuilder.append("\r\n").append(entry);
+                            }
+
+                            boolean isAlreadyInFile = false; // update Table entries with this entry
                             for (int i = 0; i < entries.size(); i++) {
                                 if (entries.get(i).getKeyword().equals(keyword)) {
                                     entries.set(i, FormatChecker.getBibTableEntry(entry));
@@ -319,16 +383,38 @@ public class FileManager {
                             }
                         }
                     }
+
+                    synchronized (lock) {
+                        try {
+                            BufferedWriter writer;
+                            if (needsRewrite) {
+                                writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
+                                writer.write(rewriteBuilder.toString());
+                            } else {
+                                writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), true));
+                                writer.write(appendBuilder.toString());
+                            }
+                            writer.flush();
+                            writer.close();
+                            fileAsString = rewriteBuilder.toString();
+                        } catch (IOException e) {
+                            System.err.println("Error during insert file write");
+                            e.printStackTrace();
+                        }
+                    }
+
+                    undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.WRITE);
                     //inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
                     boolean isSingle = entryArray.size() == 1;
                     Platform.runLater(() -> {
                         PrimaryController.throwAlert(isSingle ? "Bib-Entry inserted!" : "Entries inserted!",
                                 isSingle ? "The single Bib-Entry was inserted" : entryArray.size() + " Bib-Entries successfully inserted");
-                        b.setDisable(false);
+                        undoButton.setDisable(!undoRedo.isUndoPossible());
+                        redoButton.setDisable(!undoRedo.isRedoPossible());
                     });
 
-
                 }
+                b.setDisable(false);
                 return null;
             }
         };
@@ -439,6 +525,9 @@ public class FileManager {
                     }
                     reader.close();
                     fileAsString = builder.toString();
+                    if (undoRedo.isInit()) {
+                        undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.INIT);
+                    }
 
                 } catch (IOException e) {
                     System.err.println("Error reading from file!");
@@ -518,12 +607,15 @@ public class FileManager {
                         ) {
                             String oldEntry = entry.getValue();
                             String newValue = FormatChecker.replaceValueClosures(oldEntry, toCurlyBraces) + "\r\n";
-                            fileAsString = fileAsString.replace(oldEntry, newValue);
+                            fileAsString = fileAsString.replace(oldEntry.trim(), newValue.trim());
                             bibMap.put(entry.getKey(), newValue);
                         }
                         writer.write(fileAsString.trim() + "\r\n");
                         writer.flush();
                         writer.close();
+                        undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.REFORMAT);
+                        undoButton.setDisable(!undoRedo.isUndoPossible());
+                        redoButton.setDisable(!undoRedo.isRedoPossible());
 
                     } catch (IOException e) {
                         System.err.println("Error writing to file");

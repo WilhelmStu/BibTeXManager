@@ -27,7 +27,8 @@
 
         <!--Label GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.columnSpan="4" text="Main Window"/-->
 
-        <VBox fx:id="colWithListView" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="0"  spacing="5" alignment="CENTER">
+        <VBox fx:id="colWithListView" styleClass="Vbox" GridPane.rowIndex="0" GridPane.columnIndex="0" spacing="5"
+              alignment="CENTER">
 
             <HBox fx:id="buttonBox1" alignment="CENTER" spacing="10">
                 <Button fx:id="selectRootButton" onAction="#selectRoot">
@@ -45,6 +46,11 @@
                         <Tooltip text="Create a new .bib file"/>
                     </tooltip>
                 </Button>
+                <Button fx:id="disableFileList" onAction="#disableFileList">
+                    <tooltip>
+                        <Tooltip text="Create a new .bib file"/>
+                    </tooltip>
+                </Button>
             </HBox>
 
             <!--Label fx:id="selectedFile" text="Select a file/directory first"/-->
@@ -56,8 +62,14 @@
 
         </VBox>
 
-        <VBox alignment="CENTER" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.halignment="CENTER">
-            <Region prefHeight="35"/>
+        <VBox fx:id="secondColumnBox" alignment="CENTER" GridPane.rowIndex="0" GridPane.columnIndex="1"
+              GridPane.halignment="CENTER">
+            <Button fx:id="enableFileListButton" onAction="#enableFileList" visible="false" managed="false" text=">">
+                <tooltip>
+                    <Tooltip text="Select this file"/>
+                </tooltip>
+            </Button>
+            <Region fx:id="secondColumnRegion" prefHeight="35"/>
             <Button fx:id="selectFile" onAction="#selectFileFromList">
                 <tooltip>
                     <Tooltip text="Select this file"/>
@@ -76,50 +88,50 @@
                     <TableView fx:id="bibTable" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" prefHeight="2000"/>
                     <Region minHeight="8"/>
                     <!--Button fx:id="selectEntry" text="\\/" onAction="#selectEntry"/-->
-                    <HBox fx:id="buttonBox2" alignment="CENTER">
+                    <HBox fx:id="buttonBox2" alignment="CENTER" spacing="8">
 
-                        <Button fx:id="insertButton" onAction="#insertIntoFile" GridPane.rowIndex="1"
-                                GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                        <Button fx:id="insertButton" onAction="#insertIntoFile">
                             <tooltip>
                                 <Tooltip text="Add entry below to the file"/>
                             </tooltip>
                         </Button>
-                        <Region prefWidth="1000" minWidth="0"/>
-                        <HBox fx:id="buttonBox2_1" spacing="8">
-                            <Button fx:id="selectEntry" onAction="#selectEntry">
-                                <tooltip>
-                                    <Tooltip text="Edit selected entry/ies"/>
-                                </tooltip>
-                            </Button>
-                            <Button fx:id="toggleAutoInsert" onAction="#toggleAutoInsert">
-                                <tooltip>
-                                    <Tooltip text='Disable insert of clipboard content'/>
-                                </tooltip>
-                            </Button>
-                            <Button fx:id="clearTextArea" onAction="#clearTextArea">
-                                <tooltip>
-                                    <Tooltip text='Clear content of TextArea below'/>
-                                </tooltip>
-                            </Button>
-                        </HBox>
-                        <Region prefWidth="1000"  minWidth="0"/>
-                        <HBox fx:id="buttonBox2_2" spacing="8">
-                            <Button fx:id="changeColorMode" onAction="#changeColorMode">
-                                <tooltip>
-                                    <Tooltip text='Change between dark and light mode'/>
-                                </tooltip>
-                            </Button>
-                            <Button fx:id="undoLastMove" onAction="#changeColorMode">
-                                <tooltip>
-                                    <Tooltip text='Undo the last action'/>
-                                </tooltip>
-                            </Button>
-                            <Button fx:id="redoLastMove" onAction="#changeColorMode">
-                                <tooltip>
-                                    <Tooltip text='Redo the last undone action'/>
-                                </tooltip>
-                            </Button>
-                        </HBox>
+                        <Button fx:id="selectEntry" onAction="#selectEntry">
+                            <tooltip>
+                                <Tooltip text="Edit selected entry/ies"/>
+                            </tooltip>
+                        </Button>
+                        <Region prefWidth="300" minWidth="0"/>
+                        <Button fx:id="toggleAutoInsert" onAction="#toggleAutoInsert">
+                            <tooltip>
+                                <Tooltip text='Disable insert of clipboard content'/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="changeClosureMode" onAction="#changeClosureMode">
+                            <tooltip>
+                                <Tooltip text='Change between "" and {} format for inserts'/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="clearTextArea" onAction="#clearTextArea">
+                            <tooltip>
+                                <Tooltip text='Clear content of text field below'/>
+                            </tooltip>
+                        </Button>
+                        <Region prefWidth="500" minWidth="0"/>
+                        <Button fx:id="changeColorMode" onAction="#changeColorMode">
+                            <tooltip>
+                                <Tooltip text='Change between dark and light mode'/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="undoMoveButton" onAction="#undoLastMove" disable="true">
+                            <tooltip>
+                                <Tooltip text='Undo the last action'/>
+                            </tooltip>
+                        </Button>
+                        <Button fx:id="redoMoveButton" onAction="#redoLastMove" disable="true">
+                            <tooltip>
+                                <Tooltip text='Redo the last undone action'/>
+                            </tooltip>
+                        </Button>
 
                     </HBox>
                 </VBox>
@@ -149,6 +161,7 @@
                             <Tooltip text='Replace ALL [tag = {x}] with [tag = "x"]'/>
                         </tooltip>
                     </Button>
+                    <Region prefHeight="5"/>
                 </VBox>
             </HBox>
 
@@ -161,8 +174,8 @@
     </children>
 
     <columnConstraints>
-        <ColumnConstraints minWidth="220"/>
-        <ColumnConstraints percentWidth="7" prefWidth="50"/>
+        <ColumnConstraints fx:id="listViewColumnConstraints" minWidth="220"/>
+        <ColumnConstraints fx:id="secondColumnConstraints" percentWidth="7" prefWidth="50"/>
         <ColumnConstraints prefWidth="4000"/>
     </columnConstraints>
     <rowConstraints>

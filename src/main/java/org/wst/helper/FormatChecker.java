@@ -1,6 +1,7 @@
 package org.wst.helper;
 
 
+import org.wst.PrimaryController;
 import org.wst.model.TableEntry;
 
 import java.util.ArrayList;
@@ -237,7 +238,8 @@ public abstract class FormatChecker {
 
         String entry;
         while (!(entry = basicBibTeXCheck(text)).isEmpty()) {
-            entries.add(entry);
+            String correctClosure = replaceValueClosures(entry, PrimaryController.isToCurlyMode());
+            entries.add(correctClosure + "\r\n");
             if (text.length() > entry.length()) {
                 text = text.replace(entry.substring(0, entry.length() - 2), "");
             } else break;

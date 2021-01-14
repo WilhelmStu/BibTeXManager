@@ -12,11 +12,11 @@
     -fx-font-size: 14;
 }
 
-#gridPane{
+#gridPane {
     -fx-padding: 0 10 10 10;
 }
 
-#colWithListView{
+#colWithListView {
     -fx-padding: 10 0 0 0;
 }
 
@@ -40,7 +40,7 @@
     -fx-padding: 0;
 }
 
-#colWithSecondListView{
+#colWithSecondListView {
     -fx-padding: 10 0 5 0;
 }
 
@@ -70,6 +70,13 @@
     -fx-background-position: center;
     -fx-font-size: 14;
     -fx-cursor: hand;
+}
+
+#enableFileListButton {
+    -fx-min-height: 230;
+    -fx-min-width: 17;
+    -fx-pref-width: 17;
+    -fx-font-size: 16;
 }
 
 #insertButton {

@@ -1,19 +1,18 @@
 package org.wst;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.*;
-
 import javafx.application.HostServices;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -22,6 +21,12 @@ import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.wst.helper.*;
 import org.wst.model.TableEntry;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 
 public class PrimaryController {
@@ -36,19 +41,26 @@ public class PrimaryController {
     @FXML
     private ListView<String> fileList;
     @FXML
-    private HBox buttonBox2, buttonBox2_1, buttonBox2_2;
+    private HBox buttonBox2;
     @FXML
-    private VBox buttonBox3;
+    private VBox buttonBox3, colWithListView, secondColumnBox;
     @FXML
-    private Button insertButton, selectFile;
+    private Button insertButton, selectFile, enableFileListButton, undoMoveButton, redoMoveButton;
+    @FXML
+    private ColumnConstraints listViewColumnConstraints, secondColumnConstraints;
+    @FXML
+    private Region secondColumnRegion;
 
     private boolean isBelowSize = false;
     private double height = 768;
     private double width = 1024;
     private final ObservableList<Node> buttons = FXCollections.observableArrayList();
     private Stage stage;
-    private static boolean isDarkMode = true;
+    public static boolean isDarkMode = true;
+    private static boolean toCurlyMode = true;
+    private boolean isFileListActive = true;
     private final FileManager fileManager = FileManager.getInstance();
+    private UndoRedoManager undoRedo = UndoRedoManager.getInstance();
     private ClipboardService clipboardService;
 
     public PrimaryController() {
@@ -63,6 +75,7 @@ public class PrimaryController {
         initClipboardService();
         initListAndTable();
         //initShortCutListener();
+        fileManager.setUndoRedoButtons(undoMoveButton, redoMoveButton);
         getAllButtons();
     }
 
@@ -86,7 +99,7 @@ public class PrimaryController {
                 String entry = FormatChecker.basicBibTeXCheck((String) t.getSource().getValue());
                 boolean valid = (!entry.isEmpty());
                 if (valid) {
-                    entry = FormatChecker.replaceValueClosures(entry, true); //todo
+                    entry = FormatChecker.replaceValueClosures(entry, toCurlyMode);
                     System.out.println(entry);
 
                     String currentText = inputArea.getText();
@@ -235,7 +248,17 @@ public class PrimaryController {
                 "    -fx-background-repeat: no-repeat;\n" +
                 "    -fx-background-position: center;";
 
-        if (!this.isBelowSize && (this.width <= 720 || this.height <= 650)) {
+        final String smallStyleEnableButton = "   -fx-min-height: 150;\n" +
+                "    -fx-min-width: 14;\n" +
+                "    -fx-pref-width: 14;\n" +
+                "-fx-font-size: 12";
+
+        final String largeStyleEnableButton = "   -fx-min-height: 230;\n" +
+                "    -fx-min-width: 17;\n" +
+                "    -fx-pref-width: 17;\n" +
+                "-fx-font-size: 16";
+
+        if (!this.isBelowSize && ((isFileListActive ? this.width <= 785 : this.width <= 600) || this.height <= 650)) {
             this.isBelowSize = true;
             for (Node node : this.buttons
             ) {
@@ -244,10 +267,10 @@ public class PrimaryController {
                 }
             }
             buttonBox3.setSpacing(3);
-            buttonBox2_1.setSpacing(5);
-            buttonBox2_2.setSpacing(5);
+            buttonBox2.setSpacing(3);
+            enableFileListButton.setStyle(smallStyleEnableButton);
 
-        } else if (this.isBelowSize && (this.width > 720 && this.height > 650)) {
+        } else if (this.isBelowSize && ((isFileListActive ? this.width > 785 : this.width > 600) && this.height > 650)) {
             this.isBelowSize = false;
             for (Node node : this.buttons
             ) {
@@ -256,8 +279,8 @@ public class PrimaryController {
                 }
             }
             buttonBox3.setSpacing(8);
-            buttonBox2_1.setSpacing(8);
-            buttonBox2_2.setSpacing(8);
+            buttonBox2.setSpacing(8);
+            enableFileListButton.setStyle(largeStyleEnableButton);
         }
     }
 
@@ -269,8 +292,6 @@ public class PrimaryController {
         for (Node n : buttonBox2.getChildren()) {
             if (n.getClass() == Button.class) {
                 buttons.add(n);
-            } else if (n.getClass() == HBox.class) {
-                buttons.addAll(((HBox) n).getChildren());
             }
         }
         this.buttons.addAll(buttonBox3.getChildren());
@@ -382,7 +403,7 @@ public class PrimaryController {
     public void selectEntry(ActionEvent actionEvent) {
         if (fileManager.isFileSelected()) {
             ObservableList<TableEntry> items = bibTable.getSelectionModel().getSelectedItems();
-            if(items.size() == 0){
+            if (items.size() == 0) {
                 throwAlert("No entry selected!", "Select an entry from the table first!");
                 return;
             }
@@ -393,7 +414,7 @@ public class PrimaryController {
             ) {
                 String entry = fileManager.getBibEntry(tableEntry.getKeyword());
                 if (!oldText.contains(entry.replaceAll("\r", "").trim())) {
-                    builder.append(FormatChecker.replaceValueClosures(entry, true)).append("\n\n"); //todo
+                    builder.append(FormatChecker.replaceValueClosures(entry, toCurlyMode)).append("\n\n");
                 }
             }
             builder.setLength(builder.length() - 2);
@@ -571,6 +592,150 @@ public class PrimaryController {
             bibTable.getSelectionModel().clearSelection();
         } else {
             bibTable.getSelectionModel().selectAll();
+        }
+    }
+
+    /**
+     * Switch between the formatting type for entries to either use
+     * "" OR {} for values.
+     *
+     * @param actionEvent button click
+     */
+    public void changeClosureMode(ActionEvent actionEvent) {
+        toCurlyMode = !toCurlyMode;
+    }
+
+    public static boolean isToCurlyMode() {
+        return toCurlyMode;
+    }
+
+    /**
+     * Will disable the ListView to the left of the App, to make more space for the
+     * Table, also enables a hidden button to enable the ListView in again
+     *
+     * @param actionEvent button click
+     */
+    public void disableFileList(ActionEvent actionEvent) {
+        isFileListActive = false;
+
+        colWithListView.setVisible(false);
+        colWithListView.setManaged(false);
+        selectFile.setVisible(false);
+        selectFile.setManaged(false);
+        secondColumnRegion.setVisible(false);
+        secondColumnRegion.setManaged(false);
+
+        listViewColumnConstraints.setMinWidth(0);
+        secondColumnConstraints.setMinWidth(50);
+        secondColumnConstraints.setPrefWidth(50);
+        secondColumnConstraints.setPercentWidth(2);
+
+        enableFileListButton.setVisible(true);
+        enableFileListButton.setManaged(true);
+        enableFileListButton.setTranslateX(-10);
+
+        this.secondColumnBox.setAlignment(Pos.CENTER_LEFT);
+    }
+
+    /**
+     * Inverts the changes of the above function
+     *
+     * @param actionEvent button click
+     */
+    public void enableFileList(ActionEvent actionEvent) {
+        isFileListActive = true;
+
+        colWithListView.setVisible(true);
+        colWithListView.setManaged(true);
+        selectFile.setVisible(true);
+        selectFile.setManaged(true);
+        secondColumnRegion.setVisible(true);
+        secondColumnRegion.setManaged(true);
+
+        listViewColumnConstraints.setMinWidth(220);
+        secondColumnConstraints.setPrefWidth(50);
+        secondColumnConstraints.setPercentWidth(7);
+
+        enableFileListButton.setVisible(false);
+        enableFileListButton.setManaged(false);
+
+        secondColumnBox.setAlignment(Pos.CENTER);
+    }
+
+    /**
+     * Will undo the last move (only file operations), with the class the UndoRedoManager
+     * After the undo a alert with the appropriate undone action is shown
+     *
+     * @param actionEvent button click
+     */
+    public void undoLastMove(ActionEvent actionEvent) {
+        if (undoRedo.isUndoPossible()) {
+            UndoRedoManager.Action action = undoRedo.undoLastFileOperation();
+
+            fileManager.readFileIntoTable(this.bibTable);
+            this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
+
+            switch (action) {
+                case INIT:
+                    throwAlert("Undo success!", "Last available file operation (insert) was undone!");
+                    break;
+                case WRITE:
+                    throwAlert("Undo success!", "The last file operation (insert) was undone!");
+                    break;
+                case DELETE:
+                    throwAlert("Undo success!", "The last file operation (delete) was undone!");
+                    break;
+                case REFORMAT:
+                    throwAlert("Undo success!", "The last file operation (reformat) was undone");
+                    break;
+                case NONE_LEFT:
+                    throwAlert("Undo error!", "Cant undo any more operations!");
+                    break;
+                case ERROR:
+                    throwAlert("Undo error!", "Error occurred during undo, nothing happened!");
+            }
+
+            undoMoveButton.setDisable(!undoRedo.isUndoPossible());
+            redoMoveButton.setDisable(!undoRedo.isRedoPossible());
+        } else {
+            throwAlert("Undo error!", "Cant undo any more operations!");
+        }
+    }
+
+    /**
+     * Redoes the last undone move, with the class UndoRedoManager
+     * As with the function above an alert wil be shown
+     *
+     * @param actionEvent button click
+     */
+    public void redoLastMove(ActionEvent actionEvent) {
+        if (undoRedo.isRedoPossible()) {
+            UndoRedoManager.Action action = undoRedo.redoLastFileOperation();
+
+            fileManager.readFileIntoTable(this.bibTable);
+            this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
+
+            switch (action) {
+                case WRITE:
+                    throwAlert("Redo success!", "Previous file operation (insert) was redone!");
+                    break;
+                case DELETE:
+                    throwAlert("Redo success!", "Previous file operation (delete) was redone!");
+                    break;
+                case REFORMAT:
+                    throwAlert("Redo success!", "Previous file operation (reformat) was redone");
+                    break;
+                case NONE_LEFT:
+                    throwAlert("Redo error!", "Cant redo any more operations!");
+                    break;
+                case ERROR:
+                    throwAlert("Redo error!", "Error occurred during redo, nothing happened!");
+            }
+            undoMoveButton.setDisable(!undoRedo.isUndoPossible());
+            redoMoveButton.setDisable(!undoRedo.isRedoPossible());
+
+        } else {
+            throwAlert("Redo error!", "Cant redo any more operations!");
         }
     }
 }
