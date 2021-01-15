@@ -80,7 +80,7 @@ public class FileManager {
             alert.getDialogPane().getScene().getStylesheets()
                     .add(App.class.getResource(PrimaryController.isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
             Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+            stage.getIcons().add(new Image(App.class.getResource("icons/icon.png").toExternalForm()));
             alert.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     b.setId("selectRootButton");

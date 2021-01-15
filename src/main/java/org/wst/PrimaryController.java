@@ -392,7 +392,7 @@ public class PrimaryController {
         alert.getDialogPane().getScene().getStylesheets()
                 .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+        stage.getIcons().add(new Image(App.class.getResource("icons/icon.png").toExternalForm()));
         alert.show();
     }
 
@@ -452,7 +452,7 @@ public class PrimaryController {
         alert.getDialogPane().getScene().getStylesheets()
                 .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+        stage.getIcons().add(new Image(App.class.getResource("icons/icon.png").toExternalForm()));
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 ObservableList<TableEntry> items = bibTable.getSelectionModel().getSelectedItems();
@@ -540,7 +540,7 @@ public class PrimaryController {
         alert.getDialogPane().getScene().getStylesheets()
                 .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+        stage.getIcons().add(new Image(App.class.getResource("icons/icon.png").toExternalForm()));
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 fileManager.replaceValueClosures(toCurlyBraces, actionEvent);
