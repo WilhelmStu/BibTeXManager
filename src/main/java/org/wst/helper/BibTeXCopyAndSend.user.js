@@ -12,7 +12,6 @@
  * It will work on: https://dl.acm.org/ and check for a bibTeX Citation within the
  * specified div container and then copy it to clipboard, to be used inside BibTeXManager
  * The check for content in the container happens every 500ms for a total of 10 times (5sec for data to load)
- *
  */
 // LINK plugin: https://www.tampermonkey.net/
 // SCRIPT: https://gist.github.com/WilhelmStu/cf1b994d934bd6f6d89dc07ab65b09d3/raw/8f1d60f74973826f5d06fdcf25050fa423412295/BibTeXCopyAndSend.user.js

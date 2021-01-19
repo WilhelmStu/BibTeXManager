@@ -17,17 +17,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
-import org.jnativehook.GlobalScreen;
-import org.jnativehook.NativeHookException;
 import org.wst.helper.*;
 import org.wst.model.TableEntry;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
 
 public class PrimaryController {
 
@@ -61,7 +55,7 @@ public class PrimaryController {
     private static boolean toCurlyMode = true;
     private boolean isFileListActive = true;
     private final FileManager fileManager = FileManager.getInstance();
-    private UndoRedoManager undoRedo = UndoRedoManager.getInstance();
+    private final UndoRedoManager undoRedo = UndoRedoManager.getInstance();
     private ClipboardService clipboardService;
 
     public PrimaryController() {
@@ -75,7 +69,6 @@ public class PrimaryController {
     public void initialize() {
         initClipboardService();
         initListAndTable();
-        initShortCutListener();
         fileManager.setUndoRedoButtons(undoMoveButton, redoMoveButton);
         getAllButtons();
     }
@@ -183,27 +176,6 @@ public class PrimaryController {
         yearColumn.setMaxWidth(60);
         yearColumn.setResizable(false);
 
-    }
-
-    /**
-     * Creates a listener that detects keyboard inputs, with the help of jnativehook
-     * Detects key input of F1 to auto-press ctrl/cmd + a +c to copy a bib entry
-     */
-    private void initShortCutListener() {
-        // Get the logger for "org.jnativehook" and disable warnings
-        LogManager.getLogManager().reset();
-        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
-        logger.setLevel(Level.WARNING);
-
-        // Don't forget to disable the parent handlers.
-        logger.setUseParentHandlers(false);
-
-        try {
-            GlobalScreen.registerNativeHook();
-        } catch (NativeHookException e) {
-            System.err.println("Problem registering native hook / Key hook");
-        }
-        GlobalScreen.addNativeKeyListener(new ShortCutListener());
     }
 
     /**
@@ -392,7 +364,7 @@ public class PrimaryController {
         alert.getDialogPane().getScene().getStylesheets()
                 .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+        stage.getIcons().add(new Image(App.class.getResource("icons/icon.png").toExternalForm()));
         alert.show();
     }
 
@@ -452,7 +424,7 @@ public class PrimaryController {
         alert.getDialogPane().getScene().getStylesheets()
                 .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+        stage.getIcons().add(new Image(App.class.getResource("icons/icon.png").toExternalForm()));
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 ObservableList<TableEntry> items = bibTable.getSelectionModel().getSelectedItems();
@@ -540,7 +512,7 @@ public class PrimaryController {
         alert.getDialogPane().getScene().getStylesheets()
                 .add(App.class.getResource(isDarkMode ? "darkStyles.css" : "lightStyles.css").toExternalForm());
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(App.class.getResource("icon/icon.png").toExternalForm()));
+        stage.getIcons().add(new Image(App.class.getResource("icons/icon.png").toExternalForm()));
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.YES) {
                 fileManager.replaceValueClosures(toCurlyBraces, actionEvent);
