@@ -27,7 +27,7 @@ public class UndoRedoManager {
     }
 
     public enum Action {
-        INIT,
+        FILE_LOAD,
         DELETE,
         WRITE,
         REFORMAT,

@@ -283,7 +283,7 @@ public class FileManager {
      *
      * @param keywords entry keyword to delete
      */
-    public void deleteEntriesFromFile(List<String> keywords) {
+    public void deleteEntriesFromFile(List<String> keywords, Label tableLabel) {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -309,6 +309,10 @@ public class FileManager {
                         writer.flush();
                         writer.close();
                         undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.DELETE);
+                        Platform.runLater(() -> {
+                            int size = bibMap.size();
+                            tableLabel.setText(size + (size == 1 ? " entry inside: " : " entries inside: ") + fileManager.getSelectedFileName());
+                        });
                     } catch (IOException e) {
                         System.err.println("Error writing to file");
                         e.printStackTrace();
@@ -335,7 +339,7 @@ public class FileManager {
      * @param entries entries inside the table for updates
      * @param event   button press event
      */
-    public void insertIntoFile(String text, ObservableList<TableEntry> entries, ActionEvent event) {
+    public void insertIntoFile(String text, ObservableList<TableEntry> entries, Label tableLabel, ActionEvent event) {
         Button b = (Button) event.getSource();
         b.setDisable(true);
         Task<Void> task = new Task<>() {
@@ -407,6 +411,8 @@ public class FileManager {
                     //inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
                     boolean isSingle = entryArray.size() == 1;
                     Platform.runLater(() -> {
+                        int size = bibMap.size();
+                        tableLabel.setText(size + (size == 1 ? " entry inside: " : " entries inside: ") + fileManager.getSelectedFileName());
                         PrimaryController.throwAlert(isSingle ? "Bib-Entry inserted!" : "Entries inserted!",
                                 isSingle ? "The single Bib-Entry was inserted" : entryArray.size() + " Bib-Entries successfully inserted");
                         undoButton.setDisable(!undoRedo.isUndoPossible());
@@ -461,6 +467,9 @@ public class FileManager {
                     fw.write("");
                     fw.flush();
                     fw.close();
+                    undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.FILE_LOAD);
+                    undoButton.setDisable(!undoRedo.isUndoPossible());
+                    redoButton.setDisable(!undoRedo.isRedoPossible());
                 }
             } catch (IOException e) {
                 System.err.println("Error writing file, during creation");
@@ -479,7 +488,7 @@ public class FileManager {
      * Duplicates (same entry keyword) will only occur a single time in the map!
      * Synchronized to prevent bugs from quickly loading various large files
      */
-    public synchronized void readFileIntoTable(TableView<TableEntry> view) {
+    public synchronized void readFileIntoTable(TableView<TableEntry> view, Label tableLabel, boolean isUndoRedo) {
         Task<ObservableList<TableEntry>> task = new Task<>() {
             @Override
             protected ObservableList<TableEntry> call() throws Exception {
@@ -525,8 +534,15 @@ public class FileManager {
                     }
                     reader.close();
                     fileAsString = builder.toString();
-                    if (undoRedo.isInit()) {
-                        undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.INIT);
+                    Platform.runLater(() -> {
+                        int size = bibMap.size();
+                        tableLabel.setText(size + (size == 1 ? " entry inside: " : " entries inside: ") + fileManager.getSelectedFileName());
+                    });
+
+                    if (undoRedo.isInit() || !isUndoRedo) {
+                        undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.FILE_LOAD);
+                        undoButton.setDisable(!undoRedo.isUndoPossible());
+                        redoButton.setDisable(!undoRedo.isRedoPossible());
                     }
 
                 } catch (IOException e) {
