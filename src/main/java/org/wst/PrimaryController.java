@@ -100,9 +100,9 @@ public class PrimaryController {
 
                     String currentText = inputArea.getText();
                     if (currentText.length() < 30) {
-                        inputArea.setText(entry);
+                        inputArea.replaceText(0, inputArea.getLength(), entry);
                     } else if (!inputArea.getText().contains(entry.replaceAll("\r", "").trim())) {
-                        inputArea.setText(inputArea.getText() + "\n\n" + entry);
+                        inputArea.replaceText(0, inputArea.getLength(), inputArea.getText() + "\n\n" + entry);
                     }
                     App.toFront();
                 } else {
@@ -395,7 +395,7 @@ public class PrimaryController {
                 }
             }
             builder.setLength(builder.length() - 2);
-            this.inputArea.setText(builder.toString());
+            this.inputArea.replaceText(0, inputArea.getLength(), builder.toString());
 
         } else {
             throwAlert("No file selected!", "Select a file first!");
@@ -420,8 +420,8 @@ public class PrimaryController {
             return;
         }
 
-        String msg = selectedItems.size() == 1 ? "Delete 1 entry from the list?" :
-                "Delete " + selectedItems.size() + " entries from the list?";
+        String msg = selectedItems.size() == 1 ? "Delete 1 entry from the file?" :
+                "Delete " + selectedItems.size() + " entries from the file?";
 
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.YES, ButtonType.CANCEL);
         alert.setTitle("Delete confirmation");
@@ -483,7 +483,7 @@ public class PrimaryController {
             } else if (!entry.getTitle().equals("none") && !entry.getAuthor().equals("none")) { //todo add config for search engine!
                 String engine = "https://duckduckgo.com/?q="; // or GOOGLE: https://www.google.at/search?q=
                 String query = entry.getTitle().trim() + "+" + entry.getAuthor().trim();
-                query = query.replaceAll(" ", "+").replaceAll("[\\[\\]{}|\\\\”%~#<>$–_.!*‘()]", "");
+                query = query.replaceAll(" ", "+").replaceAll("[\\[\\]{}|\\\\\"„“”%~#<>$–_.!*‘()]", "");
 
                 service.showDocument(engine + query);
             } else {
@@ -564,7 +564,17 @@ public class PrimaryController {
      * @param actionEvent button click
      */
     public void clearTextArea(ActionEvent actionEvent) {
-        this.inputArea.setText("Content cleared.");
+        /*
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        String inClipboard = clipboard.getString();
+        String possibleEntry = FormatChecker.basicBibTeXCheck(inClipboard);
+        if (!possibleEntry.equals("")) {
+            ClipboardContent content = new ClipboardContent();
+            content.putString(inClipboard + " ");
+            clipboard.setContent(content);
+        }*/
+
+        this.inputArea.replaceText(0, inputArea.getLength(), "Content cleared.");
     }
 
     /**

@@ -350,7 +350,8 @@ public class FileManager {
                 if (entryArray.isEmpty()) {
                     Platform.runLater(() -> PrimaryController.throwAlert("Entry/ies not inserted!", "No valid entry found!"));
                 } else {
-                    boolean needsRewrite = false;
+                    int entriesChanged = 0;
+                    int entriesInserted = 0;
                     String fileAsStringTmp = fileAsString;
                     StringBuilder rewriteBuilder = new StringBuilder(fileAsStringTmp);
                     StringBuilder appendBuilder = new StringBuilder();
@@ -362,16 +363,19 @@ public class FileManager {
                         } else {
                             if (bibMap.containsKey(keyword)) { // entry already in file, replace old one
                                 String toReplace = bibMap.get(keyword);
-                                fileAsStringTmp = rewriteBuilder.toString();
-                                fileAsStringTmp = fileAsStringTmp.replace(toReplace, entry).trim() + "\r\n";
-                                rewriteBuilder = new StringBuilder(fileAsStringTmp);
-                                bibMap.put(keyword, entry);
-                                needsRewrite = true;
+                                if (!toReplace.equals(entry)) {
+                                    fileAsStringTmp = rewriteBuilder.toString();
+                                    fileAsStringTmp = fileAsStringTmp.replace(toReplace, entry).trim() + "\r\n";
+                                    rewriteBuilder = new StringBuilder(fileAsStringTmp);
+                                    bibMap.put(keyword, entry);
+                                    entriesChanged++;
+                                }
 
                             } else { // entry not in file yet append it
                                 bibMap.put(keyword, entry);
                                 rewriteBuilder.append("\r\n").append(entry);
                                 appendBuilder.append("\r\n").append(entry);
+                                entriesInserted++;
                             }
 
                             boolean isAlreadyInFile = false; // update Table entries with this entry
@@ -391,7 +395,7 @@ public class FileManager {
                     synchronized (lock) {
                         try {
                             BufferedWriter writer;
-                            if (needsRewrite) {
+                            if (entriesChanged > 0) {
                                 writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
                                 writer.write(rewriteBuilder.toString());
                             } else {
@@ -409,12 +413,42 @@ public class FileManager {
 
                     undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.WRITE);
                     //inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
-                    boolean isSingle = entryArray.size() == 1;
+
+                    String actionHead = (entriesChanged > 0 && entriesInserted > 0) ? "inserted and changed!" : entriesChanged > 0 ? "changed!" : "inserted!";
+                    String head = entryArray.size() == 1 ? "Bib-Entry " : "Entries ";
+
+                    StringBuilder build = new StringBuilder();
+                    if (entriesInserted == 1) {
+                        build.append("A single Bib-Entry was inserted!");
+                    } else if (entriesInserted > 1) {
+                        build.append(entriesInserted).append(" Bib-Entries successfully inserted!");
+                    }
+                    if (entriesChanged == 1) {
+                        if (!(build.length() < 1)) {
+                            build.setLength(build.length() - 1);
+                            build.append("\n").append("and one was updated!");
+                        } else {
+                            build.append("A single Bib-Entry was updated!");
+                        }
+                    } else if (entriesChanged > 1) {
+                        if (!(build.length() < 1)) {
+                            build.setLength(build.length() - 1);
+                            build.append("\n").append("and ").append(entriesChanged).append(" where updated!");
+                        } else {
+                            build.append(entriesChanged).append(" Bib-Entries successfully updated!");
+                        }
+                    }
+                    boolean nothingChanged = (entriesChanged == 0 && entriesInserted == 0);
+                    String body = build.toString();
+
                     Platform.runLater(() -> {
-                        int size = bibMap.size();
+                        int size = bibMap.size(); // todo make it big if else or switch...
                         tableLabel.setText(size + (size == 1 ? " entry inside: " : " entries inside: ") + fileManager.getSelectedFileName());
-                        PrimaryController.throwAlert(isSingle ? "Bib-Entry inserted!" : "Entries inserted!",
-                                isSingle ? "The single Bib-Entry was inserted" : entryArray.size() + " Bib-Entries successfully inserted");
+                        if (nothingChanged) {
+                            PrimaryController.throwAlert("Nothing changed!", ((entryArray.size() == 1 ? "This entry is " : "These entries are ") + "already in the file!"));
+                        } else {
+                            PrimaryController.throwAlert(head + actionHead, body);
+                        }
                         undoButton.setDisable(!undoRedo.isUndoPossible());
                         redoButton.setDisable(!undoRedo.isRedoPossible());
                     });

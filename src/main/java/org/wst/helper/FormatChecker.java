@@ -199,9 +199,11 @@ public abstract class FormatChecker {
                                 .replaceAll("[\"{},]", "").trim();
                         break;
                     case "URL":
+                    case "OPTURL":
                         url = removeClosure(tagAndValue[1]);
                         break;
                     case "DOI":
+                    case "OPTDOI":
                         doi = removeClosure(tagAndValue[1]);
                 }
             }
