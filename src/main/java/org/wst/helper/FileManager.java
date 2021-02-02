@@ -56,7 +56,6 @@ public class FileManager {
     }
 
     /**
-     * TODO: improve the way duplicate filenames are handled!
      * Button is disabled during processing
      * Will prompt the user to choose a directory, with possible .bib files
      * If a directory has already been chosen, the same directory will be opened
@@ -283,7 +282,7 @@ public class FileManager {
      *
      * @param keywords entry keyword to delete
      */
-    public void deleteEntriesFromFile(List<String> keywords) {
+    public void deleteEntriesFromFile(List<String> keywords, Label tableLabel) {
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -309,6 +308,10 @@ public class FileManager {
                         writer.flush();
                         writer.close();
                         undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.DELETE);
+                        Platform.runLater(() -> {
+                            int size = bibMap.size();
+                            tableLabel.setText(size + (size == 1 ? " entry inside: " : " entries inside: ") + fileManager.getSelectedFileName());
+                        });
                     } catch (IOException e) {
                         System.err.println("Error writing to file");
                         e.printStackTrace();
@@ -335,7 +338,7 @@ public class FileManager {
      * @param entries entries inside the table for updates
      * @param event   button press event
      */
-    public void insertIntoFile(String text, ObservableList<TableEntry> entries, ActionEvent event) {
+    public void insertIntoFile(String text, ObservableList<TableEntry> entries, Label tableLabel, ActionEvent event) {
         Button b = (Button) event.getSource();
         b.setDisable(true);
         Task<Void> task = new Task<>() {
@@ -346,7 +349,8 @@ public class FileManager {
                 if (entryArray.isEmpty()) {
                     Platform.runLater(() -> PrimaryController.throwAlert("Entry/ies not inserted!", "No valid entry found!"));
                 } else {
-                    boolean needsRewrite = false;
+                    int entriesChanged = 0;
+                    int entriesInserted = 0;
                     String fileAsStringTmp = fileAsString;
                     StringBuilder rewriteBuilder = new StringBuilder(fileAsStringTmp);
                     StringBuilder appendBuilder = new StringBuilder();
@@ -358,16 +362,19 @@ public class FileManager {
                         } else {
                             if (bibMap.containsKey(keyword)) { // entry already in file, replace old one
                                 String toReplace = bibMap.get(keyword);
-                                fileAsStringTmp = rewriteBuilder.toString();
-                                fileAsStringTmp = fileAsStringTmp.replace(toReplace, entry).trim() + "\r\n";
-                                rewriteBuilder = new StringBuilder(fileAsStringTmp);
-                                bibMap.put(keyword, entry);
-                                needsRewrite = true;
+                                if (!toReplace.equals(entry)) {
+                                    fileAsStringTmp = rewriteBuilder.toString();
+                                    fileAsStringTmp = fileAsStringTmp.replace(toReplace, entry).trim() + "\r\n";
+                                    rewriteBuilder = new StringBuilder(fileAsStringTmp);
+                                    bibMap.put(keyword, entry);
+                                    entriesChanged++;
+                                }
 
                             } else { // entry not in file yet append it
                                 bibMap.put(keyword, entry);
                                 rewriteBuilder.append("\r\n").append(entry);
                                 appendBuilder.append("\r\n").append(entry);
+                                entriesInserted++;
                             }
 
                             boolean isAlreadyInFile = false; // update Table entries with this entry
@@ -387,7 +394,7 @@ public class FileManager {
                     synchronized (lock) {
                         try {
                             BufferedWriter writer;
-                            if (needsRewrite) {
+                            if (entriesChanged > 0) {
                                 writer = new BufferedWriter(new FileWriter(selectedFile.getAbsoluteFile(), false));
                                 writer.write(rewriteBuilder.toString());
                             } else {
@@ -405,10 +412,42 @@ public class FileManager {
 
                     undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.WRITE);
                     //inputArea.setText("Bib entry successfully inserted into " + fileManager.getSelectedFileName());
-                    boolean isSingle = entryArray.size() == 1;
+
+                    String actionHead = (entriesChanged > 0 && entriesInserted > 0) ? "inserted and changed!" : entriesChanged > 0 ? "changed!" : "inserted!";
+                    String head = entryArray.size() == 1 ? "Bib-Entry " : "Entries ";
+
+                    StringBuilder build = new StringBuilder();
+                    if (entriesInserted == 1) {
+                        build.append("A single Bib-Entry was inserted!");
+                    } else if (entriesInserted > 1) {
+                        build.append(entriesInserted).append(" Bib-Entries successfully inserted!");
+                    }
+                    if (entriesChanged == 1) {
+                        if (!(build.length() < 1)) {
+                            build.setLength(build.length() - 1);
+                            build.append("\n").append("and one was updated!");
+                        } else {
+                            build.append("A single Bib-Entry was updated!");
+                        }
+                    } else if (entriesChanged > 1) {
+                        if (!(build.length() < 1)) {
+                            build.setLength(build.length() - 1);
+                            build.append("\n").append("and ").append(entriesChanged).append(" where updated!");
+                        } else {
+                            build.append(entriesChanged).append(" Bib-Entries successfully updated!");
+                        }
+                    }
+                    boolean nothingChanged = (entriesChanged == 0 && entriesInserted == 0);
+                    String body = build.toString();
+
                     Platform.runLater(() -> {
-                        PrimaryController.throwAlert(isSingle ? "Bib-Entry inserted!" : "Entries inserted!",
-                                isSingle ? "The single Bib-Entry was inserted" : entryArray.size() + " Bib-Entries successfully inserted");
+                        int size = bibMap.size();
+                        tableLabel.setText(size + (size == 1 ? " entry inside: " : " entries inside: ") + fileManager.getSelectedFileName());
+                        if (nothingChanged) {
+                            PrimaryController.throwAlert("Nothing changed!", ((entryArray.size() == 1 ? "This entry is " : "These entries are ") + "already in the file!"));
+                        } else {
+                            PrimaryController.throwAlert(head + actionHead, body);
+                        }
                         undoButton.setDisable(!undoRedo.isUndoPossible());
                         redoButton.setDisable(!undoRedo.isRedoPossible());
                     });
@@ -461,6 +500,9 @@ public class FileManager {
                     fw.write("");
                     fw.flush();
                     fw.close();
+                    undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.FILE_LOAD);
+                    undoButton.setDisable(!undoRedo.isUndoPossible());
+                    redoButton.setDisable(!undoRedo.isRedoPossible());
                 }
             } catch (IOException e) {
                 System.err.println("Error writing file, during creation");
@@ -479,7 +521,7 @@ public class FileManager {
      * Duplicates (same entry keyword) will only occur a single time in the map!
      * Synchronized to prevent bugs from quickly loading various large files
      */
-    public synchronized void readFileIntoTable(TableView<TableEntry> view) {
+    public synchronized void readFileIntoTable(TableView<TableEntry> view, Label tableLabel, boolean isUndoRedo) {
         Task<ObservableList<TableEntry>> task = new Task<>() {
             @Override
             protected ObservableList<TableEntry> call() throws Exception {
@@ -525,8 +567,15 @@ public class FileManager {
                     }
                     reader.close();
                     fileAsString = builder.toString();
-                    if (undoRedo.isInit()) {
-                        undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.INIT);
+                    Platform.runLater(() -> {
+                        int size = bibMap.size();
+                        tableLabel.setText(size + (size == 1 ? " entry inside: " : " entries inside: ") + fileManager.getSelectedFileName());
+                    });
+
+                    if (undoRedo.isInit() || !isUndoRedo) {
+                        undoRedo.saveOperation(fileAsString, selectedFile, UndoRedoManager.Action.FILE_LOAD);
+                        undoButton.setDisable(!undoRedo.isUndoPossible());
+                        redoButton.setDisable(!undoRedo.isRedoPossible());
                     }
 
                 } catch (IOException e) {

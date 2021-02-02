@@ -29,7 +29,7 @@ public class PrimaryController {
     @FXML
     private TextArea inputArea; // replace with textFlow?
     @FXML
-    private Label rootDirectory, secondList;
+    private Label rootDirectory, tableLabel;
     @FXML
     private TableView<TableEntry> bibTable;
     @FXML
@@ -45,6 +45,8 @@ public class PrimaryController {
     private ColumnConstraints listViewColumnConstraints, secondColumnConstraints;
     @FXML
     private Region secondColumnRegion;
+    @FXML
+    private Tooltip toggleAutoInsertTooltip;
 
     private boolean isBelowSize = false;
     private double height = 768;
@@ -98,9 +100,9 @@ public class PrimaryController {
 
                     String currentText = inputArea.getText();
                     if (currentText.length() < 30) {
-                        inputArea.setText(entry);
+                        inputArea.replaceText(0, inputArea.getLength(), entry);
                     } else if (!inputArea.getText().contains(entry.replaceAll("\r", "").trim())) {
-                        inputArea.setText(inputArea.getText() + "\n\n" + entry);
+                        inputArea.replaceText(0, inputArea.getLength(), inputArea.getText() + "\n\n" + entry);
                     }
                     App.toFront();
                 } else {
@@ -305,8 +307,7 @@ public class PrimaryController {
         String selectedFileName = fileManager.getSelectedFileName();
         fileManager.selectSingleFile(actionEvent);
         if (!selectedFileName.equals(fileManager.getSelectedFileName())) {
-            this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
-            fileManager.readFileIntoTable(bibTable);
+            fileManager.readFileIntoTable(bibTable, this.tableLabel, false);
         }
     }
 
@@ -319,8 +320,7 @@ public class PrimaryController {
     @FXML
     private void createFile(ActionEvent actionEvent) {
         if (fileManager.createFile(actionEvent)) {
-            this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
-            fileManager.readFileIntoTable(bibTable);
+            fileManager.readFileIntoTable(bibTable, this.tableLabel, false);
         }
     }
 
@@ -332,8 +332,12 @@ public class PrimaryController {
     @FXML
     private void selectFileFromList(ActionEvent actionEvent) {
         fileManager.selectFileFromList(fileList.getSelectionModel().getSelectedItem());
-        this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
-        fileManager.readFileIntoTable(bibTable);
+        fileManager.readFileIntoTable(bibTable, this.tableLabel, false);
+    }
+
+    private void setTableLabel() {
+        int numOfEntries = this.bibTable.getItems().size();
+        this.tableLabel.setText(numOfEntries + " Entries inside: " + fileManager.getSelectedFileName());
     }
 
 
@@ -348,7 +352,7 @@ public class PrimaryController {
         if (!fileManager.isFileSelected()) {
             throwAlert("Entry/ies not inserted!", "Select a file first!");
         } else {
-            fileManager.insertIntoFile(inputArea.getText(), bibTable.getItems(), actionEvent);
+            fileManager.insertIntoFile(inputArea.getText(), bibTable.getItems(), this.tableLabel, actionEvent);
         }
     }
 
@@ -391,7 +395,7 @@ public class PrimaryController {
                 }
             }
             builder.setLength(builder.length() - 2);
-            this.inputArea.setText(builder.toString());
+            this.inputArea.replaceText(0, inputArea.getLength(), builder.toString());
 
         } else {
             throwAlert("No file selected!", "Select a file first!");
@@ -416,8 +420,8 @@ public class PrimaryController {
             return;
         }
 
-        String msg = selectedItems.size() == 1 ? "Delete 1 entry from the list?" :
-                "Delete " + selectedItems.size() + " entries from the list?";
+        String msg = selectedItems.size() == 1 ? "Delete 1 entry from the file?" :
+                "Delete " + selectedItems.size() + " entries from the file?";
 
         Alert alert = new Alert(Alert.AlertType.NONE, msg, ButtonType.YES, ButtonType.CANCEL);
         alert.setTitle("Delete confirmation");
@@ -434,7 +438,7 @@ public class PrimaryController {
                         keywords.add(e.getKeyword());
                     }
                     bibTable.getItems().removeAll(items);
-                    fileManager.deleteEntriesFromFile(keywords);
+                    fileManager.deleteEntriesFromFile(keywords, this.tableLabel);
                 } else {
                     throwAlert("File/s not deleted!", "Nothing selected!");
                 }
@@ -479,7 +483,7 @@ public class PrimaryController {
             } else if (!entry.getTitle().equals("none") && !entry.getAuthor().equals("none")) { //todo add config for search engine!
                 String engine = "https://duckduckgo.com/?q="; // or GOOGLE: https://www.google.at/search?q=
                 String query = entry.getTitle().trim() + "+" + entry.getAuthor().trim();
-                query = query.replaceAll(" ", "+").replaceAll("[\\[\\]{}|\\\\”%~#<>$–_.!*‘()]", "");
+                query = query.replaceAll(" ", "+").replaceAll("[\\[\\]{}|\\\\\"„“”%,;:/?@&=~#<>$–_.!*‘()]", "");
 
                 service.showDocument(engine + query);
             } else {
@@ -545,9 +549,12 @@ public class PrimaryController {
         if (this.clipboardService.isRunning()) {
             this.clipboardService.cancel();
             this.toggleAutoInsert.setId("toggleAutoInsert2");
+            this.toggleAutoInsertTooltip.setText("Enable insert of clipboard content");
         } else {
             this.clipboardService.restart();
             this.toggleAutoInsert.setId("toggleAutoInsert");
+            this.toggleAutoInsertTooltip.setText("Disable insert of clipboard content");
+
         }
     }
 
@@ -557,7 +564,17 @@ public class PrimaryController {
      * @param actionEvent button click
      */
     public void clearTextArea(ActionEvent actionEvent) {
-        this.inputArea.setText("Content cleared.");
+        /*
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        String inClipboard = clipboard.getString();
+        String possibleEntry = FormatChecker.basicBibTeXCheck(inClipboard);
+        if (!possibleEntry.equals("")) {
+            ClipboardContent content = new ClipboardContent();
+            content.putString(inClipboard + " ");
+            clipboard.setContent(content);
+        }*/
+
+        this.inputArea.replaceText(0, inputArea.getLength(), "Content cleared.");
     }
 
     /**
@@ -656,12 +673,11 @@ public class PrimaryController {
         if (undoRedo.isUndoPossible()) {
             UndoRedoManager.Action action = undoRedo.undoLastFileOperation();
 
-            fileManager.readFileIntoTable(this.bibTable);
-            this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
+            fileManager.readFileIntoTable(bibTable, this.tableLabel, true);
 
             switch (action) {
-                case INIT:
-                    throwAlert("Undo success!", "Last available file operation (insert) was undone!");
+                case FILE_LOAD:
+                    throwAlert("Undo success!", "The last file operation (load) was undone!");
                     break;
                 case WRITE:
                     throwAlert("Undo success!", "The last file operation (insert) was undone!");
@@ -696,10 +712,12 @@ public class PrimaryController {
         if (undoRedo.isRedoPossible()) {
             UndoRedoManager.Action action = undoRedo.redoLastFileOperation();
 
-            fileManager.readFileIntoTable(this.bibTable);
-            this.secondList.setText("Entries inside: " + fileManager.getSelectedFileName());
+            fileManager.readFileIntoTable(bibTable, this.tableLabel, true);
 
             switch (action) {
+                case FILE_LOAD:
+                    throwAlert("Redo success!", "Previous file operation (load) was undone!");
+                    break;
                 case WRITE:
                     throwAlert("Redo success!", "Previous file operation (insert) was redone!");
                     break;

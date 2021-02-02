@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        BibTeXCopyAndSend
-// @version     1.0.3
+// @version     1.0.4
 // @grant       GM.setClipboard
 // @include	    https://dl.acm.org/*
 // @author      Wilhelm Stuhlpfarrer
@@ -14,7 +14,7 @@
  * The check for content in the container happens every 500ms for a total of 10 times (5sec for data to load)
  */
 // LINK plugin: https://www.tampermonkey.net/
-// SCRIPT: https://gist.github.com/WilhelmStu/cf1b994d934bd6f6d89dc07ab65b09d3/raw/8f1d60f74973826f5d06fdcf25050fa423412295/BibTeXCopyAndSend.user.js
+// SCRIPT: https://gist.github.com/WilhelmStu/cf1b994d934bd6f6d89dc07ab65b09d3/raw/64ce9084f2733e23f67326954edc00bb8c7a8380/BibTeXCopyAndSend.user.js
 
 if (window.location.origin === "https://dl.acm.org") {
 
@@ -45,7 +45,8 @@ if (window.location.origin === "https://dl.acm.org") {
 
             if (bibEntry.length > 20) {
                 console.log("BibTeXCopyAndSend: found an entry, copy to clipboard and end loop");
-                GM.setClipboard(bibEntry);
+                let randString = Math.random().toString(36).substring(2, 7);
+                GM.setClipboard(bibEntry + randString);
                 clearInterval(interval);
                 isRunning = false;
                 return;

@@ -20,7 +20,7 @@
     -fx-padding: 10 0 0 0;
 }
 
-#secondList {
+#tableLabel {
     -fx-font-size: 16;
     -fx-padding: 8 0 0 0;
     -fx-pref-height: 20px;

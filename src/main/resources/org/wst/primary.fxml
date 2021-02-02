@@ -84,7 +84,7 @@
             <HBox spacing="8">
                 <VBox HBox.hgrow="ALWAYS" alignment="CENTER">
 
-                    <Label fx:id="secondList" text="No file selected"/>
+                    <Label fx:id="tableLabel" text="No file selected"/>
                     <TableView fx:id="bibTable" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" prefHeight="2000"/>
                     <Region minHeight="8"/>
                     <!--Button fx:id="selectEntry" text="\\/" onAction="#selectEntry"/-->
@@ -103,7 +103,7 @@
                         <Region prefWidth="300" minWidth="0"/>
                         <Button fx:id="toggleAutoInsert" onAction="#toggleAutoInsert">
                             <tooltip>
-                                <Tooltip text='Disable insert of clipboard content'/>
+                                <Tooltip fx:id="toggleAutoInsertTooltip" text='Disable insert of clipboard content'/>
                             </tooltip>
                         </Button>
                         <Button fx:id="changeClosureMode" onAction="#changeClosureMode">

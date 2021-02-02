@@ -33,14 +33,15 @@ public class ClipboardService extends ScheduledService<String> {
                     };
                     Platform.runLater(query);
 
+                    String clipBoardContent = query.get();
                     if (oldClipboard == null) {
-                        oldClipboard = query.get();
-                        return query.get();
-                    } else if (!(oldClipboard.equals(query.get()))) {
-                        oldClipboard = query.get();
-                        return query.get();
-                    } else {
+                        oldClipboard = clipBoardContent;
+                        return clipBoardContent;
+                    } else if (oldClipboard.equals(clipBoardContent)) {
                         wait(200);
+                    } else {
+                        oldClipboard = clipBoardContent;
+                        return clipBoardContent;
                     }
                 }
             }
