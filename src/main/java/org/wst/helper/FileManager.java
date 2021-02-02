@@ -56,7 +56,6 @@ public class FileManager {
     }
 
     /**
-     * TODO: improve the way duplicate filenames are handled!
      * Button is disabled during processing
      * Will prompt the user to choose a directory, with possible .bib files
      * If a directory has already been chosen, the same directory will be opened
@@ -442,7 +441,7 @@ public class FileManager {
                     String body = build.toString();
 
                     Platform.runLater(() -> {
-                        int size = bibMap.size(); // todo make it big if else or switch...
+                        int size = bibMap.size();
                         tableLabel.setText(size + (size == 1 ? " entry inside: " : " entries inside: ") + fileManager.getSelectedFileName());
                         if (nothingChanged) {
                             PrimaryController.throwAlert("Nothing changed!", ((entryArray.size() == 1 ? "This entry is " : "These entries are ") + "already in the file!"));

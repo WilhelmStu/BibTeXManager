@@ -483,7 +483,7 @@ public class PrimaryController {
             } else if (!entry.getTitle().equals("none") && !entry.getAuthor().equals("none")) { //todo add config for search engine!
                 String engine = "https://duckduckgo.com/?q="; // or GOOGLE: https://www.google.at/search?q=
                 String query = entry.getTitle().trim() + "+" + entry.getAuthor().trim();
-                query = query.replaceAll(" ", "+").replaceAll("[\\[\\]{}|\\\\\"„“”%~#<>$–_.!*‘()]", "");
+                query = query.replaceAll(" ", "+").replaceAll("[\\[\\]{}|\\\\\"„“”%,;:/?@&=~#<>$–_.!*‘()]", "");
 
                 service.showDocument(engine + query);
             } else {
