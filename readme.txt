@@ -13,12 +13,10 @@ Key features:
 To deploy the app you can use maven and either run:
 
     - mvn clean javafx:jlink
-    (this will create BibTeXManager/target/output.zip, that includes all needed binaries for your specific platform  and
-    the executable "launch" inside the bin folder to run the App, this version then works independent of your java installation)
+(this will create BibTeXManager/target/output.zip, that includes all needed binaries for your specific platform  and the executable "launch" inside the bin folder to run the App, this version then works independent of your java installation)
 
     - mvn package
-    (note that this will create the BibTeXManager-version-shade.jar inside the target folder, it should work on windows, linux
-    and mac, but requires a valid java installation to run)
+(note that this will create the BibTeXManager-version-shade.jar inside the target folder, it should work on windows, linuxand mac, but requires a valid java installation to run)
 
 To use the script for acm.org:
 Browser-Plugin to manage User-Scripts: https://www.tampermonkey.net/
